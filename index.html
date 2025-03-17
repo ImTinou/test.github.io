@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camille le nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap');
+        
+        :root {
+            --text-color: gold;
+            --text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
+            --glow-color: rgba(255, 215, 0, 0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            perspective: 1000px;
+            cursor: none;
+        }
+        
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .texte-container {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        .texte-repete {
+            position: absolute;
+            color: var(--text-color);
+            font-weight: 800;
+            font-size: 30px;
+            text-shadow: var(--text-shadow);
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+            user-select: none;
+            animation: float 3s infinite alternate ease-in-out, glow 2s infinite alternate;
+            filter: drop-shadow(0 0 5px var(--glow-color));
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
+            100% { transform: translateY(-20px) rotateX(10deg) rotateY(10deg); }
+        }
+        
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px var(--text-color), 0 0 20px var(--text-color); }
+            100% { text-shadow: 0 0 15px var(--text-color), 0 0 30px var(--text-color), 0 0 45px var(--text-color); }
+        }
+        
+        .texte-repete:nth-child(odd) {
+            animation-delay: 0.5s;
+        }
+        
+        .texte-repete:hover {
+            z-index: 100;
+            transform: scale(1.3) rotate3d(1, 1, 1, 15deg);
+            animation-play-state: paused;
+        }
+        
+        .texte-repete.glitch {
+            animation: glitch 0.5s infinite;
+        }
+        
+        @keyframes glitch {
+            0% {
+                transform: translate(2px, 2px);
+                color: cyan;
+            }
+            25% {
+                transform: translate(-2px, -2px);
+                color: magenta;
+            }
+            50% {
+                transform: translate(2px, -2px);
+                color: yellow;
+            }
+            75% {
+                transform: translate(-2px, 2px);
+                color: white;
+            }
+            100% {
+                transform: translate(2px, 2px);
+                color: var(--text-color);
+            }
+        }
+        
+        .explosion {
+            position: absolute;
+            display: inline-block;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 100;
+            transform-origin: center;
+            animation: explode 1s forwards cubic-bezier(0.11, 0.65, 0.33, 1.43);
+        }
+        
+        @keyframes explode {
+            0% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3) rotate(var(--rotation));
+                filter: blur(5px);
+            }
+        }
+        
+        .shockwave {
+            position: absolute;
+            border-radius: 50%;
+            background: transparent;
+            border: 4px solid var(--text-color);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 99;
+            animation: shockwave 0.8s forwards cubic-bezier(0.1, 0.82, 0.25, 1);
+        }
+        
+        @keyframes shockwave {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 400px;
+                height: 400px;
+                opacity: 0;
+            }
+        }
+        
+        .neon-trail {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--text-color);
+            filter: blur(5px);
+            pointer-events: none;
+            mix-blend-mode: screen;
+            z-index: 1000;
+            transition: opacity 1s;
+            opacity: 0.7;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 2px solid var(--text-color);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.3s;
+            opacity: 0.7;
+        }
+        
+        .cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 5px;
+            height: 5px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+        }
+        
+        .cursor.click {
+            animation: click-pulse 0.5s forwards;
+        }
+        
+        @keyframes click-pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 2px; }
+            50% { transform: translate(-50%, -50%) scale(2); opacity: 0.5; border-width: 1px; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; border-width: 2px; }
+        }
+        
+        .rotating-text {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .rotating-text span {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            color: var(--text-color);
+            font-size: 18px;
+            transform-origin: center;
+            padding-top: 140px;
+            text-align: center;
+        }
+        
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        
+        @keyframes lightning {
+            0%, 100% { 
+                opacity: 0; 
+            }
+            10%, 90% { 
+                opacity: 0; 
+            }
+            50% { 
+                opacity: 1; 
+            }
+        }
+        
+        .lightning {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--text-color) 40%, var(--text-color) 70%, rgba(255, 255, 255, 0) 100%);
+            width: 3px;
+            height: 0;
+            top: 0;
+            opacity: 0.7;
+            filter: blur(1px);
+            box-shadow: 0 0 10px 2px var(--text-color);
+            pointer-events: none;
+            z-index: 50;
+        }
+        
+        @keyframes lightning-animate {
+            0% { height: 0; opacity: 0.7; }
+            100% { height: 100vh; opacity: 0; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .spiral {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--text-color);
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 60;
+        }
+        
+        @keyframes spiral-out {
+            0% { 
+                width: 20px; 
+                height: 20px; 
+                opacity: 0.7; 
+                transform: translate(-50%, -50%) rotate(0deg); 
+            }
+            100% { 
+                width: 300px; 
+                height: 300px; 
+                opacity: 0; 
+                transform: translate(-50%, -50%) rotate(720deg); 
+            }
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--text-color);
+            border-radius: 50%;
+            z-index: 90;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background"></canvas>
+    <div class="flash"></div>
+    <div class="texte-container" id="texte-container"></div>
+    <div class="rotating-text" id="rotating-text"></div>
+    <div class="cursor" id="cursor"></div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/confetti-js/0.0.18/confetti.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Variables d'initialisation
+            const texte = "Camille le nul";
+            const container = document.getElementById("texte-container");
+            const cursor = document.getElementById("cursor");
+            const flash = document.querySelector(".flash");
+            const canvas = document.getElementById("background");
+            const rotatingText = document.getElementById("rotating-text");
+            const explosionSymbols = ["★", "✦", "✯", "✪", "⚡", "💥", "✨", "🔥", "💫", "⭐", "🌟"];
+            const colors = ["#FFD700", "#FFA500", "#FF4500", "#FF00FF", "#00FFFF", "#00FF00"];
+            let mouseX = 0;
+            let mouseY = 0;
+            let trailElements = [];
+            let texteElements = [];
+            let isMouseDown = false;
+            let backgroundParticles = [];
+            let lastConfettiTime = 0;
+            let ctx;
+            
+            // Configuration du canvas
+            function setupCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                ctx = canvas.getContext("2d");
+                
+                // Créer les particules de fond
+                for (let i = 0; i < 100; i++) {
+                    backgroundParticles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        size: Math.random() * 3 + 1,
+                        speedX: (Math.random() - 0.5) * 0.5,
+                        speedY: (Math.random() - 0.5) * 0.5,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+                
+                animateBackground();
+            }
+            
+            // Animation du fond
+            function animateBackground() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Dessiner les particules
+                backgroundParticles.forEach(particle => {
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color;
+                    ctx.globalAlpha = 0.6;
+                    ctx.fill();
+                    
+                    // Mettre à jour la position
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+                    
+                    // Si la souris est proche, déplacer les particules en conséquence
+                    const dx = mouseX - particle.x;
+                    const dy = mouseY - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        particle.x -= dx * 0.02;
+                        particle.y -= dy * 0.02;
+                    }
+                    
+                    // Rebonds sur les bords
+                    if (particle.x < 0 || particle.x > canvas.width) {
+                        particle.speedX *= -1;
+                    }
+                    if (particle.y < 0 || particle.y > canvas.height) {
+                        particle.speedY *= -1;
+                    }
+                    
+                    // Connexions entre particules proches
+                    backgroundParticles.forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 70) {
+                            ctx.beginPath();
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(otherParticle.x, otherParticle.y);
+                            ctx.strokeStyle = particle.color;
+                            ctx.globalAlpha = 0.1 * (1 - distance / 70);
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                requestAnimationFrame(animateBackground);
+            }
+            
+            // Créer un élément de texte
+            function createText(forcePosition = null) {
+                const p = document.createElement("p");
+                p.className = "texte-repete";
+                p.textContent = texte;
+                
+                // Position aléatoire ou forcée
+                const position = forcePosition || getRandomPosition();
+                p.style.left = `${position.x}px`;
+                p.style.top = `${position.y}px`;
+                
+                // Rotation 3D aléatoire
+                const rotX = (Math.random() - 0.5) * 40;
+                const rotY = (Math.random() - 0.5) * 40;
+                const rotZ = (Math.random() - 0.5) * 20;
+                p.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
+                
+                // Taille aléatoire
+                const size = 20 + Math.random() * 30;
+                p.style.fontSize = `${size}px`;
+                
+                // Délai d'animation aléatoire
+                p.style.animationDelay = `${Math.random() * 2}s`;
+                
+                // Effet aléatoire
+                applyRandomEffect(p);
+                
+                // Intéractions avec la souris
+                p.addEventListener("mouseenter", function() {
+                    applyRandomEffect(p, true);
+                });
+                
+                // Événement de clic
+                p.addEventListener("click", function(event) {
+                    handleTextClick(p, event);
+                });
+                
+                // Ajouter l'élément au tableau de suivi
+                texteElements.push(p);
+                
+                return p;
+            }
+            
+            // Appliquer un effet aléatoire à un élément
+            function applyRandomEffect(element, isHover = false) {
+                // Réinitialiser les classes et styles précédents
+                element.className = "texte-repete";
+                element.style.filter = "";
+                
+                const effectRandom = isHover ? Math.random() * 6 : Math.random() * 3;
+                
+                if (effectRandom < 1) {
+                    // Effet de pulse
+                    element.classList.add("pulse");
+                } else if (effectRandom < 2) {
+                    // Effet de glitch
+                    element.classList.add("glitch");
+                } else if (effectRandom < 3) {
+                    // Ombre colorée
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    element.style.textShadow = `0 0 10px ${randomColor}, 0 0 20px ${randomColor}, 0 0 30px ${randomColor}`;
+                } else if (effectRandom < 4) {
+                    // Effet néon plus fort
+                    element.style.filter = "brightness(1.5) contrast(1.5)";
+                    element.style.textShadow = "0 0 5px #fff, 0 0 10px #fff, 0 0 15px #FFD700, 0 0 20px #FFD700, 0 0 25px #FFD700";
+                } else if (effectRandom < 5) {
+                    // Multi-couleurs
+                    element.style.background = "linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet)";
+                    element.style.webkitBackgroundClip = "text";
+                    element.style.webkitTextFillColor = "transparent";
+                    element.style.filter = "brightness(1.5)";
+                } else {
+                    // Effet de flou avec zoom
+                    element.style.transform = "scale(1.2)";
+                    element.style.filter = "blur(1px) brightness(1.2)";
+                    setTimeout(() => {
+                        element.style.filter = "";
+                        element.style.transform = "";
+                    }, 300);
+                }
+            }
+            
+            // Gestion du clic sur un texte
+            function handleTextClick(element, event) {
+                // Créer un effet de flash
+                flash.style.opacity = "0.5";
+                setTimeout(() => {
+                    flash.style.opacity = "0";
+                }, 100);
+                
+                // Effet d'onde de choc
+                const shockwave = document.createElement("div");
+                shockwave.className = "shockwave";
+                shockwave.style.left = `${event.clientX}px`;
+                shockwave.style.top = `${event.clientY}px`;
+                document.body.appendChild(shockwave);
+                setTimeout(() => shockwave.remove(), 800);
+                
+                // Effet d'explosion
+                for (let i = 0; i < 20; i++) {
+                    createExplosionParticle(event.clientX, event.clientY);
+                }
+                
+                // Créer un effet de spirale
+                const spiral = document.createElement("div");
+                spiral.className = "spiral";
+                spiral.style.animation = "spiral-out 1s forwards";
+                spiral.style.borderColor = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(spiral);
+                setTimeout(() => spiral.remove(), 1000);
+                
+                // Foudre aléatoire
+                if (Math.random() < 0.3) {
+                    createLightning();
+                }
+                
+                // Génération de confettis
+                const currentTime = new Date().getTime();
+                if (currentTime - lastConfettiTime > 5000) { // Pas plus d'une fois toutes les 5 secondes
+                    const confettiSettings = {
+                        target: 'background',
+                        max: 100,
+                        size: 2,
+                        animate: true,
+                        props: ['circle', 'square', 'triangle', 'line'],
+                        colors: [[255, 215, 0], [255, 165, 0], [255, 69, 0], [255, 0, 255]],
+                        clock: 25,
+                        rotate: true,
+                        start_from_edge: false,
+                        respawn: false
+                    };
+                    const confetti = new ConfettiGenerator(confettiSettings);
+                    confetti.render();
+                    
+                    setTimeout(() => {
+                        confetti.clear();
+                    }, 3000);
+                    
+                    lastConfettiTime = currentTime;
+                }
+                
+                // Téléportation du texte
+                const newPosition = getRandomPosition();
+                element.style.opacity = "0";
+                element.style.transform = "scale(0.5)";
+                
+                setTimeout(() => {
+                    element.style.left = `${newPosition.x}px`;
+                    element.style.top = `${newPosition.y}px`;
+                    element.style.opacity = "1";
+                    element.style.transform = "scale(1)";
+                    applyRandomEffect(element);
+                }, 300);
+            }
+            
+            // Créer une particule d'explosion
+            function createExplosionParticle(x, y) {
+                const particle = document.createElement("span");
+                particle.className = "explosion";
+                
+                // Symbole aléatoire
+                const symbol = explosionSymbols[Math.floor(Math.random() * explosionSymbols.length)];
+                particle.innerHTML = symbol;
+                
+                // Couleur aléatoire
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.color = color;
+                
+                // Position
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                // Direction
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 100;
+                const finalX = x + Math.cos(angle) * distance;
+                const finalY = y + Math.sin(angle) * distance;
+                
+                // Animation
+                particle.style.setProperty('--rotation', `${(Math.random() - 0.5) * 720}deg`);
+                
+                document.body.appendChild(particle);
+                
+                // Animation manuelle pour plus de contrôle
+                const startTime = performance.now();
+                const duration = 1000 + Math.random() * 500;
+                
+                function animateParticle(timestamp) {
+                    const elapsed = timestamp - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    if (progress < 1) {
+                        const easeOutProgress = 1 - Math.pow(1 - progress, 3); // Easing function
+                        const currentX = x + (finalX - x) * easeOutProgress;
+                        const currentY = y + (finalY - y) * easeOutProgress;
+                        
+                        particle.style.left = `${currentX}px`;
+                        particle.style.top = `${currentY}px`;
+                        particle.style.opacity = 1 - progress;
+                        
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        particle.remove();
+                    }
+                }
+                
+                requestAnimationFrame(animateParticle);
+            }
+            
+            // Créer un éclair
+            function createLightning() {
+                const x = Math.random() * window.innerWidth;
+                const lightning = document.createElement("div");
+                lightning.className = "lightning";
+                lightning.style.left = `${x}px`;
+                lightning.style.animation = "lightning-animate 0.5s forwards";
+                
+                document.body.appendChild(lightning);
+                setTimeout(() => lightning.remove(), 500);
+            }
+            
+            // Obtenir une position aléatoire dans la fenêtre
+            function getRandomPosition() {
+                const padding = 100;
+                const x = padding + Math.random() * (window.innerWidth - padding * 2);
+                const y = padding + Math.random() * (window.innerHeight - padding * 2);
+                return { x, y };
+            }
+            
+            // Créer un texte rotatif
+            function createRotatingText() {
+                rotatingText.innerHTML = '';
+                const count = 12;
+                
+                for (let i = 0; i < count; i++) {
+                    const span = document.createElement("span");
+                    span.textContent = texte;
+                    span.style.transform = `rotate(${i * (360 / count)}deg)`;
+                    rotatingText.appendChild(span);
+                }
+            }
+            
+            // Créer un élément de traînée pour le curseur
+            function createTrail() {
+                const trail = document.createElement("div");
+                trail.className = "neon-trail";
+                trail.style.left = `${mouseX}px`;
+                trail.style.top = `${mouseY}px`;
+                
+                // Couleur aléatoire pour la traînée
+                const trailColor = colors[Math.floor(Math.random() * colors.length)];
+                trail.style.backgroundColor = trailColor;
+                
+                document.body.appendChild(trail);
+                trailElements.push({
+                    element: trail,
+                    createdAt: Date.now()
+                });
+                
+                // Supprimer les vieilles traînées
+                const now = Date.now();
+                trailElements = trailElements.filter(item => {
+                    if (now - item.createdAt > 1000) {
+                        item.element.remove();
+                        return false;
+                    }
+                    return true;
+                });
+            }
+            
+            // Mise à jour périodique des positions et des effets
+            function updateElements() {
+                // 5% de chance qu'un texte change d'effet
+                texteElements.forEach(element => {
+                    if (Math.random() < 0.05) {
+                        applyRandomEffect(element);
+                    }
+                    
+                    // Légère variation de position
+                    if (Math.random() < 0.1) {
+                        const currentX = parseFloat(element.style.left);
+                        const currentY = parseFloat(element.style.top);
+                        
+                        element.style.left = `${currentX + (Math.random() - 0.5) * 10}px`;
+                        element.style.top = `${currentY + (Math.random() - 0.5) * 10}px`;
+                    }
+                });
+                
+                // 10% de chance de créer un éclair
+                if (Math.random() < 0.1) {
+                    createLightning();
+                }
+            }
+            
+            // Gestionnaires d'événements
+            function setupEventListeners() {
+                // Suivi de la souris pour le curseur personnalisé
+                document.addEventListener("mousemove", function(e) {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    
+                    // Mise à jour du curseur
+                    cursor.style.left = `${mouseX}px`;
+                    cursor.style.top = `${mouseY}px`;
+                    
+                    // Création de traînée (moins fréquente pour éviter trop d'éléments DOM)
+                    if (Math.random() < 0.2) {
+                        createTrail();
+                    }
+                    
+                    // Interaction avec les textes
+                    texteElements.forEach(element => {
+                        const rect = element.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        
+                        // Distance entre la souris et le centre du texte
+                        const dx = mouseX - centerX;
+                        const dy = mouseY - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // Si la souris est à proximité, décaler légèrement le texte
+                        if (distance < 100) {
+                            const pushFactor = (100 - distance) / 10;
+                            const pushX = (dx / distance) * pushFactor;
+                            const pushY = (dy / distance) * pushFactor;
+                            
+                            element.style.transform = `translate(${-pushX}px, ${-pushY}px) scale(${1 + (100 - distance) / 300})`;
+                        } else {
+                            element.style.transform = "";
+                        }
+                    });
+                });
+                
+                // Événements de clic
+                document.addEventListener("mousedown", function() {
+                    isMouseDown = true;
+                    cursor.classList.add("click");
+                    
+                    // Effet à chaque clic
+                    const shockwave = document.createElement("div");
+                    shockwave.className = "shockwave";
+                    shockwave.style.left = `${mouseX}px`;
+                    shockwave.style.top = `${mouseY}px`;
+                    document.body.appendChild(shockwave);
+                    
+                    setTimeout(() => {
+                        shockwave.remove();
+                    }, 800);
+                });
+                
+                document.addEventListener("mouseup", function() {
+                    isMouseDown = false;
+                    cursor.classList.remove("click");
+                });
+                
+                // Redimensionnement de la fenêtre
+                window.addEventListener("resize", function() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    
+                    // Repositionner les textes
+                    texteElements.forEach(element => {
+                        const position = getRandomPosition();
+                        element.style.left = `${position.x}px`;
+                        element.style.top = `${position.y}px`;
+                    });
+                });
+            }
+            
+            // Initialisation
+            function initialize() {
+                setupCanvas();
+                createRotatingText();
+                
+                // Créer 10 textes initiaux
+                for (let i = 0; i < 10; i++) {
+                    container.appendChild(createText());
+                }
+                
+                setupEventListeners();
+                
+                // Mises à jour périodiques
+                setInterval(updateElements, 1000);
+                
+                // Lancer un effet de foudre toutes les 5-10 secondes
+                setInterval(() => {
+                    if (Math.random() < 0.5) {
+                        createLightning();
+                    }
+                }, 5000);
+                
+                // Créer un nouveau texte toutes les 3 secondes jusqu'à un maximum
+                setInterval(() => {
+                    if (texteElements.length < 20) {
+                        container.appendChild(createText());
+                    }
+                }, 3000);
+            }
+            
+            initialize();
+        });
+    </script>
+</body>
+</html>
