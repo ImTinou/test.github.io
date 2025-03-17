@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camille le nul</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Camille Le Nul - Collection de Mini-Jeux</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
         
         :root {
-            --text-color: gold;
-            --text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
-            --glow-color: rgba(255, 215, 0, 0.7);
+            --primary-color: #ff0000;
+            --secondary-color: #ffff00;
+            --background-dark: #000000;
+            --background-light: #111111;
+            --text-color: #ffffff;
+            --border-color: #ffffff;
+            --highlight-color: #00ffff;
         }
         
         * {
@@ -21,826 +24,2691 @@
         }
         
         body {
-            background-color: #000;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            font-family: 'Press Start 2P', cursive;
             overflow: hidden;
-            font-family: 'Poppins', sans-serif;
+            user-select: none;
             height: 100vh;
             width: 100vw;
-            position: relative;
-            perspective: 1000px;
-            cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
-        #background {
-            position: fixed;
-            top: 0;
-            left: 0;
+        #game-container {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            border: 4px solid var(--border-color);
+            overflow: hidden;
+            background-color: var(--background-dark);
+        }
+        
+        /* --- ÉCRAN TITRE --- */
+        #title-screen {
             width: 100%;
             height: 100%;
-            z-index: -1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="50" height="50" fill="%23111"/><rect x="50" y="50" width="50" height="50" fill="%23111"/></svg>');
+            background-size: 20px 20px;
+            animation: backgroundScroll 10s linear infinite;
         }
         
-        .texte-container {
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            position: relative;
+        @keyframes backgroundScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
         }
         
-        .texte-repete {
-            position: absolute;
-            color: var(--text-color);
-            font-weight: 800;
-            font-size: 30px;
-            text-shadow: var(--text-shadow);
-            transform-style: preserve-3d;
-            backface-visibility: hidden;
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        .game-title {
+            font-size: 40px;
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+            animation: textGlow 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes textGlow {
+            from { text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); }
+            to { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
+        }
+        
+        .title-camille {
+            color: var(--secondary-color);
+            display: block;
+            margin-bottom: 10px;
+            font-size: 50px;
+            transform: rotate(-5deg);
+        }
+        
+        .menu-container {
+            width: 80%;
+            max-width: 500px;
+        }
+        
+        .menu-item {
+            background-color: var(--background-light);
+            margin: 15px 0;
+            padding: 15px;
+            border: 3px solid var(--border-color);
             cursor: pointer;
-            user-select: none;
-            animation: float 3s infinite alternate ease-in-out, glow 2s infinite alternate;
-            filter: drop-shadow(0 0 5px var(--glow-color));
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
         }
         
-        @keyframes float {
-            0% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
-            100% { transform: translateY(-20px) rotateX(10deg) rotateY(10deg); }
+        .menu-item:hover {
+            transform: scale(1.05);
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 15px var(--highlight-color);
         }
         
-        @keyframes glow {
-            0% { text-shadow: 0 0 10px var(--text-color), 0 0 20px var(--text-color); }
-            100% { text-shadow: 0 0 15px var(--text-color), 0 0 30px var(--text-color), 0 0 45px var(--text-color); }
+        .menu-item.selected {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 15px var(--secondary-color);
         }
         
-        .texte-repete:nth-child(odd) {
-            animation-delay: 0.5s;
+        .menu-item:before {
+            content: "★";
+            margin-right: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
-        .texte-repete:hover {
-            z-index: 100;
-            transform: scale(1.3) rotate3d(1, 1, 1, 15deg);
-            animation-play-state: paused;
+        .menu-item:hover:before, .menu-item.selected:before {
+            opacity: 1;
         }
         
-        .texte-repete.glitch {
-            animation: glitch 0.5s infinite;
-        }
-        
-        @keyframes glitch {
-            0% {
-                transform: translate(2px, 2px);
-                color: cyan;
-            }
-            25% {
-                transform: translate(-2px, -2px);
-                color: magenta;
-            }
-            50% {
-                transform: translate(2px, -2px);
-                color: yellow;
-            }
-            75% {
-                transform: translate(-2px, 2px);
-                color: white;
-            }
-            100% {
-                transform: translate(2px, 2px);
-                color: var(--text-color);
-            }
-        }
-        
-        .explosion {
-            position: absolute;
-            display: inline-block;
-            font-size: 20px;
-            pointer-events: none;
-            z-index: 100;
-            transform-origin: center;
-            animation: explode 1s forwards cubic-bezier(0.11, 0.65, 0.33, 1.43);
-        }
-        
-        @keyframes explode {
-            0% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(3) rotate(var(--rotation));
-                filter: blur(5px);
-            }
-        }
-        
-        .shockwave {
-            position: absolute;
-            border-radius: 50%;
-            background: transparent;
-            border: 4px solid var(--text-color);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 99;
-            animation: shockwave 0.8s forwards cubic-bezier(0.1, 0.82, 0.25, 1);
-        }
-        
-        @keyframes shockwave {
-            0% {
-                width: 0;
-                height: 0;
-                opacity: 1;
-            }
-            100% {
-                width: 400px;
-                height: 400px;
-                opacity: 0;
-            }
-        }
-        
-        .neon-trail {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--text-color);
-            filter: blur(5px);
-            pointer-events: none;
-            mix-blend-mode: screen;
-            z-index: 1000;
-            transition: opacity 1s;
-            opacity: 0.7;
-        }
-        
-        .firework {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 100;
-        }
-        
-        .cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: transparent;
-            border: 2px solid var(--text-color);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 9999;
-            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.3s;
-            opacity: 0.7;
-        }
-        
-        .cursor::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 5px;
-            height: 5px;
-            background-color: var(--text-color);
-            border-radius: 50%;
-        }
-        
-        .cursor.click {
-            animation: click-pulse 0.5s forwards;
-        }
-        
-        @keyframes click-pulse {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; border-width: 2px; }
-            50% { transform: translate(-50%, -50%) scale(2); opacity: 0.5; border-width: 1px; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; border-width: 2px; }
-        }
-        
-        .rotating-text {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: rotate 20s linear infinite;
-            z-index: -1;
-            opacity: 0.3;
-        }
-        
-        .rotating-text span {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            color: var(--text-color);
-            font-size: 18px;
-            transform-origin: center;
-            padding-top: 140px;
+        .menu-item-icon {
+            font-family: 'VT323', monospace;
+            font-size: 30px;
+            margin-right: 15px;
+            min-width: 30px;
             text-align: center;
         }
         
-        @keyframes rotate {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        .start-button {
+            margin-top: 30px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: pulse 1.5s infinite alternate;
         }
         
-        .flash {
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+        
+        .start-button:hover {
+            background-color: var(--highlight-color);
+            animation: none;
+            transform: scale(1.1);
+        }
+        
+        /* --- JEUX COMMUN --- */
+        .game-screen {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            padding: 5px 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .back-button:hover {
+            background-color: var(--border-color);
+            color: var(--background-dark);
+        }
+        
+        /* --- COMBAT UNDERTALE --- */
+        #undertale-game {
+            background-color: var(--background-dark);
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        #battle-zone {
+            width: 400px;
+            height: 150px;
+            border: 4px solid white;
+            position: absolute;
+            top: 250px;
+            left: 200px;
+        }
+        
+        #player-heart {
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary-color);
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: filter 0.1s;
+        }
+        
+        #action-menu {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            display: flex;
+            gap: 50px;
+        }
+        
+        .action-button {
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+        }
+        
+        .action-button:hover {
+            color: var(--secondary-color);
+        }
+        
+        .action-button:hover::before {
+            content: '★';
+            position: absolute;
+            left: -25px;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        #dialogue-box {
+            position: absolute;
+            bottom: 150px;
+            left: 50px;
+            width: 700px;
+            height: 80px;
+            border: 4px solid white;
+            padding: 15px;
+            font-size: 18px;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        #stats {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            font-size: 18px;
+        }
+        
+        #enemy-container {
+            position: absolute;
+            top: 100px;
+            left: 400px;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .enemy-sprite {
+            font-size: 100px;
+            filter: drop-shadow(0 0 10px var(--highlight-color));
+            animation: enemyFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes enemyFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .attack-bone {
+            position: absolute;
+            width: 20px;
+            height: 80px;
+            background: linear-gradient(to bottom, white 75%, rgba(0,0,0,0) 25%);
+            background-size: 100% 20px;
+            background-repeat: repeat-y;
+        }
+        
+        .attack-bone.top {
+            top: 0;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        
+        .attack-bone.bottom {
+            bottom: 0;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        
+        #game-over, #victory {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            display: none;
+            z-index: 100;
+        }
+        
+        #game-over {
+            color: var(--primary-color);
+        }
+        
+        #victory {
+            color: var(--secondary-color);
+        }
+        
+        .restart-button {
+            margin-top: 30px;
+            font-family: 'Press Start 2P', cursive;
+            background: none;
+            border: 3px solid;
+            color: inherit;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* --- JEU DE PLATEFORME --- */
+        #platformer-game {
+            background-color: #6495ED; /* Ciel bleu */
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+        }
+        
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #8B4513; /* Marron */
+            border-top: 5px solid #556B2F; /* Vert foncé */
+        }
+        
+        .platform {
+            position: absolute;
+            height: 30px;
+            background-color: #8B4513;
+            border-top: 5px solid #556B2F;
+        }
+        
+        #player {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            bottom: 80px;
+            left: 100px;
+            font-size: 30px;
+            text-align: center;
+            line-height: 60px;
+        }
+        
+        .enemy-platform {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+            text-align: center;
+            line-height: 30px;
+            animation: enemyBob 2s infinite alternate ease-in-out;
+        }
+        
+        @keyframes enemyBob {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        
+        .coin {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            font-size: 20px;
+            text-align: center;
+            line-height: 20px;
+            color: gold;
+            animation: coinSpin 1s infinite alternate;
+        }
+        
+        @keyframes coinSpin {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+        
+        #platformer-hud {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border: 2px solid white;
+            font-size: 14px;
+        }
+        
+        /* --- JEU DE RYTHME --- */
+        #rhythm-game {
+            background-color: #000;
+            font-family: 'Press Start 2P', cursive;
+            perspective: 1000px;
+            overflow: hidden;
+        }
+        
+        .highway {
+            position: absolute;
+            width: 400px;
+            height: 500px;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%) rotateX(60deg);
+            background: linear-gradient(to bottom, #111 10%, #333 90%);
+            border: 5px solid #555;
+            display: flex;
+            justify-content: space-around;
+            perspective: 800px;
+        }
+        
+        .lane {
+            width: 60px;
+            height: 100%;
+            border-right: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .lane:last-child {
+            border-right: none;
+        }
+        
+        .target-zone {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .note {
+            position: absolute;
+            width: 50px;
+            height: 20px;
+            top: 0;
+            left: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .button-container {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+        
+        .rhythm-button {
+            width: 60px;
+            height: 60px;
+            background-color: #333;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        .rhythm-button:active, .rhythm-button.pressed {
+            background-color: var(--highlight-color);
+            transform: scale(0.9);
+        }
+        
+        #rhythm-score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: white;
+        }
+        
+        #combo-display {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            font-size: 18px;
+            color: var(--secondary-color);
+        }
+        
+        #feedback-display {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.3s;
+        }
+        
+        /* --- JEU DE QUIZ --- */
+        #quiz-game {
+            background-color: #330033;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .quiz-container {
+            width: 90%;
+            max-width: 700px;
+        }
+        
+        .quiz-header {
+            font-size: 24px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .question-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 3px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .quiz-option {
+            background-color: var(--background-light);
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .quiz-option:hover {
+            background-color: var(--highlight-color);
+            color: var(--background-dark);
+        }
+        
+        #quiz-feedback {
+            height: 60px;
+            font-size: 20px;
+            color: var(--highlight-color);
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #quiz-score {
+            font-size: 18px;
+            color: var(--secondary-color);
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        /* --- JEU DE LABYRINTHE --- */
+        #maze-game {
+            background-color: #000022;
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        .maze-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 3px solid var(--border-color);
+        }
+        
+        .maze-row {
+            display: flex;
+        }
+        
+        .maze-cell {
+            width: 30px;
+            height: 30px;
+            position: relative;
+        }
+        
+        .maze-wall {
+            background-color: #1a237e; /* Bleu foncé */
+            border: 1px solid #303f9f;
+            box-shadow: 0 0 5px #3f51b5;
+        }
+        
+        .maze-player {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            z-index: 10;
+            animation: playerPulse 1s infinite alternate;
+        }
+        
+        @keyframes playerPulse {
+            from { transform: scale(0.9); }
+            to { transform: scale(1.1); }
+        }
+        
+        .maze-end {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--secondary-color);
+            animation: endGlow 1.5s infinite alternate;
+        }
+        
+        @keyframes endGlow {
+            from { text-shadow: 0 0 5px var(--secondary-color); }
+            to { text-shadow: 0 0 20px var(--secondary-color); }
+        }
+        
+        .maze-status {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            color: white;
+        }
+        
+        /* --- EFFETS COMMUNS ET ANIMATIONS --- */
+        .pixel-transition {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: white;
+            background-color: black;
             z-index: 1000;
-            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            grid-template-rows: repeat(15, 1fr);
             opacity: 0;
-            transition: opacity 0.1s;
+            pointer-events: none;
         }
         
-        @keyframes lightning {
-            0%, 100% { 
-                opacity: 0; 
-            }
-            10%, 90% { 
-                opacity: 0; 
-            }
-            50% { 
-                opacity: 1; 
-            }
+        .pixel {
+            background-color: var(--primary-color);
         }
         
-        .lightning {
+        @keyframes pixelFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pixelFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .scanline {
             position: absolute;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--text-color) 40%, var(--text-color) 70%, rgba(255, 255, 255, 0) 100%);
-            width: 3px;
-            height: 0;
             top: 0;
-            opacity: 0.7;
-            filter: blur(1px);
-            box-shadow: 0 0 10px 2px var(--text-color);
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.1);
             pointer-events: none;
-            z-index: 50;
+            z-index: 900;
+            animation: scanlineMove 8s linear infinite;
         }
         
-        @keyframes lightning-animate {
-            0% { height: 0; opacity: 0.7; }
-            100% { height: 100vh; opacity: 0; }
+        @keyframes scanlineMove {
+            from { top: -2px; }
+            to { top: 600px; }
         }
         
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        .spiral {
+        .vignette {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(0deg);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid var(--text-color);
-            opacity: 0.7;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 100px black;
             pointer-events: none;
-            z-index: 60;
+            z-index: 800;
         }
         
-        @keyframes spiral-out {
-            0% { 
-                width: 20px; 
-                height: 20px; 
-                opacity: 0.7; 
-                transform: translate(-50%, -50%) rotate(0deg); 
-            }
-            100% { 
-                width: 300px; 
-                height: 300px; 
-                opacity: 0; 
-                transform: translate(-50%, -50%) rotate(720deg); 
-            }
-        }
-        
-        .particle {
+        .crt-effect {
             position: absolute;
-            background: var(--text-color);
-            border-radius: 50%;
-            z-index: 90;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.03) 50%);
+            background-size: 100% 4px;
             pointer-events: none;
-            opacity: 0.8;
+            z-index: 700;
         }
     </style>
 </head>
 <body>
-    <canvas id="background"></canvas>
-    <div class="flash"></div>
-    <div class="texte-container" id="texte-container"></div>
-    <div class="rotating-text" id="rotating-text"></div>
-    <div class="cursor" id="cursor"></div>
+    <div id="game-container">
+        <!-- Écran titre -->
+        <div id="title-screen">
+            <h1 class="game-title">
+                <span class="title-camille">CAMILLE LE NUL</span>
+                COLLECTION DE MINI-JEUX
+            </h1>
+            
+            <div class="menu-container">
+                <div class="menu-item" data-game="undertale">
+                    <span class="menu-item-icon">☠</span>
+                    Mode Combat (style Undertale)
+                </div>
+                <div class="menu-item" data-game="platformer">
+                    <span class="menu-item-icon">🏃</span>
+                    Camille Run (Platformer)
+                </div>
+                <div class="menu-item" data-game="rhythm">
+                    <span class="menu-item-icon">🎵</span>
+                    Camille Beat (Jeu de Rythme)
+                </div>
+                <div class="menu-item" data-game="maze">
+                    <span class="menu-item-icon">🌀</span>
+                    Labyrinthe Nul
+                </div>
+                <div class="menu-item" data-game="quiz">
+                    <span class="menu-item-icon">❓</span>
+                    Quiz Camille
+                </div>
+                
+                <button class="start-button">JOUER !</button>
+            </div>
+        </div>
+        
+        <!-- Jeu de combat Undertale -->
+        <div id="undertale-game" class="game-screen">
+            <button class="back-button">← RETOUR</button>
+            
+            <div id="stats">
+                CAMILLE LV 1 HP: <span id="hp">20</span>/20
+            </div>
+            
+            <div id="enemy-container">
+                <div class="enemy-sprite">☠</div>
+                <div id="enemy-name">CAMILLE LE NUL</div>
+            </div>
+            
+            <div id="battle-zone">
+                <div id="player-heart"></div>
+            </div>
+            
+            <div id="dialogue-box"></div>
+            
+            <div id="action-menu">
+                <button class="action-button" id="fight">FIGHT</button>
+                <button class="action-button" id="act">ACT</button>
+                <button class="action-button" id="item">ITEM</button>
+                <button class="action-button" id="mercy">MERCY</button>
+            </div>
+            
+            <div id="game-over">
+                GAME OVER
+                <button class="restart-button">Réessayer</button>
+            </div>
+            
+            <div id="victory">
+                VICTOIRE !
+                <button class="restart-button">Rejouer</button>
+            </div>
+        </div>
+        
+        <!-- Jeu de plateforme -->
+        <div id="platformer-game" class="game-screen">
+            <button class="back-button">← RETOUR</button>
+            
+            <div id="platformer-hud">
+                PIÈCES: <span id="coin-count">0</span>/10
+            </div>
+            
+            <div class="ground"></div>
+            <div id="player">🏃</div>
+        </div>
+        
+        <!-- Jeu de rythme -->
+        <div id="rhythm-game" class="game-screen">
+            <button class="back-button">← RETOUR</button>
+            
+            <div id="rhythm-score">SCORE: 0</div>
+            <div id="combo-display">COMBO: x1</div>
+            
+            <div class="highway">
+                <div class="lane" id="lane1">
+                    <div class="target-zone"></div>
+                </div>
+                <div class="lane" id="lane2">
+                    <div class="target-zone"></div>
+                </div>
+                <div class="lane" id="lane3">
+                    <div class="target-zone"></div>
+                </div>
+                <div class="lane" id="lane4">
+                    <div class="target-zone"></div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <div class="rhythm-button" id="button1">D</div>
+                <div class="rhythm-button" id="button2">F</div>
+                <div class="rhythm-button" id="button3">J</div>
+                <div class="rhythm-button" id="button4">K</div>
+            </div>
+            
+            <div id="feedback-display"></div>
+        </div>
+        
+        <!-- Jeu de Quiz -->
+        <div id="quiz-game" class="game-screen">
+            <button class="back-button">← RETOUR</button>
+            
+            <div class="quiz-container">
+                <div class="quiz-header">Quiz Camille Le Nul</div>
+                
+                <div class="question-container">
+                    <div class="question-text" id="question-text">Chargement de la question...</div>
+                    
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-index="0">Option 1</div>
+                        <div class="quiz-option" data-index="1">Option 2</div>
+                        <div class="quiz-option" data-index="2">Option 3</div>
+                        <div class="quiz-option" data-index="3">Option 4</div>
+                    </div>
+                </div>
+                
+                <div id="quiz-feedback"></div>
+                <div id="quiz-score">Score: 0/0</div>
+            </div>
+        </div>
+        
+        <!-- Jeu de labyrinthe -->
+        <div id="maze-game" class="game-screen">
+            <button class="back-button">← RETOUR</button>
+            
+            <div class="maze-container" id="maze-container"></div>
+            <div class="maze-status">Utilisez les flèches pour déplacer Camille à travers le labyrinthe!</div>
+        </div>
+        
+        <!-- Effets visuels communs -->
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/confetti-js/0.0.18/confetti.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Variables d'initialisation
-            const texte = "Camille le nul";
-            const container = document.getElementById("texte-container");
-            const cursor = document.getElementById("cursor");
-            const flash = document.querySelector(".flash");
-            const canvas = document.getElementById("background");
-            const rotatingText = document.getElementById("rotating-text");
-            const explosionSymbols = ["★", "✦", "✯", "✪", "⚡", "💥", "✨", "🔥", "💫", "⭐", "🌟"];
-            const colors = ["#FFD700", "#FFA500", "#FF4500", "#FF00FF", "#00FFFF", "#00FF00"];
-            let mouseX = 0;
-            let mouseY = 0;
-            let trailElements = [];
-            let texteElements = [];
-            let isMouseDown = false;
-            let backgroundParticles = [];
-            let lastConfettiTime = 0;
-            let ctx;
+        // SYSTÈME PRINCIPAL DE GESTION DES JEUX
+        document.addEventListener('DOMContentLoaded', () => {
+            const gameContainer = document.getElementById('game-container');
+            const titleScreen = document.getElementById('title-screen');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const startButton = document.querySelector('.start-button');
+            const backButtons = document.querySelectorAll('.back-button');
+            const transition = document.getElementById('transition');
             
-            // Configuration du canvas
-            function setupCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                ctx = canvas.getContext("2d");
-                
-                // Créer les particules de fond
-                for (let i = 0; i < 100; i++) {
-                    backgroundParticles.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height,
-                        size: Math.random() * 3 + 1,
-                        speedX: (Math.random() - 0.5) * 0.5,
-                        speedY: (Math.random() - 0.5) * 0.5,
-                        color: colors[Math.floor(Math.random() * colors.length)]
-                    });
+            // État global
+            let currentGame = null;
+            let selectedGame = null;
+            
+            // Remplir la transition avec des pixels
+            for (let i = 0; i < 300; i++) {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel';
+                transition.appendChild(pixel);
+            }
+            
+            // Sélection de jeu dans le menu
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Désélectionner l'ancien item
+                    menuItems.forEach(i => i.classList.remove('selected'));
+                    // Sélectionner le nouvel item
+                    item.classList.add('selected');
+                    selectedGame = item.getAttribute('data-game');
+                    
+                    // Jouer un son de sélection
+                    playSound('select');
+                });
+            });
+            
+            // Bouton de démarrage
+            startButton.addEventListener('click', () => {
+                if (!selectedGame) {
+                    // Aucun jeu sélectionné, sélectionner le premier par défaut
+                    selectedGame = menuItems[0].getAttribute('data-game');
+                    menuItems[0].classList.add('selected');
                 }
                 
-                animateBackground();
+                playSound('start');
+                startGame(selectedGame);
+            });
+            
+            // Boutons de retour
+            backButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    playSound('back');
+                    returnToTitle();
+                });
+            });
+            
+            // Fonction pour démarrer un jeu
+            function startGame(game) {
+                currentGame = game;
+                transitionToScreen(() => {
+                    titleScreen.style.display = 'none';
+                    document.getElementById(`${game}-game`).style.display = 'block';
+                    
+                    // Initialiser le jeu spécifique
+                    switch (game) {
+                        case 'undertale':
+                            initUndertaleGame();
+                            break;
+                        case 'platformer':
+                            initPlatformerGame();
+                            break;
+                        case 'rhythm':
+                            initRhythmGame();
+                            break;
+                        case 'quiz':
+                            initQuizGame();
+                            break;
+                        case 'maze':
+                            initMazeGame();
+                            break;
+                    }
+                });
             }
             
-            // Animation du fond
-            function animateBackground() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Dessiner les particules
-                backgroundParticles.forEach(particle => {
-                    ctx.beginPath();
-                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                    ctx.fillStyle = particle.color;
-                    ctx.globalAlpha = 0.6;
-                    ctx.fill();
-                    
-                    // Mettre à jour la position
-                    particle.x += particle.speedX;
-                    particle.y += particle.speedY;
-                    
-                    // Si la souris est proche, déplacer les particules en conséquence
-                    const dx = mouseX - particle.x;
-                    const dy = mouseY - particle.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < 100) {
-                        particle.x -= dx * 0.02;
-                        particle.y -= dy * 0.02;
-                    }
-                    
-                    // Rebonds sur les bords
-                    if (particle.x < 0 || particle.x > canvas.width) {
-                        particle.speedX *= -1;
-                    }
-                    if (particle.y < 0 || particle.y > canvas.height) {
-                        particle.speedY *= -1;
-                    }
-                    
-                    // Connexions entre particules proches
-                    backgroundParticles.forEach(otherParticle => {
-                        const dx = particle.x - otherParticle.x;
-                        const dy = particle.y - otherParticle.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (distance < 70) {
-                            ctx.beginPath();
-                            ctx.moveTo(particle.x, particle.y);
-                            ctx.lineTo(otherParticle.x, otherParticle.y);
-                            ctx.strokeStyle = particle.color;
-                            ctx.globalAlpha = 0.1 * (1 - distance / 70);
-                            ctx.stroke();
-                        }
+            // Fonction pour retourner à l'écran titre
+            function returnToTitle() {
+                transitionToScreen(() => {
+                    // Cacher tous les écrans de jeu
+                    document.querySelectorAll('.game-screen').forEach(screen => {
+                        screen.style.display = 'none';
                     });
+                    
+                    // Arrêter le jeu actuel
+                    switch (currentGame) {
+                        case 'undertale':
+                            stopUndertaleGame();
+                            break;
+                        case 'platformer':
+                            stopPlatformerGame();
+                            break;
+                        case 'rhythm':
+                            stopRhythmGame();
+                            break;
+                        case 'quiz':
+                            // Le quiz n'a pas besoin d'être arrêté
+                            break;
+                        case 'maze':
+                            // Le labyrinthe n'a pas besoin d'être arrêté
+                            break;
+                    }
+                    
+                    // Afficher l'écran titre
+                    titleScreen.style.display = 'flex';
+                    currentGame = null;
                 });
-                
-                requestAnimationFrame(animateBackground);
             }
             
-            // Créer un élément de texte
-            function createText(forcePosition = null) {
-                const p = document.createElement("p");
-                p.className = "texte-repete";
-                p.textContent = texte;
+            // Animation de transition entre les écrans
+            function transitionToScreen(callback) {
+                const pixels = transition.querySelectorAll('.pixel');
                 
-                // Position aléatoire ou forcée
-                const position = forcePosition || getRandomPosition();
-                p.style.left = `${position.x}px`;
-                p.style.top = `${position.y}px`;
+                // Faire apparaître les pixels dans un ordre aléatoire
+                const pixelArray = Array.from(pixels);
+                pixelArray.sort(() => Math.random() - 0.5);
                 
-                // Rotation 3D aléatoire
-                const rotX = (Math.random() - 0.5) * 40;
-                const rotY = (Math.random() - 0.5) * 40;
-                const rotZ = (Math.random() - 0.5) * 20;
-                p.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
-                
-                // Taille aléatoire
-                const size = 20 + Math.random() * 30;
-                p.style.fontSize = `${size}px`;
-                
-                // Délai d'animation aléatoire
-                p.style.animationDelay = `${Math.random() * 2}s`;
-                
-                // Effet aléatoire
-                applyRandomEffect(p);
-                
-                // Intéractions avec la souris
-                p.addEventListener("mouseenter", function() {
-                    applyRandomEffect(p, true);
-                });
-                
-                // Événement de clic
-                p.addEventListener("click", function(event) {
-                    handleTextClick(p, event);
-                });
-                
-                // Ajouter l'élément au tableau de suivi
-                texteElements.push(p);
-                
-                return p;
-            }
-            
-            // Appliquer un effet aléatoire à un élément
-            function applyRandomEffect(element, isHover = false) {
-                // Réinitialiser les classes et styles précédents
-                element.className = "texte-repete";
-                element.style.filter = "";
-                
-                const effectRandom = isHover ? Math.random() * 6 : Math.random() * 3;
-                
-                if (effectRandom < 1) {
-                    // Effet de pulse
-                    element.classList.add("pulse");
-                } else if (effectRandom < 2) {
-                    // Effet de glitch
-                    element.classList.add("glitch");
-                } else if (effectRandom < 3) {
-                    // Ombre colorée
-                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-                    element.style.textShadow = `0 0 10px ${randomColor}, 0 0 20px ${randomColor}, 0 0 30px ${randomColor}`;
-                } else if (effectRandom < 4) {
-                    // Effet néon plus fort
-                    element.style.filter = "brightness(1.5) contrast(1.5)";
-                    element.style.textShadow = "0 0 5px #fff, 0 0 10px #fff, 0 0 15px #FFD700, 0 0 20px #FFD700, 0 0 25px #FFD700";
-                } else if (effectRandom < 5) {
-                    // Multi-couleurs
-                    element.style.background = "linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet)";
-                    element.style.webkitBackgroundClip = "text";
-                    element.style.webkitTextFillColor = "transparent";
-                    element.style.filter = "brightness(1.5)";
-                } else {
-                    // Effet de flou avec zoom
-                    element.style.transform = "scale(1.2)";
-                    element.style.filter = "blur(1px) brightness(1.2)";
+                // Animation de fondu
+                transition.style.opacity = '1';
+                pixelArray.forEach((pixel, index) => {
                     setTimeout(() => {
-                        element.style.filter = "";
-                        element.style.transform = "";
-                    }, 300);
+                        pixel.style.backgroundColor = getRandomColor();
+                    }, index * 5);
+                });
+                
+                // Exécuter le callback au milieu de la transition
+                setTimeout(() => {
+                    callback();
+                    
+                    // Animation de disparition
+                    setTimeout(() => {
+                        pixelArray.forEach((pixel, index) => {
+                            setTimeout(() => {
+                                pixel.style.backgroundColor = 'transparent';
+                            }, index * 5);
+                        });
+                        
+                        setTimeout(() => {
+                            transition.style.opacity = '0';
+                        }, pixels.length * 5 + 100);
+                    }, 500);
+                }, pixels.length * 5 + 300);
+            }
+            
+            // Fonction pour obtenir une couleur aléatoire
+            function getRandomColor() {
+                const colors = ['#ff0000', '#ffff00', '#00ffff', '#ff00ff', '#00ff00', '#0000ff'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            // Système de son simple
+            function playSound(type) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                switch (type) {
+                    case 'select':
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'start':
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.1);
+                        oscillator.frequency.setValueAtTime(1320, audioContext.currentTime + 0.2);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime + 0.2);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        break;
+                    case 'back':
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'hit':
+                        oscillator.type = 'sawtooth';
+                        oscillator.frequency.setValueAtTime(110, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'perfect':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(1320, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'miss':
+                        oscillator.type = 'sawtooth';
+                        oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(110, audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'coin':
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(1320, audioContext.currentTime + 0.05);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'victory':
+                        const o1 = audioContext.createOscillator();
+                        const o2 = audioContext.createOscillator();
+                        const g1 = audioContext.createGain();
+                        const g2 = audioContext.createGain();
+                        
+                        o1.connect(g1);
+                        o2.connect(g2);
+                        g1.connect(audioContext.destination);
+                        g2.connect(audioContext.destination);
+                        
+                        o1.type = 'square';
+                        o2.type = 'triangle';
+                        
+                        o1.frequency.setValueAtTime(440, audioContext.currentTime);
+                        o1.frequency.setValueAtTime(554, audioContext.currentTime + 0.2);
+                        o1.frequency.setValueAtTime(659, audioContext.currentTime + 0.4);
+                        
+                        o2.frequency.setValueAtTime(880, audioContext.currentTime);
+                        o2.frequency.setValueAtTime(1108, audioContext.currentTime + 0.2);
+                        o2.frequency.setValueAtTime(1318, audioContext.currentTime + 0.4);
+                        
+                        g1.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        g2.gain.setValueAtTime(0.05, audioContext.currentTime);
+                        
+                        g1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                        g2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                        
+                        o1.start();
+                        o2.start();
+                        o1.stop(audioContext.currentTime + 0.6);
+                        o2.stop(audioContext.currentTime + 0.6);
+                        break;
                 }
             }
             
-            // Gestion du clic sur un texte
-            function handleTextClick(element, event) {
-                // Créer un effet de flash
-                flash.style.opacity = "0.5";
+            //===================================
+            // JEU DE COMBAT STYLE UNDERTALE
+            //===================================
+            const battleZone = document.getElementById('battle-zone');
+            const playerHeart = document.getElementById('player-heart');
+            const dialogueBox = document.getElementById('dialogue-box');
+            const hpDisplay = document.getElementById('hp');
+            const gameOver = document.getElementById('game-over');
+            const victory = document.getElementById('victory');
+            
+            // Boutons d'action
+            const fightButton = document.getElementById('fight');
+            const actButton = document.getElementById('act');
+            const itemButton = document.getElementById('item');
+            const mercyButton = document.getElementById('mercy');
+            
+            // État du jeu Undertale
+            let undertaleState = {
+                hp: 20,
+                playerX: 0,
+                playerY: 0,
+                playerSpeed: 4,
+                keysPressed: {},
+                isPlayerTurn: true,
+                isFightMode: false,
+                isDialogueOpen: false,
+                enemyHP: 100,
+                mercyPoints: 0,
+                attackBones: [],
+                attackPattern: 0,
+                dialogueIndex: 0,
+                enemyName: "CAMILLE LE NUL",
+                gameLoopId: null,
+                invincible: false
+            };
+            
+            // Dialogues
+            const dialogues = [
+                "Bonjour humain... Je suis CAMILLE LE NUL, le squelette.",
+                "Tu as l'air perdu... NYEH HEH HEH!",
+                "Je ne peux pas te laisser passer!",
+                "Je dois te capturer pour devenir GRAND!",
+                "PREPARE-TOI AU COMBAT!",
+                "* CAMILLE LE NUL bloque le chemin!"
+            ];
+            
+            const actDialogues = [
+                "* Tu complimentes CAMILLE LE NUL sur son style.",
+                "* CAMILLE LE NUL est flatté!",
+                "* Tu dis à CAMILLE LE NUL que tu aimes les puzzles.",
+                "* CAMILLE LE NUL est impressionné par ton goût!",
+                "* Tu dis à CAMILLE LE NUL que tu veux être son ami.",
+                "* CAMILLE LE NUL semble confus... mais heureux!"
+            ];
+            
+            const itemDialogues = [
+                "* Tu manges des spaghettis!",
+                "* C'est... indescriptible.",
+                "* Tu as récupéré 5 HP!",
+                "* Tu montres des spaghettis à CAMILLE LE NUL.",
+                "* CAMILLE LE NUL est impressionné par ta cuisine!",
+                "* Tu n'as aucun objet..."
+            ];
+            
+            const mercyDialogues = [
+                "* Tu essaies d'épargner CAMILLE LE NUL.",
+                "* CAMILLE LE NUL n'est pas prêt à t'épargner... pour l'instant.",
+                "* Tu continues d'épargner CAMILLE LE NUL.",
+                "* CAMILLE LE NUL hésite...",
+                "* Tu épargnes CAMILLE LE NUL de tout ton cœur!",
+                "* CAMILLE LE NUL accepte ta merci!"
+            ];
+            
+            function initUndertaleGame() {
+                // Réinitialiser l'état du jeu
+                undertaleState = {
+                    hp: 20,
+                    playerX: battleZone.offsetWidth / 2,
+                    playerY: battleZone.offsetHeight / 2,
+                    playerSpeed: 4,
+                    keysPressed: {},
+                    isPlayerTurn: true,
+                    isFightMode: false,
+                    isDialogueOpen: false,
+                    enemyHP: 100,
+                    mercyPoints: 0,
+                    attackBones: [],
+                    attackPattern: 0,
+                    dialogueIndex: 0,
+                    enemyName: "CAMILLE LE NUL",
+                    gameLoopId: null,
+                    invincible: false
+                };
+                
+                // Positionner le cœur au centre de la zone de combat
+                updateHeartPosition();
+                
+                // Afficher les HP
+                hpDisplay.textContent = undertaleState.hp;
+                
+                // Cacher les écrans de fin
+                gameOver.style.display = 'none';
+                victory.style.display = 'none';
+                
+                // Démarrer la séquence d'introduction
+                startIntroDialogue();
+                
+                // Mettre en place les événements
+                setupUndertaleEvents();
+                
+                // Démarrer la boucle de jeu
+                undertaleState.gameLoopId = requestAnimationFrame(undertaleGameLoop);
+            }
+            
+            function stopUndertaleGame() {
+                if (undertaleState.gameLoopId) {
+                    cancelAnimationFrame(undertaleState.gameLoopId);
+                    undertaleState.gameLoopId = null;
+                }
+                
+                // Nettoyer les os d'attaque
+                undertaleState.attackBones.forEach(bone => {
+                    if (bone.element && bone.element.parentNode) {
+                        bone.element.remove();
+                    }
+                });
+                undertaleState.attackBones = [];
+                
+                // Réinitialiser la position du cœur
+                playerHeart.style.left = "50%";
+                playerHeart.style.top = "50%";
+                
+                // Fermer la boîte de dialogue
+                dialogueBox.style.display = 'none';
+            }
+            
+            function setupUndertaleEvents() {
+                // Écouteurs pour les touches du clavier
+                window.addEventListener('keydown', handleUndertaleKeyDown);
+                window.addEventListener('keyup', handleUndertaleKeyUp);
+                
+                // Écouteurs pour les boutons d'action
+                fightButton.addEventListener('click', handleFight);
+                actButton.addEventListener('click', handleAct);
+                itemButton.addEventListener('click', handleItem);
+                mercyButton.addEventListener('click', handleMercy);
+                
+                // Boutons de redémarrage
+                document.querySelectorAll('#undertale-game .restart-button').forEach(button => {
+                    button.addEventListener('click', initUndertaleGame);
+                });
+            }
+            
+            function handleUndertaleKeyDown(e) {
+                undertaleState.keysPressed[e.key] = true;
+                
+                if (e.key === 'Enter' || e.key === ' ') {
+                    advanceDialogue();
+                }
+                
+                // Éviter le défilement de la page avec les flèches
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                    e.preventDefault();
+                }
+            }
+            
+            function handleUndertaleKeyUp(e) {
+                undertaleState.keysPressed[e.key] = false;
+            }
+            
+            function undertaleGameLoop() {
+                if (!undertaleState.isDialogueOpen && !undertaleState.isFightMode) {
+                    updatePlayerMovement();
+                }
+                
+                if (undertaleState.isFightMode) {
+                    updateAttacks();
+                }
+                
+                undertaleState.gameLoopId = requestAnimationFrame(undertaleGameLoop);
+            }
+            
+            function updatePlayerMovement() {
+                let dx = 0;
+                let dy = 0;
+                
+                if (undertaleState.keysPressed['ArrowUp'] || undertaleState.keysPressed['z'] || undertaleState.keysPressed['w']) {
+                    dy -= undertaleState.playerSpeed;
+                }
+                if (undertaleState.keysPressed['ArrowDown'] || undertaleState.keysPressed['s']) {
+                    dy += undertaleState.playerSpeed;
+                }
+                if (undertaleState.keysPressed['ArrowLeft'] || undertaleState.keysPressed['q'] || undertaleState.keysPressed['a']) {
+                    dx -= undertaleState.playerSpeed;
+                }
+                if (undertaleState.keysPressed['ArrowRight'] || undertaleState.keysPressed['d']) {
+                    dx += undertaleState.playerSpeed;
+                }
+                
+                // Mise à jour de la position avec collision aux bords
+                const bounds = battleZone.getBoundingClientRect();
+                const heartRect = playerHeart.getBoundingClientRect();
+                
+                const minX = bounds.left + 10;
+                const maxX = bounds.right - 10;
+                const minY = bounds.top + 10;
+                const maxY = bounds.bottom - 10;
+                
+                const newX = Math.max(minX, Math.min(maxX, heartRect.left + dx));
+                const newY = Math.max(minY, Math.min(maxY, heartRect.top + dy));
+                
+                undertaleState.playerX = newX - bounds.left;
+                undertaleState.playerY = newY - bounds.top;
+                
+                updateHeartPosition();
+                checkCollisions();
+            }
+            
+            function updateHeartPosition() {
+                playerHeart.style.left = `${undertaleState.playerX}px`;
+                playerHeart.style.top = `${undertaleState.playerY}px`;
+            }
+            
+            function startIntroDialogue() {
+                undertaleState.isDialogueOpen = true;
+                dialogueBox.style.display = 'block';
+                showDialogue(dialogues[0]);
+                undertaleState.dialogueIndex = 1;
+            }
+            
+            function advanceDialogue() {
+                if (!undertaleState.isDialogueOpen) return;
+                
+                if (undertaleState.dialogueIndex < dialogues.length) {
+                    showDialogue(dialogues[undertaleState.dialogueIndex]);
+                    undertaleState.dialogueIndex++;
+                } else {
+                    undertaleState.isDialogueOpen = false;
+                    dialogueBox.style.display = 'none';
+                }
+            }
+            
+            function showDialogue(text) {
+                dialogueBox.textContent = '';
+                let i = 0;
+                const interval = setInterval(() => {
+                    dialogueBox.textContent += text[i];
+                    i++;
+                    if (i >= text.length) {
+                        clearInterval(interval);
+                    }
+                }, 30);
+            }
+            
+            function updateAttacks() {
+                const bounds = battleZone.getBoundingClientRect();
+                
+                // Mettre à jour les os d'attaque
+                undertaleState.attackBones.forEach(bone => {
+                    const boneElement = bone.element;
+                    bone.x += bone.speed;
+                    boneElement.style.left = bone.x + 'px';
+                    
+                    // Supprimer les os sortis de l'écran
+                    if (bone.x < -50 || bone.x > bounds.width + 50) {
+                        boneElement.remove();
+                        undertaleState.attackBones = undertaleState.attackBones.filter(b => b !== bone);
+                    }
+                });
+                
+                // Créer de nouveaux os si nécessaire
+                if (undertaleState.attackBones.length < 5 && Math.random() < 0.02) {
+                    createBone();
+                }
+                
+                checkCollisions();
+            }
+            
+            function createBone() {
+                const bone = document.createElement('div');
+                bone.className = 'attack-bone';
+                
+                const isTop = Math.random() > 0.5;
+                bone.classList.add(isTop ? 'top' : 'bottom');
+                
+                const height = 20 + Math.floor(Math.random() * 60);
+                bone.style.height = height + 'px';
+                
+                let x, speed;
+                
+                // Selon le pattern d'attaque
+                switch(undertaleState.attackPattern) {
+                    case 0: // Attaque de gauche à droite
+                        x = -40;
+                        speed = 2 + Math.random() * 3;
+                        break;
+                    case 1: // Attaque de droite à gauche
+                        x = battleZone.offsetWidth + 40;
+                        speed = -(2 + Math.random() * 3);
+                        break;
+                    case 2: // Attaque mixte
+                        if (Math.random() > 0.5) {
+                            x = -40;
+                            speed = 2 + Math.random() * 4;
+                        } else {
+                            x = battleZone.offsetWidth + 40;
+                            speed = -(2 + Math.random() * 4);
+                        }
+                        break;
+                }
+                
+                bone.style.left = x + 'px';
+                
+                if (isTop) {
+                    bone.style.top = '0';
+                } else {
+                    bone.style.bottom = '0';
+                }
+                
+                battleZone.appendChild(bone);
+                
+                undertaleState.attackBones.push({
+                    element: bone,
+                    x: x,
+                    y: isTop ? 0 : battleZone.offsetHeight - height,
+                    width: 20,
+                    height: height,
+                    speed: speed,
+                    isTop: isTop
+                });
+            }
+            
+            function checkCollisions() {
+                if (!undertaleState.isFightMode) return;
+                
+                const heartRect = playerHeart.getBoundingClientRect();
+                
+                // Vérifier les collisions avec les os
+                undertaleState.attackBones.forEach(bone => {
+                    const boneRect = bone.element.getBoundingClientRect();
+                    
+                    if (
+                        heartRect.left < boneRect.right &&
+                        heartRect.right > boneRect.left &&
+                        heartRect.top < boneRect.bottom &&
+                        heartRect.bottom > boneRect.top
+                    ) {
+                        takeDamage(1);
+                    }
+                });
+            }
+            
+            function takeDamage(amount) {
+                // Éviter les dégâts multiples en peu de temps
+                if (undertaleState.invincible) return;
+                
+                undertaleState.hp -= amount;
+                hpDisplay.textContent = undertaleState.hp;
+                playSound('hit');
+                
+                // Flash du cœur
+                playerHeart.style.filter = "brightness(5)";
                 setTimeout(() => {
-                    flash.style.opacity = "0";
+                    playerHeart.style.filter = "none";
                 }, 100);
                 
-                // Effet d'onde de choc
-                const shockwave = document.createElement("div");
-                shockwave.className = "shockwave";
-                shockwave.style.left = `${event.clientX}px`;
-                shockwave.style.top = `${event.clientY}px`;
-                document.body.appendChild(shockwave);
-                setTimeout(() => shockwave.remove(), 800);
+                // Courte période d'invincibilité
+                undertaleState.invincible = true;
+                setTimeout(() => {
+                    undertaleState.invincible = false;
+                }, 1000);
                 
-                // Effet d'explosion
-                for (let i = 0; i < 20; i++) {
-                    createExplosionParticle(event.clientX, event.clientY);
+                // Vérifier game over
+                if (undertaleState.hp <= 0) {
+                    endUndertaleGame(false);
                 }
+            }
+            
+            function handleFight() {
+                if (!undertaleState.isPlayerTurn || undertaleState.isDialogueOpen) return;
                 
-                // Créer un effet de spirale
-                const spiral = document.createElement("div");
-                spiral.className = "spiral";
-                spiral.style.animation = "spiral-out 1s forwards";
-                spiral.style.borderColor = colors[Math.floor(Math.random() * colors.length)];
-                document.body.appendChild(spiral);
-                setTimeout(() => spiral.remove(), 1000);
+                playSound('select');
+                undertaleState.isDialogueOpen = true;
+                dialogueBox.style.display = 'block';
                 
-                // Foudre aléatoire
-                if (Math.random() < 0.3) {
-                    createLightning();
-                }
-                
-                // Génération de confettis
-                const currentTime = new Date().getTime();
-                if (currentTime - lastConfettiTime > 5000) { // Pas plus d'une fois toutes les 5 secondes
-                    const confettiSettings = {
-                        target: 'background',
-                        max: 100,
-                        size: 2,
-                        animate: true,
-                        props: ['circle', 'square', 'triangle', 'line'],
-                        colors: [[255, 215, 0], [255, 165, 0], [255, 69, 0], [255, 0, 255]],
-                        clock: 25,
-                        rotate: true,
-                        start_from_edge: false,
-                        respawn: false
-                    };
-                    const confetti = new ConfettiGenerator(confettiSettings);
-                    confetti.render();
-                    
-                    setTimeout(() => {
-                        confetti.clear();
-                    }, 3000);
-                    
-                    lastConfettiTime = currentTime;
-                }
-                
-                // Téléportation du texte
-                const newPosition = getRandomPosition();
-                element.style.opacity = "0";
-                element.style.transform = "scale(0.5)";
+                showDialogue("* Tu attaques CAMILLE LE NUL!");
                 
                 setTimeout(() => {
-                    element.style.left = `${newPosition.x}px`;
-                    element.style.top = `${newPosition.y}px`;
-                    element.style.opacity = "1";
-                    element.style.transform = "scale(1)";
-                    applyRandomEffect(element);
-                }, 300);
-            }
-            
-            // Créer une particule d'explosion
-            function createExplosionParticle(x, y) {
-                const particle = document.createElement("span");
-                particle.className = "explosion";
-                
-                // Symbole aléatoire
-                const symbol = explosionSymbols[Math.floor(Math.random() * explosionSymbols.length)];
-                particle.innerHTML = symbol;
-                
-                // Couleur aléatoire
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.color = color;
-                
-                // Position
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
-                
-                // Direction
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 50 + Math.random() * 100;
-                const finalX = x + Math.cos(angle) * distance;
-                const finalY = y + Math.sin(angle) * distance;
-                
-                // Animation
-                particle.style.setProperty('--rotation', `${(Math.random() - 0.5) * 720}deg`);
-                
-                document.body.appendChild(particle);
-                
-                // Animation manuelle pour plus de contrôle
-                const startTime = performance.now();
-                const duration = 1000 + Math.random() * 500;
-                
-                function animateParticle(timestamp) {
-                    const elapsed = timestamp - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
+                    // Attaque
+                    const damage = 10 + Math.floor(Math.random() * 5);
+                    undertaleState.enemyHP -= damage;
+                    showDialogue(`* Tu infliges ${damage} points de dégâts!`);
                     
-                    if (progress < 1) {
-                        const easeOutProgress = 1 - Math.pow(1 - progress, 3); // Easing function
-                        const currentX = x + (finalX - x) * easeOutProgress;
-                        const currentY = y + (finalY - y) * easeOutProgress;
-                        
-                        particle.style.left = `${currentX}px`;
-                        particle.style.top = `${currentY}px`;
-                        particle.style.opacity = 1 - progress;
-                        
-                        requestAnimationFrame(animateParticle);
+                    // Vérifier victoire
+                    if (undertaleState.enemyHP <= 0) {
+                        setTimeout(() => {
+                            showDialogue("* CAMILLE LE NUL a été vaincu!");
+                            setTimeout(() => {
+                                endUndertaleGame(true);
+                            }, 2000);
+                        }, 1500);
                     } else {
-                        particle.remove();
+                        // Tour de l'ennemi
+                        setTimeout(() => {
+                            startEnemyTurn();
+                        }, 1500);
                     }
-                }
-                
-                requestAnimationFrame(animateParticle);
+                }, 1500);
             }
             
-            // Créer un éclair
-            function createLightning() {
-                const x = Math.random() * window.innerWidth;
-                const lightning = document.createElement("div");
-                lightning.className = "lightning";
-                lightning.style.left = `${x}px`;
-                lightning.style.animation = "lightning-animate 0.5s forwards";
+            function handleAct() {
+                if (!undertaleState.isPlayerTurn || undertaleState.isDialogueOpen) return;
                 
-                document.body.appendChild(lightning);
-                setTimeout(() => lightning.remove(), 500);
-            }
-            
-            // Obtenir une position aléatoire dans la fenêtre
-            function getRandomPosition() {
-                const padding = 100;
-                const x = padding + Math.random() * (window.innerWidth - padding * 2);
-                const y = padding + Math.random() * (window.innerHeight - padding * 2);
-                return { x, y };
-            }
-            
-            // Créer un texte rotatif
-            function createRotatingText() {
-                rotatingText.innerHTML = '';
-                const count = 12;
+                playSound('select');
+                undertaleState.isDialogueOpen = true;
+                dialogueBox.style.display = 'block';
                 
-                for (let i = 0; i < count; i++) {
-                    const span = document.createElement("span");
-                    span.textContent = texte;
-                    span.style.transform = `rotate(${i * (360 / count)}deg)`;
-                    rotatingText.appendChild(span);
-                }
-            }
-            
-            // Créer un élément de traînée pour le curseur
-            function createTrail() {
-                const trail = document.createElement("div");
-                trail.className = "neon-trail";
-                trail.style.left = `${mouseX}px`;
-                trail.style.top = `${mouseY}px`;
+                const dialogueIndex = Math.min(4, Math.floor(undertaleState.mercyPoints / 2) * 2);
+                showDialogue(actDialogues[dialogueIndex]);
                 
-                // Couleur aléatoire pour la traînée
-                const trailColor = colors[Math.floor(Math.random() * colors.length)];
-                trail.style.backgroundColor = trailColor;
-                
-                document.body.appendChild(trail);
-                trailElements.push({
-                    element: trail,
-                    createdAt: Date.now()
-                });
-                
-                // Supprimer les vieilles traînées
-                const now = Date.now();
-                trailElements = trailElements.filter(item => {
-                    if (now - item.createdAt > 1000) {
-                        item.element.remove();
-                        return false;
-                    }
-                    return true;
-                });
-            }
-            
-            // Mise à jour périodique des positions et des effets
-            function updateElements() {
-                // 5% de chance qu'un texte change d'effet
-                texteElements.forEach(element => {
-                    if (Math.random() < 0.05) {
-                        applyRandomEffect(element);
-                    }
+                setTimeout(() => {
+                    showDialogue(actDialogues[dialogueIndex + 1]);
+                    undertaleState.mercyPoints++;
                     
-                    // Légère variation de position
-                    if (Math.random() < 0.1) {
-                        const currentX = parseFloat(element.style.left);
-                        const currentY = parseFloat(element.style.top);
-                        
-                        element.style.left = `${currentX + (Math.random() - 0.5) * 10}px`;
-                        element.style.top = `${currentY + (Math.random() - 0.5) * 10}px`;
-                    }
-                });
-                
-                // 10% de chance de créer un éclair
-                if (Math.random() < 0.1) {
-                    createLightning();
-                }
+                    // Tour de l'ennemi
+                    setTimeout(() => {
+                        startEnemyTurn();
+                    }, 1500);
+                }, 1500);
             }
             
-            // Gestionnaires d'événements
-            function setupEventListeners() {
-                // Suivi de la souris pour le curseur personnalisé
-                document.addEventListener("mousemove", function(e) {
-                    mouseX = e.clientX;
-                    mouseY = e.clientY;
-                    
-                    // Mise à jour du curseur
-                    cursor.style.left = `${mouseX}px`;
-                    cursor.style.top = `${mouseY}px`;
-                    
-                    // Création de traînée (moins fréquente pour éviter trop d'éléments DOM)
-                    if (Math.random() < 0.2) {
-                        createTrail();
-                    }
-                    
-                    // Interaction avec les textes
-                    texteElements.forEach(element => {
-                        const rect = element.getBoundingClientRect();
-                        const centerX = rect.left + rect.width / 2;
-                        const centerY = rect.top + rect.height / 2;
-                        
-                        // Distance entre la souris et le centre du texte
-                        const dx = mouseX - centerX;
-                        const dy = mouseY - centerY;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        // Si la souris est à proximité, décaler légèrement le texte
-                        if (distance < 100) {
-                            const pushFactor = (100 - distance) / 10;
-                            const pushX = (dx / distance) * pushFactor;
-                            const pushY = (dy / distance) * pushFactor;
-                            
-                            element.style.transform = `translate(${-pushX}px, ${-pushY}px) scale(${1 + (100 - distance) / 300})`;
-                        } else {
-                            element.style.transform = "";
-                        }
-                    });
-                });
+            function handleItem() {
+                if (!undertaleState.isPlayerTurn || undertaleState.isDialogueOpen) return;
                 
-                // Événements de clic
-                document.addEventListener("mousedown", function() {
-                    isMouseDown = true;
-                    cursor.classList.add("click");
-                    
-                    // Effet à chaque clic
-                    const shockwave = document.createElement("div");
-                    shockwave.className = "shockwave";
-                    shockwave.style.left = `${mouseX}px`;
-                    shockwave.style.top = `${mouseY}px`;
-                    document.body.appendChild(shockwave);
+                playSound('select');
+                undertaleState.isDialogueOpen = true;
+                dialogueBox.style.display = 'block';
+                
+                if (Math.random() < 0.5) {
+                    showDialogue(itemDialogues[0]);
                     
                     setTimeout(() => {
-                        shockwave.remove();
-                    }, 800);
-                });
-                
-                document.addEventListener("mouseup", function() {
-                    isMouseDown = false;
-                    cursor.classList.remove("click");
-                });
-                
-                // Redimensionnement de la fenêtre
-                window.addEventListener("resize", function() {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
+                        showDialogue(itemDialogues[1]);
+                        
+                        setTimeout(() => {
+                            showDialogue(itemDialogues[2]);
+                            undertaleState.hp = Math.min(20, undertaleState.hp + 5);
+                            hpDisplay.textContent = undertaleState.hp;
+                            
+                            // Tour de l'ennemi
+                            setTimeout(() => {
+                                startEnemyTurn();
+                            }, 1500);
+                        }, 1500);
+                    }, 1500);
+                } else if (Math.random() < 0.5) {
+                    showDialogue(itemDialogues[3]);
                     
-                    // Repositionner les textes
-                    texteElements.forEach(element => {
-                        const position = getRandomPosition();
-                        element.style.left = `${position.x}px`;
-                        element.style.top = `${position.y}px`;
+                    setTimeout(() => {
+                        showDialogue(itemDialogues[4]);
+                        undertaleState.mercyPoints++;
+                        
+                        // Tour de l'ennemi
+                        setTimeout(() => {
+                            startEnemyTurn();
+                        }, 1500);
+                    }, 1500);
+                } else {
+                    showDialogue(itemDialogues[5]);
+                    
+                    // Tour de l'ennemi
+                    setTimeout(() => {
+                        startEnemyTurn();
+                    }, 1500);
+                }
+            }
+            
+            function handleMercy() {
+                if (!undertaleState.isPlayerTurn || undertaleState.isDialogueOpen) return;
+                
+                playSound('select');
+                undertaleState.isDialogueOpen = true;
+                dialogueBox.style.display = 'block';
+                
+                if (undertaleState.mercyPoints >= 5) {
+                    showDialogue(mercyDialogues[4]);
+                    
+                    setTimeout(() => {
+                        showDialogue(mercyDialogues[5]);
+                        
+                        setTimeout(() => {
+                            showDialogue("* CAMILLE LE NUL t'épargne!");
+                            
+                            setTimeout(() => {
+                                endUndertaleGame(true, true);
+                            }, 1500);
+                        }, 1500);
+                    }, 1500);
+                } else {
+                    const dialogueIndex = Math.min(3, undertaleState.mercyPoints);
+                    showDialogue(mercyDialogues[dialogueIndex]);
+                    undertaleState.mercyPoints++;
+                    
+                    // Tour de l'ennemi
+                    setTimeout(() => {
+                        startEnemyTurn();
+                    }, 1500);
+                }
+            }
+            
+            function startEnemyTurn() {
+                undertaleState.isPlayerTurn = false;
+                undertaleState.isDialogueOpen = false;
+                undertaleState.isFightMode = true;
+                dialogueBox.style.display = 'none';
+                
+                // Choisir un pattern d'attaque
+                undertaleState.attackPattern = Math.floor(Math.random() * 3);
+                
+                // Durée du tour de l'ennemi
+                setTimeout(() => {
+                    endEnemyTurn();
+                }, 5000 + Math.random() * 3000);
+            }
+            
+            function endEnemyTurn() {
+                undertaleState.isPlayerTurn = true;
+                undertaleState.isFightMode = false;
+                
+                // Supprimer tous les os
+                undertaleState.attackBones.forEach(bone => {
+                    bone.element.remove();
+                });
+                undertaleState.attackBones = [];
+                
+                // Message de fin de tour
+                undertaleState.isDialogueOpen = true;
+                dialogueBox.style.display = 'block';
+                showDialogue(`* ${undertaleState.enemyName} attend ta prochaine action.`);
+                
+                setTimeout(() => {
+                    undertaleState.isDialogueOpen = false;
+                    dialogueBox.style.display = 'none';
+                }, 1500);
+            }
+            
+            function endUndertaleGame(isVictory, isMercy = false) {
+                undertaleState.isFightMode = false;
+                undertaleState.isDialogueOpen = false;
+                dialogueBox.style.display = 'none';
+                
+                if (isVictory) {
+                    playSound('victory');
+                    victory.style.display = 'flex';
+                    if (isMercy) {
+                        victory.querySelector('.restart-button').textContent = "Continuer en ami";
+                    } else {
+                        victory.querySelector('.restart-button').textContent = "Rejouer";
+                    }
+                } else {
+                    gameOver.style.display = 'flex';
+                }
+                
+                // Supprimer tous les os
+                undertaleState.attackBones.forEach(bone => {
+                    bone.element.remove();
+                });
+            }
+            
+            //===================================
+            // JEU DE PLATEFORME
+            //===================================
+            const platformerGame = document.getElementById('platformer-game');
+            const player = document.getElementById('player');
+            const coinCountDisplay = document.getElementById('coin-count');
+            
+            // État du jeu de plateforme
+            let platformerState = {
+                player: {
+                    x: 100,
+                    y: 0,
+                    width: 40,
+                    height: 60,
+                    velocityX: 0,
+                    velocityY: 0,
+                    isJumping: false,
+                    speed: 5,
+                    jumpPower: 15,
+                    gravity: 0.5
+                },
+                platforms: [],
+                coins: [],
+                enemies: [],
+                coinCount: 0,
+                totalCoins: 10,
+                gameLoopId: null,
+                keysPressed: {}
+            };
+            
+            function initPlatformerGame() {
+                // Réinitialiser l'état du jeu
+                platformerState = {
+                    player: {
+                        x: 100,
+                        y: 0,
+                        width: 40,
+                        height: 60,
+                        velocityX: 0,
+                        velocityY: 0,
+                        isJumping: false,
+                        speed: 5,
+                        jumpPower: 15,
+                        gravity: 0.5
+                    },
+                    platforms: [],
+                    coins: [],
+                    enemies: [],
+                    coinCount: 0,
+                    totalCoins: 10,
+                    gameLoopId: null,
+                    keysPressed: {}
+                };
+                
+                // Créer les plateformes
+                createPlatforms();
+                
+                // Créer les pièces
+                createCoins();
+                
+                // Créer les ennemis
+                createEnemies();
+                
+                // Mettre à jour l'affichage du compteur de pièces
+                coinCountDisplay.textContent = `${platformerState.coinCount}/${platformerState.totalCoins}`;
+                
+                // Événements clavier
+                window.addEventListener('keydown', handlePlatformerKeyDown);
+                window.addEventListener('keyup', handlePlatformerKeyUp);
+                
+                // Démarrer la boucle de jeu
+                platformerState.gameLoopId = requestAnimationFrame(platformerGameLoop);
+            }
+            
+            function stopPlatformerGame() {
+                if (platformerState.gameLoopId) {
+                    cancelAnimationFrame(platformerState.gameLoopId);
+                    platformerState.gameLoopId = null;
+                }
+                
+                // Nettoyer les plateformes, pièces et ennemis
+                platformerState.platforms.forEach(platform => {
+                    platform.element.remove();
+                });
+                platformerState.coins.forEach(coin => {
+                    coin.element.remove();
+                });
+                platformerState.enemies.forEach(enemy => {
+                    enemy.element.remove();
+                });
+                
+                platformerState.platforms = [];
+                platformerState.coins = [];
+                platformerState.enemies = [];
+                
+                // Supprimer les événements clavier
+                window.removeEventListener('keydown', handlePlatformerKeyDown);
+                window.removeEventListener('keyup', handlePlatformerKeyUp);
+            }
+            
+            function createPlatforms() {
+                // Plateformes statiques
+                const platformsData = [
+                    { x: 200, y: 400, width: 150 },
+                    { x: 400, y: 350, width: 100 },
+                    { x: 550, y: 300, width: 120 },
+                    { x: 300, y: 250, width: 100 },
+                    { x: 150, y: 200, width: 100 },
+                    { x: 350, y: 150, width: 150 },
+                    { x: 600, y: 200, width: 100 }
+                ];
+                
+                platformsData.forEach(data => {
+                    const platformElement = document.createElement('div');
+                    platformElement.className = 'platform';
+                    platformElement.style.left = `${data.x}px`;
+                    platformElement.style.bottom = `${data.y}px`;
+                    platformElement.style.width = `${data.width}px`;
+                    platformerGame.appendChild(platformElement);
+                    
+                    platformerState.platforms.push({
+                        x: data.x,
+                        y: data.y,
+                        width: data.width,
+                        height: 30,
+                        element: platformElement
                     });
                 });
             }
             
-            // Initialisation
-            function initialize() {
-                setupCanvas();
-                createRotatingText();
+            function createCoins() {
+                // Positions des pièces
+                const coinPositions = [
+                    { x: 250, y: 450 },
+                    { x: 420, y: 400 },
+                    { x: 600, y: 350 },
+                    { x: 330, y: 300 },
+                    { x: 180, y: 250 },
+                    { x: 400, y: 200 },
+                    { x: 650, y: 250 },
+                    { x: 300, y: 500 },
+                    { x: 500, y: 450 },
+                    { x: 150, y: 400 }
+                ];
                 
-                // Créer 10 textes initiaux
-                for (let i = 0; i < 10; i++) {
-                    container.appendChild(createText());
-                }
-                
-                setupEventListeners();
-                
-                // Mises à jour périodiques
-                setInterval(updateElements, 1000);
-                
-                // Lancer un effet de foudre toutes les 5-10 secondes
-                setInterval(() => {
-                    if (Math.random() < 0.5) {
-                        createLightning();
-                    }
-                }, 5000);
-                
-                // Créer un nouveau texte toutes les 3 secondes jusqu'à un maximum
-                setInterval(() => {
-                    if (texteElements.length < 20) {
-                        container.appendChild(createText());
-                    }
-                }, 3000);
+                coinPositions.forEach(pos => {
+                    const coinElement = document.createElement('div');
+                    coinElement.className = 'coin';
+                    coinElement.textContent = '💰';
+                    coinElement.style.left = `${pos.x}px`;
+                    coinElement.style.bottom = `${pos.y}px`;
+                    platformerGame.appendChild(coinElement);
+                    
+                    platformerState.coins.push({
+                        x: pos.x,
+                        y: pos.y,
+                        width: 20,
+                        height: 20,
+                        collected: false,
+                        element: coinElement
+                    });
+                });
             }
             
-            initialize();
+            function createEnemies() {
+                // Positions des ennemis
+                const enemyPositions = [
+                    { x: 300, y: 430, platformIndex: 0 },
+                    { x: 450, y: 380, platformIndex: 1 },
+                    { x: 600, y: 330, platformIndex: 2 },
+                    { x: 350, y: 180, platformIndex: 5 }
+                ];
+                
+                enemyPositions.forEach((pos, index) => {
+                    const enemyElement = document.createElement('div');
+                    enemyElement.className = 'enemy-platform';
+                    enemyElement.textContent = '👾';
+                    enemyElement.style.left = `${pos.x}px`;
+                    enemyElement.style.bottom = `${pos.y}px`;
+                    platformerGame.appendChild(enemyElement);
+                    
+                    platformerState.enemies.push({
+                        x: pos.x,
+                        y: pos.y,
+                        width: 30,
+                        height: 30,
+                        direction: 1,
+                        speed: 1 + Math.random(),
+                        platformIndex: pos.platformIndex,
+                        element: enemyElement
+                    });
+                });
+            }
+            
+            function handlePlatformerKeyDown(e) {
+                platformerState.keysPressed[e.key] = true;
+                
+                // Sauter si sur le sol ou une plateforme
+                if ((e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w' || e.key === 'z') && !platformerState.player.isJumping) {
+                    platformerState.player.velocityY = platformerState.player.jumpPower;
+                    platformerState.player.isJumping = true;
+                }
+            }
+            
+            function handlePlatformerKeyUp(e) {
+                platformerState.keysPressed[e.key] = false;
+            }
+            
+            function platformerGameLoop() {
+                updatePlayer();
+                updateEnemies();
+                checkCollisions();
+                updatePlatformerRender();
+                
+                platformerState.gameLoopId = requestAnimationFrame(platformerGameLoop);
+            }
+            
+            function updatePlayer() {
+                const player = platformerState.player;
+                
+                // Mouvement horizontal
+                player.velocityX = 0;
+                if (platformerState.keysPressed['ArrowLeft'] || platformerState.keysPressed['a'] || platformerState.keysPressed['q']) {
+                    player.velocityX = -player.speed;
+                    document.getElementById('player').innerHTML = "🏃";
+                    document.getElementById('player').style.transform = "scaleX(-1)";
+                }
+                if (platformerState.keysPressed['ArrowRight'] || platformerState.keysPressed['d']) {
+                    player.velocityX = player.speed;
+                    document.getElementById('player').innerHTML = "🏃";
+                    document.getElementById('player').style.transform = "scaleX(1)";
+                }
+                
+                // Appliquer la gravité
+                player.velocityY -= player.gravity;
+                
+                // Mettre à jour la position
+                player.x += player.velocityX;
+                player.y += player.velocityY;
+                
+                // Empêcher de sortir de l'écran horizontalement
+                const containerWidth = platformerGame.offsetWidth;
+                if (player.x < 0) player.x = 0;
+                if (player.x + player.width > containerWidth) player.x = containerWidth - player.width;
+                
+                // Vérifier si le joueur est sur une plateforme
+                let onPlatform = false;
+                platformerState.platforms.forEach(platform => {
+                    if (
+                        player.y >= platform.y &&
+                        player.y <= platform.y + platform.height &&
+                        player.x + player.width > platform.x &&
+                        player.x < platform.x + platform.width &&
+                        player.velocityY <= 0
+                    ) {
+                        player.y = platform.y;
+                        player.velocityY = 0;
+                        player.isJumping = false;
+                        onPlatform = true;
+                    }
+                });
+                
+                // Vérifier si le joueur est sur le sol
+                if (player.y <= 80 && player.velocityY <= 0) {
+                    player.y = 80;
+                    player.velocityY = 0;
+                    player.isJumping = false;
+                }
+                
+                // Si le joueur tombe hors de l'écran
+                if (player.y < 0) {
+                    player.x = 100;
+                    player.y = 300;
+                    player.velocityY = 0;
+                }
+            }
+            
+            function updateEnemies() {
+                platformerState.enemies.forEach(enemy => {
+                    const platform = platformerState.platforms[enemy.platformIndex];
+                    
+                    // Mouvement sur la plateforme
+                    enemy.x += enemy.direction * enemy.speed;
+                    
+                    // Rebondir aux bords de la plateforme
+                    if (enemy.x <= platform.x || enemy.x + enemy.width >= platform.x + platform.width) {
+                        enemy.direction *= -1;
+                    }
+                });
+            }
+            
+            function checkCollisions() {
+                const player = platformerState.player;
+                
+                // Vérifier les collisions avec les pièces
+                platformerState.coins.forEach(coin => {
+                    if (!coin.collected &&
+                        player.x < coin.x + coin.width &&
+                        player.x + player.width > coin.x &&
+                        player.y < coin.y + coin.height &&
+                        player.y + player.height > coin.y
+                    ) {
+                        coin.collected = true;
+                        coin.element.style.display = 'none';
+                        platformerState.coinCount++;
+                        coinCountDisplay.textContent = `${platformerState.coinCount}/${platformerState.totalCoins}`;
+                        playSound('coin');
+                        
+                        // Si toutes les pièces sont collectées
+                        if (platformerState.coinCount >= platformerState.totalCoins) {
+                            setTimeout(() => {
+                                alert("Félicitations! Vous avez collecté toutes les pièces!");
+                                returnToTitle();
+                            }, 500);
+                        }
+                    }
+                });
+                
+                // Vérifier les collisions avec les ennemis
+                platformerState.enemies.forEach(enemy => {
+                    if (
+                        player.x < enemy.x + enemy.width &&
+                        player.x + player.width > enemy.x &&
+                        player.y < enemy.y + enemy.height &&
+                        player.y + player.height > enemy.y
+                    ) {
+                        // Si le joueur saute sur l'ennemi
+                        if (player.velocityY < 0 && player.y > enemy.y + enemy.height / 2) {
+                            // Rebondir
+                            player.velocityY = player.jumpPower * 0.7;
+                            // Repositionner l'ennemi
+                            const platform = platformerState.platforms[enemy.platformIndex];
+                            enemy.x = platform.x + Math.random() * (platform.width - enemy.width);
+                        } else {
+                            // Sinon, le joueur est touché
+                            playSound('hit');
+                            player.x = 100;
+                            player.y = 300;
+                            player.velocityY = 0;
+                        }
+                    }
+                });
+            }
+            
+            function updatePlatformerRender() {
+                const player = platformerState.player;
+                
+                // Mettre à jour la position du joueur
+                document.getElementById('player').style.left = `${player.x}px`;
+                document.getElementById('player').style.bottom = `${player.y}px`;
+                
+                // Mettre à jour la position des ennemis
+                platformerState.enemies.forEach(enemy => {
+                    enemy.element.style.left = `${enemy.x}px`;
+                    enemy.element.style.bottom = `${enemy.y}px`;
+                });
+            }
+            
+            //===================================
+            // JEU DE RYTHME
+            //===================================
+            const rhythmGame = document.getElementById('rhythm-game');
+            const scoreDisplay = document.getElementById('rhythm-score');
+            const comboDisplay = document.getElementById('combo-display');
+            const feedbackDisplay = document.getElementById('feedback-display');
+            const lanes = document.querySelectorAll('.lane');
+            const buttons = document.querySelectorAll('.rhythm-button');
+            
+            // État du jeu de rythme
+            let rhythmState = {
+                score: 0,
+                combo: 0,
+                notes: [],
+                noteSpeed: 3,
+                lastNoteTime: 0,
+                gameLoopId: null,
+                keysPressed: {},
+                hitWindow: 100, // ms
+                perfectWindow: 50, // ms
+                gameStarted: false
+            };
+            
+            function initRhythmGame() {
+                // Réinitialiser l'état du jeu
+                rhythmState = {
+                    score: 0,
+                    combo: 0,
+                    notes: [],
+                    noteSpeed: 3,
+                    lastNoteTime: 0,
+                    gameLoopId: null,
+                    keysPressed: {},
+                    hitWindow: 100, // ms
+                    perfectWindow: 50, // ms
+                    gameStarted: false
+                };
+                
+                // Mettre à jour l'affichage
+                scoreDisplay.textContent = "SCORE: 0";
+                comboDisplay.textContent = "COMBO: x1";
+                feedbackDisplay.style.opacity = "0";
+                
+                // Nettoyer les notes existantes
+                document.querySelectorAll('.note').forEach(note => note.remove());
+                
+                // Ajouter les événements
+                window.addEventListener('keydown', handleRhythmKeyDown);
+                window.addEventListener('keyup', handleRhythmKeyUp);
+                
+                buttons.forEach((button, index) => {
+                    button.addEventListener('mousedown', () => handleRhythmButtonPress(index));
+                });
+                
+                // Démarrer la boucle de jeu
+                rhythmState.gameStarted = true;
+                rhythmState.lastNoteTime = Date.now();
+                rhythmState.gameLoopId = requestAnimationFrame(rhythmGameLoop);
+            }
+            
+            function stopRhythmGame() {
+                if (rhythmState.gameLoopId) {
+                    cancelAnimationFrame(rhythmState.gameLoopId);
+                    rhythmState.gameLoopId = null;
+                }
+                
+                // Nettoyer les notes
+                document.querySelectorAll('.note').forEach(note => note.remove());
+                
+                // Enlever les événements
+                window.removeEventListener('keydown', handleRhythmKeyDown);
+                window.removeEventListener('keyup', handleRhythmKeyUp);
+                
+                buttons.forEach((button, index) => {
+                    button.removeEventListener('mousedown', () => handleRhythmButtonPress(index));
+                });
+                
+                rhythmState.gameStarted = false;
+            }
+            
+            function handleRhythmKeyDown(e) {
+                // Si la touche était déjà enfoncée, ignorer
+                if (rhythmState.keysPressed[e.key]) return;
+                
+                rhythmState.keysPressed[e.key] = true;
+                
+                // Mapping des touches
+                const keyMap = {
+                    'd': 0,
+                    'f': 1,
+                    'j': 2,
+                    'k': 3
+                };
+                
+                if (keyMap[e.key] !== undefined) {
+                    handleRhythmButtonPress(keyMap[e.key]);
+                    buttons[keyMap[e.key]].classList.add('pressed');
+                }
+            }
+            
+            function handleRhythmKeyUp(e) {
+                rhythmState.keysPressed[e.key] = false;
+                
+                // Mapping des touches
+                const keyMap = {
+                    'd': 0,
+                    'f': 1,
+                    'j': 2,
+                    'k': 3
+                };
+                
+                if (keyMap[e.key] !== undefined) {
+                    buttons[keyMap[e.key]].classList.remove('pressed');
+                }
+            }
+            
+            function handleRhythmButtonPress(laneIndex) {
+                const lane = lanes[laneIndex];
+                const targetZone = lane.querySelector('.target-zone');
+                const targetRect = targetZone.getBoundingClientRect();
+                
+                // Chercher la note la plus proche dans la zone cible
+                let closestNote = null;
+                let closestDistance = Infinity;
+                
+                rhythmState.notes.forEach(note => {
+                    if (note.lane === laneIndex && !note.hit) {
+                        const noteRect = note.element.getBoundingClientRect();
+                        // Distance du centre de la note au centre de la zone cible
+                        const noteCenter = noteRect.top + noteRect.height / 2;
+                        const targetCenter = targetRect.top + targetRect.height / 2;
+                        const distance = Math.abs(noteCenter - targetCenter);
+                        
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestNote = note;
+                        }
+                    }
+                });
+                
+                // Si une note est dans la zone de frappe
+                if (closestNote && closestDistance < rhythmState.hitWindow) {
+                    closestNote.hit = true;
+                    closestNote.element.style.opacity = "0.2";
+                    
+                    // Augmenter le score et le combo
+                    rhythmState.combo++;
+                    
+                    // Déterminer la qualité de la frappe
+                    let points, feedback;
+                    if (closestDistance < rhythmState.perfectWindow) {
+                        points = 300 * (1 + (rhythmState.combo - 1) * 0.1);
+                        feedback = "PERFECT!";
+                        playSound('perfect');
+                    } else {
+                        points = 100 * (1 + (rhythmState.combo - 1) * 0.1);
+                        feedback = "GOOD!";
+                        playSound('select');
+                    }
+                    
+                    rhythmState.score += Math.floor(points);
+                    
+                    // Mettre à jour l'affichage
+                    updateRhythmDisplay(feedback);
+                } else {
+                    // Raté
+                    rhythmState.combo = 0;
+                    updateRhythmDisplay("MISS!");
+                    playSound('miss');
+                }
+            }
+            
+            function updateRhythmDisplay(feedback) {
+                scoreDisplay.textContent = `SCORE: ${rhythmState.score}`;
+                comboDisplay.textContent = `COMBO: x${Math.max(1, rhythmState.combo)}`;
+                
+                // Afficher le feedback
+                feedbackDisplay.textContent = feedback;
+                feedbackDisplay.style.opacity = "1";
+                feedbackDisplay.style.color = feedback === "PERFECT!" ? "#00ff00" : 
+                                             feedback === "GOOD!" ? "#ffff00" : "#ff0000";
+                
+                // Animation de feedback
+                feedbackDisplay.style.transform = "translateY(0)";
+                setTimeout(() => {
+                    feedbackDisplay.style.opacity = "0";
+                    feedbackDisplay.style.transform = "translateY(-20px)";
+                }, 500);
+            }
+            
+            function rhythmGameLoop() {
+                // Créer de nouvelles notes
+                if (Date.now() - rhythmState.lastNoteTime > 1000 + Math.random() * 500) {
+                    createNote();
+                    rhythmState.lastNoteTime = Date.now();
+                }
+                
+                // Mettre à jour les notes existantes
+                updateNotes();
+                
+                rhythmState.gameLoopId = requestAnimationFrame(rhythmGameLoop);
+            }
+            
+            function createNote() {
+                // Choisir une lane aléatoire
+                const laneIndex = Math.floor(Math.random() * 4);
+                const lane = lanes[laneIndex];
+                
+                // Créer l'élément de note
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note';
+                noteElement.style.top = "-20px"; // commencer en haut de la lane
+                
+                lane.appendChild(noteElement);
+                
+                // Ajouter la note à l'état du jeu
+                rhythmState.notes.push({
+                    lane: laneIndex,
+                    element: noteElement,
+                    position: 0,
+                    hit: false
+                });
+            }
+            
+            function updateNotes() {
+                const laneHeight = lanes[0].offsetHeight;
+                
+                // Mettre à jour chaque note
+                for (let i = rhythmState.notes.length - 1; i >= 0; i--) {
+                    const note = rhythmState.notes[i];
+                    
+                    // Mettre à jour la position
+                    note.position += rhythmState.noteSpeed;
+                    note.element.style.top = `${note.position}px`;
+                    
+                    // Si la note est complètement sortie de la lane
+                    if (note.position > laneHeight + 20) {
+                        // Si la note n'a pas été frappée
+                        if (!note.hit) {
+                            rhythmState.combo = 0;
+                            updateRhythmDisplay("MISS!");
+                        }
+                        
+                        // Supprimer la note
+                        note.element.remove();
+                        rhythmState.notes.splice(i, 1);
+                    }
+                }
+            }
+            
+            //===================================
+            // JEU DE QUIZ
+            //===================================
+            const quizGame = document.getElementById('quiz-game');
+            const questionText = document.getElementById('question-text');
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            const quizFeedback = document.getElementById('quiz-feedback');
+            const quizScore = document.getElementById('quiz-score');
+            
+            // Questions du quiz
+            const quizQuestions = [
+                {
+                    question: "Quelle est la principale caractéristique de Camille le nul?",
+                    options: ["Il est très fort", "Il est nul", "Il est rapide", "Il est intelligent"],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Quel est le jeu qui a inspiré le mini-jeu de combat?",
+                    options: ["Final Fantasy", "Pokemon", "Undertale", "Dark Souls"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Combien de mini-jeux contient cette collection?",
+                    options: ["3", "4", "5", "6"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Dans quel jeu contrôle-t-on un cœur rouge?",
+                    options: ["Le jeu de plateforme", "Le jeu de quiz", "Le jeu de combat", "Le jeu de rythme"],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Que collecte-t-on dans le jeu de plateforme?",
+                    options: ["Des étoiles", "Des pièces", "Des os", "Des cœurs"],
+                    correctAnswer: 1
+                }
+            ];
+            
+            // État du jeu de quiz
+            let quizState = {
+                currentQuestion: 0,
+                score: 0,
+                answered: false
+            };
+            
+            function initQuizGame() {
+                // Réinitialiser l'état du jeu
+                quizState = {
+                    currentQuestion: 0,
+                    score: 0,
+                    answered: false
+                };
+                
+                // Afficher la première question
+                loadQuestion();
+                
+                // Ajouter les événements aux options
+                quizOptions.forEach(option => {
+                    option.addEventListener('click', handleQuizOptionClick);
+                });
+            }
+            
+            function loadQuestion() {
+                const question = quizQuestions[quizState.currentQuestion];
+                
+                // Afficher la question
+                questionText.textContent = question.question;
+                
+                // Afficher les options
+                quizOptions.forEach((option, index) => {
+                    option.textContent = question.options[index];
+                    option.classList.remove('correct', 'incorrect');
+                });
+                
+                // Réinitialiser le feedback
+                quizFeedback.textContent = "";
+                
+                // Mettre à jour le score
+                quizScore.textContent = `Score: ${quizState.score}/${quizState.currentQuestion}`;
+                
+                quizState.answered = false;
+            }
+            
+            function handleQuizOptionClick(e) {
+                if (quizState.answered) return;
+                
+                quizState.answered = true;
+                const selectedIndex = parseInt(e.target.getAttribute('data-index'));
+                const correctIndex = quizQuestions[quizState.currentQuestion].correctAnswer;
+                
+                // Vérifier la réponse
+                if (selectedIndex === correctIndex) {
+                    e.target.classList.add('correct');
+                    quizFeedback.textContent = "Correct!";
+                    quizFeedback.style.color = "#00ff00";
+                    quizState.score++;
+                    playSound('perfect');
+                } else {
+                    e.target.classList.add('incorrect');
+                    quizOptions[correctIndex].classList.add('correct');
+                    quizFeedback.textContent = "Incorrect!";
+                    quizFeedback.style.color = "#ff0000";
+                    playSound('miss');
+                }
+                
+                // Passer à la question suivante après un délai
+                setTimeout(() => {
+                    quizState.currentQuestion++;
+                    
+                    if (quizState.currentQuestion < quizQuestions.length) {
+                        loadQuestion();
+                    } else {
+                        // Fin du quiz
+                        questionText.textContent = "Quiz terminé!";
+                        quizFeedback.textContent = `Score final: ${quizState.score}/${quizQuestions.length}`;
+                        quizFeedback.style.color = "#ffff00";
+                        
+                        // Afficher le score final
+                        quizScore.textContent = `Score: ${quizState.score}/${quizQuestions.length}`;
+                        
+                        // Ajouter un bouton pour recommencer
+                        const restartButton = document.createElement('button');
+                        restartButton.textContent = "Recommencer le quiz";
+                        restartButton.className = "restart-button";
+                        restartButton.style.margin = "20px auto";
+                        restartButton.style.display = "block";
+                        
+                        restartButton.addEventListener('click', initQuizGame);
+                        quizGame.querySelector('.quiz-container').appendChild(restartButton);
+                    }
+                }, 2000);
+            }
+
+            //===================================
+            // JEU DE LABYRINTHE
+            //===================================
+            const mazeContainer = document.getElementById('maze-container');
+            
+            // État du jeu de labyrinthe
+            let mazeState = {
+                width: 15,
+                height: 10,
+                playerX: 1,
+                playerY: 1,
+                endX: 13,
+                endY: 8,
+                grid: [],
+                keysPressed: {},
+                playerElement: null,
+                endElement: null,
+                lastMoveTime: 0
+            };
+            
+            function initMazeGame() {
+                // Nettoyer le labyrinthe existant
+                mazeContainer.innerHTML = '';
+                
+                // Réinitialiser l'état du jeu
+                mazeState = {
+                    width: 15,
+                    height: 10,
+                    playerX: 1,
+                    playerY: 1,
+                    endX: 13,
+                    endY: 8,
+                    grid: [],
+                    keysPressed: {},
+                    playerElement: null,
+                    endElement: null,
+                    lastMoveTime: 0
+                };
+                
+                // Générer le labyrinthe
+                generateMaze();
+                
+                // Créer la grille visuelle
+                createMazeGrid();
+                
+                // Ajouter le joueur et la sortie
+                addMazeElements();
+                
+                // Mettre en place les événements
+                window.addEventListener('keydown', handleMazeKeyDown);
+            }
+            
+            function stopMazeGame() {
+                window.removeEventListener('keydown', handleMazeKeyDown);
+            }
+            
+            function generateMaze() {
+                // Initialiser la grille avec des murs
+                for (let y = 0; y < mazeState.height; y++) {
+                    const row = [];
+                    for (let x = 0; x < mazeState.width; x++) {
+                        // 0 = chemin, 1 = mur
+                        row.push(1);
+                    }
+                    mazeState.grid.push(row);
+                }
+                
+                // Algorithme de génération de labyrinthe (algorithme récursif)
+                function carve(x, y) {
+                    // Marquer la cellule actuelle comme chemin
+                    mazeState.grid[y][x] = 0;
+                    
+                    // Directions: 0=nord, 1=est, 2=sud, 3=ouest
+                    const directions = [0, 1, 2, 3];
+                    
+                    // Mélanger les directions
+                    for (let i = directions.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [directions[i], directions[j]] = [directions[j], directions[i]];
+                    }
+                    
+                    // Explorer chaque direction
+                    for (let dir of directions) {
+                        let nx, ny, nx2, ny2;
+                        
+                        if (dir === 0) { nx = x; ny = y - 1; nx2 = x; ny2 = y - 2; }      // Nord
+                        else if (dir === 1) { nx = x + 1; ny = y; nx2 = x + 2; ny2 = y; } // Est
+                        else if (dir === 2) { nx = x; ny = y + 1; nx2 = x; ny2 = y + 2; } // Sud
+                        else { nx = x - 1; ny = y; nx2 = x - 2; ny2 = y; }                // Ouest
+                        
+                        // Vérifier si la cellule est dans les limites et n'a pas été visitée
+                        if (nx2 >= 0 && nx2 < mazeState.width && ny2 >= 0 && ny2 < mazeState.height && mazeState.grid[ny2][nx2] === 1) {
+                            // Creuser un chemin à travers les deux cellules
+                            mazeState.grid[ny][nx] = 0;
+                            carve(nx2, ny2);
+                        }
+                    }
+                }
+                
+                // Commencer à (1,1)
+                carve(1, 1);
+                
+                // Assurer que le début et la fin sont des chemins
+                mazeState.grid[mazeState.playerY][mazeState.playerX] = 0;
+                mazeState.grid[mazeState.endY][mazeState.endX] = 0;
+                
+                // Créer un chemin entre le début et la fin
+                ensurePath();
+            }
+            
+            function ensurePath() {
+                // Algorithme simple pour s'assurer qu'il y a un chemin entre le début et la fin
+                // en créant quelques ouvertures aléatoires supplémentaires
+                for (let i = 0; i < 10; i++) {
+                    const x = 1 + Math.floor(Math.random() * (mazeState.width - 2));
+                    const y = 1 + Math.floor(Math.random() * (mazeState.height - 2));
+                    mazeState.grid[y][x] = 0;
+                }
+            }
+            
+            function createMazeGrid() {
+                // Définir la taille du conteneur
+                mazeContainer.style.width = `${mazeState.width * 30}px`;
+                mazeContainer.style.height = `${mazeState.height * 30}px`;
+                
+                // Créer les cellules
+                for (let y = 0; y < mazeState.height; y++) {
+                    const rowElement = document.createElement('div');
+                    rowElement.className = 'maze-row';
+                    
+                    for (let x = 0; x < mazeState.width; x++) {
+                        const cellElement = document.createElement('div');
+                        cellElement.className = 'maze-cell';
+                        
+                        if (mazeState.grid[y][x] === 1) {
+                            cellElement.classList.add('maze-wall');
+                        }
+                        
+                        rowElement.appendChild(cellElement);
+                    }
+                    
+                    mazeContainer.appendChild(rowElement);
+                }
+            }
+            
+            function addMazeElements() {
+                // Ajouter le joueur
+                mazeState.playerElement = document.createElement('div');
+                mazeState.playerElement.className = 'maze-player';
+                mazeState.playerElement.textContent = '🏃';
+                
+                // Ajouter la sortie
+                mazeState.endElement = document.createElement('div');
+                mazeState.endElement.className = 'maze-end';
+                mazeState.endElement.textContent = '🚪';
+                
+                // Ajouter les éléments à la grille
+                updateMazePlayerPosition();
+            }
+            
+            function updateMazePlayerPosition() {
+                // Obtenir les cellules de la grille
+                const rows = mazeContainer.querySelectorAll('.maze-row');
+                const playerCell = rows[mazeState.playerY].children[mazeState.playerX];
+                const endCell = rows[mazeState.endY].children[mazeState.endX];
+                
+                // Placer le joueur et la sortie
+                if (!playerCell.contains(mazeState.playerElement)) {
+                    playerCell.appendChild(mazeState.playerElement);
+                }
+                
+                if (!endCell.contains(mazeState.endElement)) {
+                    endCell.appendChild(mazeState.endElement);
+                }
+                
+                // Vérifier si le joueur a atteint la sortie
+                if (mazeState.playerX === mazeState.endX && mazeState.playerY === mazeState.endY) {
+                    mazeVictory();
+                }
+            }
+            
+            function handleMazeKeyDown(e) {
+                // Limiter la fréquence des mouvements (éviter les déplacements trop rapides)
+                const now = Date.now();
+                if (now - mazeState.lastMoveTime < 150) return;
+                mazeState.lastMoveTime = now;
+                
+                let newX = mazeState.playerX;
+                let newY = mazeState.playerY;
+                
+                // Déterminer la nouvelle position
+                if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'z') {
+                    newY--;
+                } else if (e.key === 'ArrowDown' || e.key === 's') {
+                    newY++;
+                } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'q') {
+                    newX--;
+                } else if (e.key === 'ArrowRight' || e.key === 'd') {
+                    newX++;
+                }
+                
+                // Vérifier si le mouvement est valide
+                if (
+                    newX >= 0 && newX < mazeState.width &&
+                    newY >= 0 && newY < mazeState.height &&
+                    mazeState.grid[newY][newX] === 0
+                ) {
+                    // Mettre à jour la position du joueur
+                    mazeState.playerX = newX;
+                    mazeState.playerY = newY;
+                    updateMazePlayerPosition();
+                    playSound('select');
+                }
+            }
+            
+            function mazeVictory() {
+                playSound('victory');
+                
+                // Afficher un message de victoire
+                const victoryMessage = document.createElement('div');
+                victoryMessage.textContent = "VICTOIRE!";
+                victoryMessage.style.position = "absolute";
+                victoryMessage.style.top = "50%";
+                victoryMessage.style.left = "50%";
+                victoryMessage.style.transform = "translate(-50%, -50%)";
+                victoryMessage.style.fontSize = "48px";
+                victoryMessage.style.color = "var(--secondary-color)";
+                victoryMessage.style.textShadow = "0 0 20px var(--secondary-color)";
+                victoryMessage.style.zIndex = "100";
+                
+                mazeContainer.appendChild(victoryMessage);
+                
+                // Ajouter un bouton pour recommencer
+                const restartButton = document.createElement('button');
+                restartButton.textContent = "Recommencer";
+                restartButton.className = "restart-button";
+                restartButton.style.position = "absolute";
+                restartButton.style.top = "60%";
+                restartButton.style.left = "50%";
+                restartButton.style.transform = "translateX(-50%)";
+                restartButton.style.zIndex = "100";
+                
+                restartButton.addEventListener('click', initMazeGame);
+                mazeContainer.appendChild(restartButton);
+            }
         });
     </script>
 </body>
