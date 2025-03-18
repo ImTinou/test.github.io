@@ -8,7 +8,8 @@ const gameVictories = {
     slots: 0,
     roulette: 0,
     poker: 0,
-    craps: 0
+    craps: 0,
+    minesweeper: 0
 };
 
 // Charger les victoires depuis le stockage local

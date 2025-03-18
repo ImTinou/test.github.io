@@ -5,39 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Camille Bros</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        /* --- JEU DE PLATEFORME --- */
-        #platform-game {
-            background-color: #6495ED; /* Ciel bleu */
-            font-family: 'Press Start 2P', cursive;
-            overflow: hidden;
-            position: relative;
-            height: 100%;
+        /* Styles globaux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
+        body {
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Press Start 2P', cursive;
+            color: #fff;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Styles du jeu */
+        #platform-game {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(to bottom, #1a75ff, #87CEEB);
+            overflow: hidden;
+        }
+        
+        /* Bouton retour amélioré */
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 14px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            padding: 8px 12px;
+            text-decoration: none;
+            z-index: 1000;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        /* Compteur de victoires */
+        .game-victory-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            padding: 8px 12px;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Niveau et éléments du jeu */
         .level {
             width: 100%;
             height: 100%;
             position: relative;
         }
         
+        /* Sol avec texture améliorée */
         .ground {
             position: absolute;
             bottom: 0;
             width: 100%;
             height: 80px;
-            background-color: #8B4513; /* Marron */
-            border-top: 5px solid #556B2F; /* Vert foncé */
+            background: linear-gradient(to bottom, #556B2F, #8B4513);
+            border-top: 5px solid #556B2F;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="50" height="50" fill="rgba(139, 69, 19, 0.8)"/><rect x="50" y="50" width="50" height="50" fill="rgba(139, 69, 19, 0.8)"/><rect x="50" y="0" width="50" height="50" fill="rgba(139, 69, 19, 0.6)"/><rect x="0" y="50" width="50" height="50" fill="rgba(139, 69, 19, 0.6)"/></svg>');
+            background-repeat: repeat;
         }
         
+        /* Plateformes avec texture améliorée */
         .platform {
             position: absolute;
             height: 30px;
-            background-color: #8B4513; /* Marron */
-            border-top: 5px solid #556B2F; /* Vert foncé */
+            background: linear-gradient(to bottom, #556B2F, #8B4513);
+            border-top: 5px solid #556B2F;
+            border-radius: 5px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="30" viewBox="0 0 60 30"><rect width="30" height="15" fill="rgba(139, 69, 19, 0.8)"/><rect x="30" y="15" width="30" height="15" fill="rgba(139, 69, 19, 0.8)"/><rect x="30" y="0" width="30" height="15" fill="rgba(139, 69, 19, 0.6)"/><rect x="0" y="15" width="30" height="15" fill="rgba(139, 69, 19, 0.6)"/></svg>');
+            background-repeat: repeat;
         }
         
+        /* Joueur avec animation */
         .player {
             position: absolute;
             width: 40px;
@@ -46,8 +113,21 @@
             text-align: center;
             line-height: 60px;
             z-index: 10;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+            transition: transform 0.1s;
         }
         
+        .player.jumping {
+            animation: playerJump 0.5s;
+        }
+        
+        @keyframes playerJump {
+            0% { transform: scaleY(1); }
+            50% { transform: scaleY(1.2); }
+            100% { transform: scaleY(1); }
+        }
+        
+        /* Ennemis avec animation */
         .enemy {
             position: absolute;
             width: 40px;
@@ -56,122 +136,163 @@
             text-align: center;
             line-height: 40px;
             z-index: 5;
+            filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.7));
+            animation: enemyFloat 2s infinite alternate;
         }
         
+        @keyframes enemyFloat {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-5px); }
+        }
+        
+        /* Pièces avec texture améliorée */
         .coin {
             position: absolute;
             width: 30px;
             height: 30px;
-            font-size: 25px;
             text-align: center;
-            line-height: 30px;
-            color: gold;
             z-index: 5;
-            animation: coinSpin 1s infinite alternate;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="gold" stroke="darkgoldenrod" stroke-width="5"/><circle cx="50" cy="50" r="35" fill="yellow" stroke="darkgoldenrod" stroke-width="2"/><path d="M50,20 L60,40 L80,40 L65,55 L70,75 L50,65 L30,75 L35,55 L20,40 L40,40 Z" fill="orange" opacity="0.6"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+            animation: coinSpin 2s infinite linear;
         }
         
         @keyframes coinSpin {
-            from { transform: scale(1); }
-            to { transform: scale(1.2); }
+            0% { transform: rotateY(0deg) scale(1); filter: brightness(1) drop-shadow(0 0 8px rgba(255, 215, 0, 0.8)); }
+            25% { filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 215, 0, 0.9)); }
+            50% { transform: rotateY(180deg) scale(1.1); filter: brightness(1.5) drop-shadow(0 0 15px rgba(255, 215, 0, 1)); }
+            75% { filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 215, 0, 0.9)); }
+            100% { transform: rotateY(360deg) scale(1); filter: brightness(1) drop-shadow(0 0 8px rgba(255, 215, 0, 0.8)); }
         }
         
+        /* HUD amélioré */
         .hud {
             position: absolute;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
+            padding: 10px 15px;
             border: 2px solid white;
-            border-radius: 5px;
+            border-radius: 10px;
             display: flex;
-            gap: 20px;
+            gap: 25px;
             z-index: 100;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
         
         .lives, .coins-counter {
-            font-size: 12px;
+            font-size: 14px;
             display: flex;
             align-items: center;
         }
         
         .lives-icon, .coins-icon {
             margin-right: 10px;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+            animation: pulse 2s infinite;
         }
         
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Messages de jeu améliorés */
         .game-message {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #333, #111);
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
             z-index: 100;
-            border: 3px solid var(--border-color);
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
             display: none;
+            max-width: 80%;
         }
         
         .game-message-title {
             font-size: 24px;
             margin-bottom: 20px;
-            color: var(--secondary-color);
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
         
         .game-message-body {
             margin-bottom: 20px;
             line-height: 1.5;
+            color: #fff;
         }
         
         .game-message-button {
-            background-color: var(--primary-color);
-            color: white;
+            background: linear-gradient(to bottom, #FFD700, #B8860B);
+            color: #111;
             border: none;
             padding: 15px 30px;
             font-family: 'Press Start 2P', cursive;
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
+            border-radius: 8px;
+            box-shadow: 0 5px 0 #8B6914;
         }
         
         .game-message-button:hover {
-            background-color: var(--highlight-color);
-            transform: scale(1.1);
+            background: linear-gradient(to bottom, #FFF44F, #FFD700);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #8B6914;
         }
         
+        .game-message-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #8B6914;
+        }
+        
+        /* Contrôles tactiles améliorés */
         .game-controls {
             position: absolute;
-            bottom: 50px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 20px;
+            gap: 30px;
             z-index: 50;
         }
         
         .control {
-            width: 60px;
-            height: 60px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 2px solid white;
-            border-radius: 10px;
-            font-size: 25px;
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid white;
+            border-radius: 50%;
+            font-size: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             user-select: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
         
         .control:active {
             background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(0.9);
         }
         
         .control-jump {
-            background-color: rgba(255, 0, 0, 0.5);
+            background: rgba(255, 0, 0, 0.5);
+            border-color: #ff9999;
         }
         
+        /* Boss avec animation améliorée */
         .camille-boss {
             position: absolute;
             width: 80px;
@@ -180,28 +301,182 @@
             text-align: center;
             line-height: 80px;
             z-index: 15;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.9));
             animation: bossBounce 2s infinite alternate;
+            transition: all 0.3s ease;
+        }
+        
+        .camille-boss.angry {
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 1));
+            animation: bossAngry 1s infinite alternate;
+            font-size: 80px;
+        }
+        
+        .camille-boss.hurt {
+            filter: drop-shadow(0 0 15px rgba(255, 255, 0, 0.9));
+            animation: bossHurt 0.5s;
+            color: red;
+        }
+        
+        .camille-boss.defeated {
+            animation: bossDefeated 2s forwards;
+            filter: grayscale(1);
+            opacity: 0.7;
+        }
+        
+        .boss-health-container {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 20px;
+            background-color: #222;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+        }
+        
+        .boss-health-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(to right, #ff0000, #ff5500);
+            border-radius: 7px;
+            transition: width 0.3s ease;
+        }
+        
+        .boss-name {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .boss-attack {
+            position: absolute;
+            background-color: rgba(255, 0, 0, 0.6);
+            border-radius: 50%;
+            z-index: 14;
+            animation: bossAttackAnim 2s linear forwards;
+            border: 2px solid rgba(255, 255, 255, 0.7);
         }
         
         @keyframes bossBounce {
-            from { transform: translateY(0) rotate(0deg); }
-            to { transform: translateY(-20px) rotate(10deg); }
+            0% { transform: translateY(0) rotate(0deg) scale(1); }
+            50% { transform: translateY(-10px) rotate(5deg) scale(1.05); }
+            100% { transform: translateY(-20px) rotate(10deg) scale(1.1); }
         }
         
+        @keyframes bossAngry {
+            0% { transform: translateY(0) rotate(-5deg) scale(1.1); }
+            25% { transform: translateY(-5px) rotate(0deg) scale(1.15); }
+            50% { transform: translateY(-10px) rotate(5deg) scale(1.2); }
+            75% { transform: translateY(-5px) rotate(0deg) scale(1.15); }
+            100% { transform: translateY(0) rotate(-5deg) scale(1.1); }
+        }
+        
+        @keyframes bossHurt {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 0.7; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        
+        @keyframes bossDefeated {
+            0% { transform: translateY(0) rotate(0) scale(1); opacity: 1; }
+            20% { transform: translateY(-30px) rotate(10deg) scale(1.2); opacity: 0.9; }
+            60% { transform: translateY(10px) rotate(180deg) scale(0.8); opacity: 0.5; }
+            100% { transform: translateY(100px) rotate(360deg) scale(0.1); opacity: 0; }
+        }
+        
+        @keyframes bossAttackAnim {
+            0% { transform: scale(0.1); opacity: 0.3; }
+            50% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        /* Drapeau d'arrivée avec animation */
         .finish-flag {
             position: absolute;
             font-size: 60px;
             z-index: 5;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+            animation: flagWave 3s infinite ease-in-out;
+        }
+        
+        @keyframes flagWave {
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            100% { transform: rotate(-5deg); }
+        }
+        
+        /* Effets visuels supplémentaires */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+        }
+        
+        /* Nuages dans le fond */
+        .cloud {
+            position: absolute;
+            font-size: 40px;
+            color: white;
+            opacity: 0.7;
+            z-index: 1;
+            animation: cloudMove linear infinite;
+        }
+        
+        @keyframes cloudMove {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100px); }
+        }
+        
+        /* Effet parallaxe pour le fond */
+        .background-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-repeat: repeat-x;
+            background-size: auto 100%;
+            animation: parallaxMove linear infinite;
+        }
+        
+        @keyframes parallaxMove {
+            0% { background-position: 0 0; }
+            100% { background-position: -1000px 0; }
+        }
+        
+        /* Montagnes du fond */
+        .mountains {
+            position: absolute;
+            bottom: 80px;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to bottom, transparent, #556B2F);
+            z-index: 2;
+            opacity: 0.7;
+            clip-path: polygon(0% 100%, 10% 90%, 20% 70%, 30% 90%, 40% 60%, 50% 100%, 60% 80%, 70% 60%, 80% 70%, 90% 90%, 100% 85%, 100% 100%);
         }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <!-- Jeu de Plateforme -->
         <div id="platform-game">
+            <!-- Bouton retour unique -->
             <a href="index.html" class="back-button">← RETOUR</a>
+            
+            <!-- Compteur de victoires -->
             <div class="game-victory-counter">Victoires: <span id="platform-victories">0</span></div>
             
+            <!-- HUD (Heads-Up Display) -->
             <div class="hud">
                 <div class="lives">
                     <span class="lives-icon">❤️</span>
@@ -213,40 +488,63 @@
                 </div>
             </div>
             
+            <!-- Le niveau de jeu -->
             <div id="level" class="level">
+                <!-- Éléments de fond -->
+                <div class="mountains"></div>
+                
+                <!-- Sol -->
                 <div class="ground"></div>
+                
+                <!-- Joueur -->
                 <div id="game-player" class="player">🏃</div>
-                <!-- Les plateformes, ennemis et pièces seront ajoutés dynamiquement -->
+                
+                <!-- Les autres éléments seront ajoutés dynamiquement par JavaScript -->
             </div>
             
+            <!-- Contrôles tactiles -->
             <div class="game-controls">
                 <div class="control" id="left-control">⬅️</div>
                 <div class="control control-jump" id="jump-control">⬆️</div>
                 <div class="control" id="right-control">➡️</div>
             </div>
             
+            <!-- Message de jeu -->
             <div id="game-message" class="game-message">
                 <div id="game-message-title" class="game-message-title"></div>
                 <div id="game-message-body" class="game-message-body"></div>
                 <button id="game-message-button" class="game-message-button">OK</button>
             </div>
         </div>
-        
-        <div class="scanline"></div>
-        <div class="vignette"></div>
-        <div class="crt-effect"></div>
-        <div class="pixel-transition" id="transition"></div>
     </div>
     
-    <script src="common.js"></script>
     <script>
-        // ===== JEU DE PLATEFORME =====
         document.addEventListener('DOMContentLoaded', () => {
-            // Fonction spécifique pour mettre à jour les victoires sur cette page
-            window.updateVictoryDisplaysPage = function() {
-                document.getElementById('platform-victories').textContent = gameVictories.platform;
+            // === SYSTÈME DE VICTOIRES (sans localStorage) ===
+            // Variables pour le système de victoires (mémoire de session uniquement)
+            let gameVictories = {
+                platform: 0
             };
             
+            // Fonction pour charger les victoires (simplifiée)
+            function loadVictories() {
+                // Dans cette version, les victoires sont réinitialisées à chaque rechargement
+                gameVictories = { platform: 0 };
+                updateVictoryDisplays();
+            }
+            
+            // Fonction pour ajouter une victoire
+            function addVictory(gameType) {
+                gameVictories[gameType]++;
+                updateVictoryDisplays();
+            }
+            
+            // Fonction pour mettre à jour l'affichage des victoires
+            function updateVictoryDisplays() {
+                document.getElementById('platform-victories').textContent = gameVictories.platform;
+            }
+            
+            // === ÉLÉMENTS DU DOM ===
             const level = document.getElementById('level');
             const gamePlayer = document.getElementById('game-player');
             const livesCount = document.getElementById('lives-count');
@@ -262,8 +560,8 @@
             const rightControl = document.getElementById('right-control');
             const jumpControl = document.getElementById('jump-control');
             
-            // État du jeu de plateforme
-            let platformState = {
+            // === ÉTAT DU JEU ===
+            let gameState = {
                 player: {
                     x: 100,
                     y: 450,
@@ -271,26 +569,142 @@
                     height: 60,
                     velocityX: 0,
                     velocityY: 0,
-                    speed: 5,
-                    jumpPower: 15,
+                    speed: 6,       // Vitesse améliorée
+                    jumpPower: 18,  // Saut amélioré
                     isJumping: false,
-                    direction: 1 // 1 = droite, -1 = gauche
+                    jumpCount: 0,   // Pour le double saut
+                    maxJumps: 2,    // Nombre maximum de sauts
+                    direction: 1,   // 1 = droite, -1 = gauche
+                    isInvincible: false,
+                    invincibilityTime: 1500,
+                    fallSpeed: 0.7  // Vitesse de chute améliorée
                 },
                 platforms: [],
                 enemies: [],
                 coins: [],
+                clouds: [],
                 boss: null,
                 lives: 3,
                 collectedCoins: 0,
                 totalCoins: 0,
                 keys: {},
                 gameLoopId: null,
-                gameOver: false
+                lastTime: 0,
+                gameOver: false,
+                levelWidth: 1500,   // Largeur du niveau plus grande pour le scrolling
+                viewportX: 0,       // Position X actuelle de la vue
+                sounds: {}
             };
             
-            function initPlatformGame() {
+            // === SYSTÈME DE SONS ===
+            // Fonction pour charger et jouer un son
+            function playSound(soundName) {
+                const soundMap = {
+                    jump: 'data:audio/mp3;base64,SUQzAwAAAAAAJlRQRTEAAAAcAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHMA//uSwAAAB4R3YVm5AADwjyw7KCAAmASAfn+AAAI5Po4L1xQRERESXWgAAAAA4f4AA/8+wBAYeA+D8H4ggEEz9bR3/kijPuHi',
+                    coin: 'data:audio/mp3;base64,SUQzAwAAAAAAJlRQRTEAAAAcAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHMA//uSwAAAB5R3ZFm5AADwjyxLKCAAolET9NdYAAIt6aW1xRRRRRaFoAAAABw/xAD/z7AEBh4D4PwfiCAQ4a7Spv/KEQfcPF',
+                    hit: 'data:audio/mp3;base64,SUQzAwAAAAAAJlRQRTEAAAAcAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHMA//uSwAAAB4RvYlm5AADwjaxLKCAAo1CT9JdYAAAja7q1xRRRRRNaF4AAAABc/5QD/z7AEBh4D4PwfiCAQ5bJNp/8oJg+4eL',
+                    death: 'data:audio/mp3;base64,SUQzAwAAAAAAJlRQRTEAAAAcAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHMA//uSwAAAB4RtZFm5AADwjKyLKCAAnmUb9JdYAAIa6O7XFFFFFFFoWgAAAAcP8QA/8+wBAYeA+D8H4ggEKlsq0/+UIgfcPF',
+                    win: 'data:audio/mp3;base64,SUQzAwAAAAAAJlRQRTEAAAAcAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHMA//uSwAAAB4RtZFm5AADwjaw7KCAAtGUj9JdYAAKXu7q1xRRRRRRDaFoAAAAHA/xAD/z7AEBh4D4PwfiCAQcNkm0/+UEwfcPF',
+                    lose: 'data:audio/mp3;base64,SUQzAwAAAAAAJlRQRTEAAAAcAAAAU291bmRKYXkuY29tIFNvdW5kIEVmZmVjdHMA//uSwAAAB4RvYlm5AADwjOxLKCAAmmYT9JdYAAAm1uzdcUUUUUUWaFoAAAAHD/EAP/PsAQGHgPg/B+IIBBc0KbT/5QiB9w8X'
+                };
+                
+                try {
+                    // Créer un nouvel élément audio avec la source en base64
+                    if (soundMap[soundName]) {
+                        const audio = new Audio(soundMap[soundName]);
+                        audio.volume = 0.5;
+                        audio.play();
+                    }
+                } catch (e) {
+                    console.log("Erreur lors de la lecture du son:", e);
+                }
+            }
+            
+            // === SYSTÈME DE PARTICULES ===
+            // Fonction pour créer des particules
+            function createParticle(x, y, type) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${x}px`;
+                particle.style.bottom = `${y}px`;
+                
+                let size, duration, color, content;
+                
+                switch(type) {
+                    case 'jump':
+                        size = Math.random() * 10 + 5;
+                        duration = Math.random() * 500 + 300;
+                        color = 'white';
+                        content = '';
+                        break;
+                    case 'coin':
+                        size = 20;
+                        duration = 800;
+                        color = 'gold';
+                        content = '+1';
+                        break;
+                    case 'hit':
+                        size = 30;
+                        duration = 600;
+                        color = 'red';
+                        content = '💥';
+                        break;
+                    default:
+                        size = 10;
+                        duration = 500;
+                        color = 'white';
+                        content = '';
+                }
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = color;
+                particle.style.borderRadius = '50%';
+                particle.style.fontSize = `${size}px`;
+                particle.style.display = 'flex';
+                particle.style.justifyContent = 'center';
+                particle.style.alignItems = 'center';
+                particle.style.color = type === 'coin' ? 'gold' : 'white';
+                particle.textContent = content;
+                
+                level.appendChild(particle);
+                
+                // Animation de la particule
+                const startX = x;
+                const startY = y;
+                const targetX = startX + (Math.random() * 100 - 50);
+                const targetY = startY + Math.random() * 100;
+                
+                // Animation avec GSAP-like timing
+                let startTime = null;
+                
+                function animate(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    const progress = (timestamp - startTime) / duration;
+                    
+                    if (progress < 1) {
+                        const easeProgress = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                        
+                        const currentX = startX + (targetX - startX) * easeProgress;
+                        const currentY = startY + (targetY - startY) * easeProgress;
+                        
+                        particle.style.left = `${currentX}px`;
+                        particle.style.bottom = `${currentY}px`;
+                        particle.style.opacity = 1 - progress;
+                        
+                        requestAnimationFrame(animate);
+                    } else {
+                        particle.remove();
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // === INITIALISATION DU JEU ===
+            function initGame() {
                 // Réinitialiser l'état du jeu
-                platformState = {
+                gameState = {
                     player: {
                         x: 100,
                         y: 450,
@@ -298,21 +712,31 @@
                         height: 60,
                         velocityX: 0,
                         velocityY: 0,
-                        speed: 5,
-                        jumpPower: 15,
+                        speed: 6,
+                        jumpPower: 18,
                         isJumping: false,
-                        direction: 1
+                        jumpCount: 0,
+                        maxJumps: 2,
+                        direction: 1,
+                        isInvincible: false,
+                        invincibilityTime: 1500,
+                        fallSpeed: 0.5 // Encore réduit pour un meilleur contrôle
                     },
                     platforms: [],
                     enemies: [],
                     coins: [],
+                    clouds: [],
                     boss: null,
                     lives: 3,
                     collectedCoins: 0,
                     totalCoins: 0,
                     keys: {},
                     gameLoopId: null,
-                    gameOver: false
+                    lastTime: 0,
+                    gameOver: false,
+                    levelWidth: 2000, // Niveau plus large pour plus d'espace
+                    viewportX: 0,
+                    sounds: {}
                 };
                 
                 // Nettoyer les éléments existants
@@ -321,94 +745,162 @@
                 // Créer le niveau
                 createLevel();
                 
+                // Créer les nuages
+                createClouds();
+                
                 // Mettre à jour l'affichage
-                livesCount.textContent = platformState.lives;
-                coinCount.textContent = platformState.collectedCoins;
-                totalCoins.textContent = platformState.totalCoins;
+                livesCount.textContent = gameState.lives;
+                coinCount.textContent = gameState.collectedCoins;
+                totalCoins.textContent = gameState.totalCoins;
                 
                 // Positionner le joueur
                 updatePlayerPosition();
                 
                 // Configurer les contrôles
-                window.removeEventListener('keydown', handlePlatformKeyDown);
-                window.removeEventListener('keyup', handlePlatformKeyUp);
-                window.addEventListener('keydown', handlePlatformKeyDown);
-                window.addEventListener('keyup', handlePlatformKeyUp);
-                
-                // Configurer les contrôles tactiles
-                configureTouch();
-                
-                // Configurer le bouton de message
-                gameMessageButton.removeEventListener('click', handleGameMessageClose);
-                gameMessageButton.addEventListener('click', handleGameMessageClose);
+                setupControls();
                 
                 // Cacher le message
                 gameMessage.style.display = 'none';
                 
                 // Démarrer la boucle de jeu
-                if (platformState.gameLoopId) {
-                    cancelAnimationFrame(platformState.gameLoopId);
+                if (gameState.gameLoopId) {
+                    cancelAnimationFrame(gameState.gameLoopId);
                 }
-                platformState.gameLoopId = requestAnimationFrame(gameLoop);
+                gameState.lastTime = performance.now();
+                gameState.gameLoopId = requestAnimationFrame(gameLoop);
             }
             
+            // === CRÉATION DU NIVEAU ===
             function clearLevel() {
                 // Supprimer tous les éléments du niveau sauf le joueur et le sol
-                const elementsToRemove = level.querySelectorAll('.platform, .enemy, .coin, .camille-boss, .finish-flag');
+                const elementsToRemove = level.querySelectorAll('.platform, .enemy, .coin, .camille-boss, .finish-flag, .cloud, .particle, .boss-attack');
                 elementsToRemove.forEach(element => element.remove());
+                
+                // Masquer la barre de vie du boss si elle existe
+                const bossHealthContainer = document.getElementById('boss-health-container');
+                if (bossHealthContainer) {
+                    bossHealthContainer.style.display = 'none';
+                }
             }
             
             function createLevel() {
-                // Créer les plateformes
+                // Map entièrement repensée avec une meilleure progression et des sauts plus faciles
                 const platformData = [
-                    { x: 100, y: 400, width: 200 },
-                    { x: 350, y: 350, width: 200 },
-                    { x: 600, y: 300, width: 150 },
-                    { x: 400, y: 250, width: 150 },
-                    { x: 200, y: 200, width: 150 },
-                    { x: 400, y: 150, width: 350 }
+                    // Plateformes de départ - tutoriel
+                    { x: 100, y: 200, width: 300 },  // 1ère plateforme large pour commencer
+                    { x: 450, y: 250, width: 250 },  // 2ème plateforme, légèrement plus haute
+                    
+                    // Section intermédiaire - mouvement vers le haut
+                    { x: 750, y: 300, width: 200 },
+                    { x: 600, y: 400, width: 150 },
+                    { x: 850, y: 450, width: 200 },
+                    
+                    // Section difficile - plateformes plus espacées
+                    { x: 1100, y: 400, width: 150 },
+                    { x: 1300, y: 350, width: 150 },
+                    { x: 1500, y: 300, width: 150 },
+                    
+                    // Section finale - vers le boss
+                    { x: 1700, y: 250, width: 280 }
                 ];
                 
                 platformData.forEach(data => {
                     createPlatform(data.x, data.y, data.width);
                 });
                 
-                // Créer les ennemis
+                // Placer les ennemis de manière stratégique
                 const enemyData = [
-                    { x: 150, y: 340, platform: 0 },
-                    { x: 400, y: 290, platform: 1 },
-                    { x: 650, y: 240, platform: 2 },
-                    { x: 450, y: 190, platform: 3 },
-                    { x: 250, y: 140, platform: 4 }
+                    { x: 200, y: 240, platform: 0 },
+                    { x: 550, y: 290, platform: 1 },
+                    { x: 800, y: 340, platform: 2 },
+                    { x: 650, y: 440, platform: 3 },
+                    { x: 900, y: 490, platform: 4 },
+                    { x: 1150, y: 440, platform: 5 },
+                    { x: 1350, y: 390, platform: 6 },
+                    { x: 1550, y: 340, platform: 7 },
+                    { x: 1800, y: 290, platform: 8 }
                 ];
                 
                 enemyData.forEach(data => {
                     createEnemy(data.x, data.y, data.platform);
                 });
                 
-                // Créer les pièces
+                // Placer les pièces le long du parcours pour guider le joueur
                 const coinData = [
-                    { x: 200, y: 370 },
-                    { x: 450, y: 320 },
-                    { x: 650, y: 270 },
-                    { x: 450, y: 220 },
-                    { x: 250, y: 170 },
-                    { x: 450, y: 120 },
-                    { x: 550, y: 120 },
-                    { x: 650, y: 120 }
+                    // Pièces de départ
+                    { x: 150, y: 250 },
+                    { x: 250, y: 250 },
+                    { x: 350, y: 250 },
+                    
+                    // Pièces vers les plateformes suivantes
+                    { x: 500, y: 300 },
+                    { x: 600, y: 300 },
+                    
+                    // Pièces section intermédiaire
+                    { x: 780, y: 350 },
+                    { x: 850, y: 350 },
+                    { x: 650, y: 450 },
+                    { x: 700, y: 450 },
+                    { x: 900, y: 500 },
+                    { x: 950, y: 500 },
+                    
+                    // Pièces section difficile - aide visuelle pour les sauts
+                    { x: 1000, y: 450 }, // Pièce en l'air pour guider le saut
+                    { x: 1150, y: 450 },
+                    { x: 1230, y: 420 }, // Pièce en l'air pour guider le saut
+                    { x: 1350, y: 400 },
+                    { x: 1430, y: 370 }, // Pièce en l'air pour guider le saut
+                    { x: 1550, y: 350 },
+                    
+                    // Pièces pour la section finale
+                    { x: 1630, y: 320 }, // Pièce en l'air pour guider le saut
+                    { x: 1750, y: 300 },
+                    { x: 1800, y: 300 },
+                    { x: 1850, y: 300 }
                 ];
                 
                 coinData.forEach(data => {
                     createCoin(data.x, data.y);
                 });
                 
-                platformState.totalCoins = coinData.length;
+                gameState.totalCoins = coinData.length;
                 
-                // Créer le boss (Camille le Nul)
-                createBoss(700, 90);
+                // Créer le boss à la fin du niveau
+                createBoss(1850, 290);
                 
-                // Créer le drapeau d'arrivée
-                createFlag(750, 90);
+                // Créer le drapeau d'arrivée juste à côté du boss
+                createFlag(1900, 290);
+            }
+            
+            // Fonction pour créer des nuages en arrière-plan
+            function createClouds() {
+                const cloudEmojis = ['☁️', '☁️', '🌤️', '⛅'];
+                
+                for (let i = 0; i < 8; i++) {
+                    const cloud = document.createElement('div');
+                    cloud.className = 'cloud';
+                    cloud.textContent = cloudEmojis[Math.floor(Math.random() * cloudEmojis.length)];
+                    
+                    const x = Math.random() * gameState.levelWidth;
+                    const y = 200 + Math.random() * 300; // Hauteur aléatoire
+                    
+                    cloud.style.left = `${x}px`;
+                    cloud.style.bottom = `${y}px`;
+                    cloud.style.opacity = 0.5 + Math.random() * 0.5; // Opacité variable
+                    cloud.style.fontSize = `${30 + Math.random() * 30}px`; // Taille variable
+                    
+                    // Vitesse de déplacement variable
+                    const duration = 30 + Math.random() * 40;
+                    cloud.style.animation = `cloudMove ${duration}s linear infinite`;
+                    
+                    level.appendChild(cloud);
+                    gameState.clouds.push({
+                        x,
+                        y,
+                        element: cloud,
+                        speed: 60 / duration
+                    });
+                }
             }
             
             function createPlatform(x, y, width) {
@@ -419,7 +911,7 @@
                 platform.style.width = `${width}px`;
                 level.appendChild(platform);
                 
-                platformState.platforms.push({
+                gameState.platforms.push({
                     x,
                     y,
                     width,
@@ -436,7 +928,7 @@
                 enemy.style.bottom = `${y}px`;
                 level.appendChild(enemy);
                 
-                platformState.enemies.push({
+                gameState.enemies.push({
                     x,
                     y,
                     width: 40,
@@ -451,12 +943,11 @@
             function createCoin(x, y) {
                 const coin = document.createElement('div');
                 coin.className = 'coin';
-                coin.textContent = '🪙';
                 coin.style.left = `${x}px`;
                 coin.style.bottom = `${y}px`;
                 level.appendChild(coin);
                 
-                platformState.coins.push({
+                gameState.coins.push({
                     x,
                     y,
                     width: 30,
@@ -474,12 +965,40 @@
                 boss.style.bottom = `${y}px`;
                 level.appendChild(boss);
                 
-                platformState.boss = {
+                // Créer la barre de vie du boss
+                const bossHealthContainer = document.createElement('div');
+                bossHealthContainer.className = 'boss-health-container';
+                bossHealthContainer.id = 'boss-health-container';
+                
+                const bossName = document.createElement('div');
+                bossName.className = 'boss-name';
+                bossName.textContent = 'CAMILLE LE NUL';
+                bossHealthContainer.appendChild(bossName);
+                
+                const bossHealthBar = document.createElement('div');
+                bossHealthBar.className = 'boss-health-bar';
+                bossHealthBar.id = 'boss-health-bar';
+                bossHealthContainer.appendChild(bossHealthBar);
+                
+                document.getElementById('platform-game').appendChild(bossHealthContainer);
+                
+                gameState.boss = {
                     x,
                     y,
                     width: 80,
                     height: 80,
-                    element: boss
+                    element: boss,
+                    health: 5,
+                    maxHealth: 5,
+                    isActive: false,
+                    isDefeated: false,
+                    isInvulnerable: false,
+                    attackCooldown: 0,
+                    attackTimer: 0,
+                    phase: 1,
+                    attacks: [],
+                    healthBar: bossHealthBar,
+                    healthContainer: bossHealthContainer
                 };
             }
             
@@ -490,153 +1009,550 @@
                 flag.style.left = `${x}px`;
                 flag.style.bottom = `${y}px`;
                 level.appendChild(flag);
+                
+                // Stocker les informations du drapeau
+                gameState.flag = {
+                    x,
+                    y,
+                    width: 40,
+                    height: 60,
+                    element: flag
+                };
             }
             
-            function handlePlatformKeyDown(e) {
-                platformState.keys[e.key] = true;
+            // Fonction pour gérer le combat contre le boss - CORRIGÉ
+            function startBossFight() {
+                if (gameState.boss.isActive || gameState.boss.isDefeated) return;
+                
+                // Activer le boss
+                gameState.boss.isActive = true;
+                gameState.boss.element.classList.add('angry');
+                
+                // Afficher la barre de vie
+                gameState.boss.healthContainer.style.display = 'block';
+                
+                // Jouer un son d'alerte
+                playSound('hit');
+                
+                // Message d'alerte
+                const alertMessage = document.createElement('div');
+                alertMessage.className = 'game-message';
+                alertMessage.style.display = 'block';
+                alertMessage.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+                alertMessage.innerHTML = '<div class="game-message-title">COMBAT DE BOSS!</div>' +
+                    '<div class="game-message-body">Camille le Nul est furieux! Saute sur sa tête pour le vaincre!</div>' +
+                    '<button id="start-fight-button" class="game-message-button">COMBATTRE</button>';
+                
+                document.getElementById('platform-game').appendChild(alertMessage);
+                
+                document.getElementById('start-fight-button').addEventListener('click', () => {
+                    alertMessage.remove();
+                    
+                    // Positionner le joueur pour le combat
+                    gameState.player.x = gameState.boss.x - 200;
+                    gameState.player.y = gameState.boss.y;
+                    
+                    // Commencer les attaques du boss
+                    bossAttackPattern();
+                });
+            }
+            
+            function bossAttackPattern() {
+                if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                
+                const attackDelay = 3000 - (gameState.boss.phase * 500); // Plus rapide dans les phases avancées
+                
+                setTimeout(function() {
+                    if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                    
+                    // Choisir une attaque aléatoire selon la phase
+                    const attackType = Math.floor(Math.random() * 3);
+                    
+                    switch(attackType) {
+                        case 0:
+                            bossAttackCircle();
+                            break;
+                        case 1:
+                            bossAttackJump();
+                            break;
+                        case 2:
+                            bossAttackCharge();
+                            break;
+                    }
+                    
+                    // Planifier la prochaine attaque
+                    bossAttackPattern();
+                }, attackDelay);
+            }
+            
+            function bossAttackCircle() {
+                if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                
+                // Animation de préparation
+                gameState.boss.element.style.backgroundColor = 'rgba(255, 0, 0, 0.3)';
+                
+                setTimeout(function() {
+                    if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                    
+                    // Créer une attaque circulaire
+                    const attack = document.createElement('div');
+                    attack.className = 'boss-attack';
+                    attack.style.width = '60px';
+                    attack.style.height = '60px';
+                    attack.style.left = gameState.boss.x + gameState.boss.width/2 - 30 + 'px';
+                    attack.style.bottom = gameState.boss.y + gameState.boss.height/2 - 30 + 'px';
+                    level.appendChild(attack);
+                    
+                    // Supprimer l'attaque après l'animation
+                    setTimeout(function() {
+                        attack.remove();
+                    }, 2000);
+                    
+                    // Réinitialiser l'apparence du boss
+                    gameState.boss.element.style.backgroundColor = '';
+                }, 500);
+            }
+            
+            function bossAttackJump() {
+                if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                
+                // Animation de préparation
+                gameState.boss.element.style.transform = 'scale(0.8)';
+                
+                setTimeout(function() {
+                    if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                    
+                    // Sauter en l'air
+                    const originalY = gameState.boss.y;
+                    const jumpHeight = 150;
+                    
+                    // Animation de saut
+                    let jumpUp = true;
+                    let jumpProgress = 0;
+                    let jumpInterval = setInterval(function() {
+                        if (!gameState.boss.isActive || gameState.boss.isDefeated) {
+                            clearInterval(jumpInterval);
+                            return;
+                        }
+                        
+                        if (jumpUp) {
+                            jumpProgress += 5;
+                            if (jumpProgress >= jumpHeight) {
+                                jumpUp = false;
+                            }
+                        } else {
+                            jumpProgress -= 10;
+                            if (jumpProgress <= 0) {
+                                clearInterval(jumpInterval);
+                                
+                                // Effet d'impact au sol
+                                const shockwave = document.createElement('div');
+                                shockwave.className = 'boss-attack';
+                                shockwave.style.width = '150px';
+                                shockwave.style.height = '30px';
+                                shockwave.style.borderRadius = '50%';
+                                shockwave.style.left = gameState.boss.x - 35 + 'px';
+                                shockwave.style.bottom = originalY - 15 + 'px';
+                                level.appendChild(shockwave);
+                                
+                                setTimeout(function() {
+                                    shockwave.remove();
+                                }, 1000);
+                                
+                                // Réinitialiser le boss
+                                gameState.boss.element.style.transform = '';
+                            }
+                        }
+                        
+                        gameState.boss.y = originalY + jumpProgress;
+                        gameState.boss.element.style.bottom = gameState.boss.y + 'px';
+                    }, 30);
+                }, 500);
+            }
+            
+            function bossAttackCharge() {
+                if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                
+                // Animation de préparation
+                gameState.boss.element.style.filter = 'brightness(1.5) drop-shadow(0 0 15px red)';
+                
+                setTimeout(function() {
+                    if (!gameState.boss.isActive || gameState.boss.isDefeated) return;
+                    
+                    // Direction de la charge (vers le joueur)
+                    const direction = gameState.player.x < gameState.boss.x ? -1 : 1;
+                    const originalX = gameState.boss.x;
+                    const chargeDistance = 200;
+                    
+                    // Animation de charge
+                    let chargeProgress = 0;
+                    let chargeForward = true;
+                    let chargeInterval = setInterval(function() {
+                        if (!gameState.boss.isActive || gameState.boss.isDefeated) {
+                            clearInterval(chargeInterval);
+                            return;
+                        }
+                        
+                        if (chargeForward) {
+                            chargeProgress += 8;
+                            if (chargeProgress >= chargeDistance) {
+                                chargeForward = false;
+                            }
+                        } else {
+                            chargeProgress -= 5;
+                            if (chargeProgress <= 0) {
+                                clearInterval(chargeInterval);
+                                gameState.boss.element.style.filter = '';
+                            }
+                        }
+                        
+                        gameState.boss.x = originalX + (direction * chargeProgress);
+                        gameState.boss.element.style.left = gameState.boss.x + 'px';
+                    }, 30);
+                }, 500);
+            }
+            
+            function hitBoss() {
+                if (!gameState.boss.isActive || gameState.boss.isDefeated || gameState.boss.isInvulnerable) return;
+                
+                // Marquer le boss comme invulnérable temporairement
+                gameState.boss.isInvulnerable = true;
+                
+                // Réduire sa santé
+                gameState.boss.health--;
+                
+                // Mettre à jour la barre de vie
+                updateBossHealth();
+                
+                // Animation de dégât
+                gameState.boss.element.classList.add('hurt');
+                setTimeout(function() {
+                    gameState.boss.element.classList.remove('hurt');
+                }, 500);
+                
+                // Effet de particules
+                for (let i = 0; i < 10; i++) {
+                    createParticle(
+                        gameState.boss.x + Math.random() * gameState.boss.width,
+                        gameState.boss.y + Math.random() * gameState.boss.height,
+                        'hit'
+                    );
+                }
+                
+                // Jouer un son
+                playSound('hit');
+                
+                // Vérifier s'il est vaincu
+                if (gameState.boss.health <= 0) {
+                    defeatBoss();
+                    return;
+                }
+                
+                // Changer de phase si nécessaire
+                if (gameState.boss.health <= gameState.boss.maxHealth / 2 && gameState.boss.phase === 1) {
+                    gameState.boss.phase = 2;
+                    // Le boss devient plus agressif en phase 2
+                    gameState.boss.element.textContent = '😡';
+                }
+                
+                // Rendre le boss vulnerable après un délai
+                setTimeout(function() {
+                    gameState.boss.isInvulnerable = false;
+                }, 1000);
+            }
+            
+            function updateBossHealth() {
+                const healthPercent = (gameState.boss.health / gameState.boss.maxHealth) * 100;
+                gameState.boss.healthBar.style.width = `${healthPercent}%`;
+                
+                // Changer la couleur en fonction de la santé
+                if (healthPercent < 30) {
+                    gameState.boss.healthBar.style.background = 'linear-gradient(to right, #ff0000, #ff3300)';
+                } else if (healthPercent < 60) {
+                    gameState.boss.healthBar.style.background = 'linear-gradient(to right, #ff3300, #ff6600)';
+                }
+            }
+            
+            function defeatBoss() {
+                // Marquer le boss comme vaincu
+                gameState.boss.isDefeated = true;
+                gameState.boss.isActive = false;
+                
+                // Animation de défaite
+                gameState.boss.element.classList.remove('angry');
+                gameState.boss.element.classList.add('defeated');
+                
+                // Masquer la barre de vie
+                gameState.boss.healthContainer.style.display = 'none';
+                
+                // Effets de particules
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(function() {
+                        if (document.contains(gameState.boss.element)) {
+                            createParticle(
+                                gameState.boss.x + Math.random() * gameState.boss.width,
+                                gameState.boss.y + Math.random() * gameState.boss.height,
+                                'coin'
+                            );
+                        }
+                    }, i * 100);
+                }
+                
+                // Son de victoire
+                playSound('win');
+                
+                // Afficher le message de victoire après un délai
+                setTimeout(function() {
+                    // Le boss est vaincu, on gagne le niveau
+                    winGame();
+                }, 2000);
+            }
+            
+            // === CONTRÔLES ===
+            function setupControls() {
+                // Supprimer les écouteurs d'événements existants
+                window.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('keyup', handleKeyUp);
+                
+                // Ajouter de nouveaux écouteurs
+                window.addEventListener('keydown', handleKeyDown);
+                window.addEventListener('keyup', handleKeyUp);
+                
+                // Configurer les contrôles tactiles
+                configureTouch();
+                
+                // Configurer le bouton de message
+                gameMessageButton.addEventListener('click', () => {
+                    gameMessage.style.display = 'none';
+                    initGame();
+                });
+            }
+            
+            function handleKeyDown(e) {
+                gameState.keys[e.key] = true;
                 
                 // Empêcher le défilement de la page avec les flèches
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
                     e.preventDefault();
                 }
+                
+                // Sauter si sur une plateforme ou le sol et pas déjà en train de sauter
+                if ((e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w' || e.key === 'z') && 
+                    gameState.player.jumpCount < gameState.player.maxJumps) {
+                    jump();
+                }
             }
             
-            function handlePlatformKeyUp(e) {
-                platformState.keys[e.key] = false;
+            function handleKeyUp(e) {
+                gameState.keys[e.key] = false;
             }
             
             function configureTouch() {
+                // Supprimer les écouteurs existants
+                leftControl.removeEventListener('touchstart', handleLeftTouch);
+                leftControl.removeEventListener('touchend', handleLeftTouchEnd);
+                rightControl.removeEventListener('touchstart', handleRightTouch);
+                rightControl.removeEventListener('touchend', handleRightTouchEnd);
+                jumpControl.removeEventListener('touchstart', handleJumpTouch);
+                
+                // Ajouter de nouveaux écouteurs
                 leftControl.addEventListener('touchstart', handleLeftTouch);
                 leftControl.addEventListener('touchend', handleLeftTouchEnd);
                 rightControl.addEventListener('touchstart', handleRightTouch);
                 rightControl.addEventListener('touchend', handleRightTouchEnd);
                 jumpControl.addEventListener('touchstart', handleJumpTouch);
+                
+                // Support pour les clics de souris (pour les tests sur ordinateur)
+                leftControl.addEventListener('mousedown', handleLeftTouch);
+                leftControl.addEventListener('mouseup', handleLeftTouchEnd);
+                rightControl.addEventListener('mousedown', handleRightTouch);
+                rightControl.addEventListener('mouseup', handleRightTouchEnd);
+                jumpControl.addEventListener('mousedown', handleJumpTouch);
             }
             
             function handleLeftTouch() {
-                platformState.keys['ArrowLeft'] = true;
+                gameState.keys['ArrowLeft'] = true;
             }
             
             function handleLeftTouchEnd() {
-                platformState.keys['ArrowLeft'] = false;
+                gameState.keys['ArrowLeft'] = false;
             }
             
             function handleRightTouch() {
-                platformState.keys['ArrowRight'] = true;
+                gameState.keys['ArrowRight'] = true;
             }
             
             function handleRightTouchEnd() {
-                platformState.keys['ArrowRight'] = false;
+                gameState.keys['ArrowRight'] = false;
             }
             
             function handleJumpTouch() {
-                if (!platformState.player.isJumping) {
-                    platformState.player.velocityY = platformState.player.jumpPower;
-                    platformState.player.isJumping = true;
-                    playSound('jump');
+                if (gameState.player.jumpCount < gameState.player.maxJumps) {
+                    jump();
                 }
             }
             
-            function gameLoop() {
-                if (platformState.gameOver) return;
+            function jump() {
+                gameState.player.velocityY = gameState.player.jumpPower;
+                gameState.player.isJumping = true;
+                gameState.player.jumpCount++;
                 
-                // Mettre à jour la position du joueur
-                updatePlayer();
+                // Ajouter classe pour animation de saut
+                gamePlayer.classList.add('jumping');
+                setTimeout(() => {
+                    gamePlayer.classList.remove('jumping');
+                }, 500);
                 
-                // Mettre à jour les ennemis
-                updateEnemies();
+                // Effet de particules pour le saut
+                createParticle(
+                    gameState.player.x + gameState.player.width / 2,
+                    gameState.player.y,
+                    'jump'
+                );
+                
+                playSound('jump');
+            }
+            
+            // === BOUCLE DE JEU ===
+            function gameLoop(timestamp) {
+                // Calculer le temps écoulé depuis la dernière frame
+                const deltaTime = timestamp - gameState.lastTime;
+                gameState.lastTime = timestamp;
+                
+                if (gameState.gameOver) return;
+                
+                // Mettre à jour les positions
+                updatePlayer(deltaTime);
+                updateEnemies(deltaTime);
+                updateClouds(deltaTime);
+                
+                // Mettre à jour le boss si actif
+                if (gameState.boss && gameState.boss.isActive && !gameState.boss.isDefeated) {
+                    // Update boss attack timer
+                    if (gameState.boss.attackTimer > 0) {
+                        gameState.boss.attackTimer -= deltaTime;
+                    }
+                }
                 
                 // Vérifier les collisions
                 checkCollisions();
                 
+                // Mettre à jour la vue (scrolling)
+                updateViewport();
+                
                 // Continuer la boucle
-                platformState.gameLoopId = requestAnimationFrame(gameLoop);
+                gameState.gameLoopId = requestAnimationFrame(gameLoop);
             }
             
-            function updatePlayer() {
-                const player = platformState.player;
+            // === MISE À JOUR DES ÉLÉMENTS ===
+            function updatePlayer(deltaTime) {
+                const player = gameState.player;
+                const smoothingFactor = deltaTime / 16.67; // Normalisation par rapport à 60 FPS
                 
                 // Mouvement horizontal
                 player.velocityX = 0;
-                if (platformState.keys['ArrowLeft'] || platformState.keys['a'] || platformState.keys['q']) {
-                    player.velocityX = -player.speed;
+                if (gameState.keys['ArrowLeft'] || gameState.keys['a'] || gameState.keys['q']) {
+                    player.velocityX = -player.speed * smoothingFactor;
                     player.direction = -1;
                     gamePlayer.style.transform = 'scaleX(-1)';
                 }
-                if (platformState.keys['ArrowRight'] || platformState.keys['d']) {
-                    player.velocityX = player.speed;
+                if (gameState.keys['ArrowRight'] || gameState.keys['d']) {
+                    player.velocityX = player.speed * smoothingFactor;
                     player.direction = 1;
                     gamePlayer.style.transform = 'scaleX(1)';
                 }
                 
                 // Appliquer la gravité
-                player.velocityY -= 0.5;
+                player.velocityY -= player.fallSpeed * smoothingFactor;
+                
+                // Sauvegarde de la position Y précédente pour la détection de collision
+                const prevY = player.y;
                 
                 // Mettre à jour la position
                 player.x += player.velocityX;
                 player.y += player.velocityY;
                 
-                // Limites de l'écran
+                // Limites du niveau
                 if (player.x < 0) player.x = 0;
-                if (player.x + player.width > 800) player.x = 800 - player.width;
+                if (player.x + player.width > gameState.levelWidth) {
+                    player.x = gameState.levelWidth - player.width;
+                }
                 
                 // Collision avec le sol
                 if (player.y <= 80) {
                     player.y = 80;
                     player.velocityY = 0;
                     player.isJumping = false;
+                    player.jumpCount = 0; // Réinitialiser le compteur de sauts
                 }
                 
-                // Collision avec les plateformes
+                // Collision avec les plateformes - CORRIGÉ
                 let onPlatform = false;
-                platformState.platforms.forEach(platform => {
+                gameState.platforms.forEach(platform => {
+                    // Vérifier si le joueur est sur une plateforme
                     if (
                         player.x + player.width > platform.x &&
                         player.x < platform.x + platform.width &&
-                        player.y <= platform.y + platform.height &&
-                        player.y + player.velocityY >= platform.y + platform.height
+                        prevY >= platform.y + platform.height - 5 && // Petit chevauchement autorisé
+                        player.y <= platform.y + platform.height
                     ) {
                         player.y = platform.y + platform.height;
                         player.velocityY = 0;
                         player.isJumping = false;
+                        player.jumpCount = 0; // Réinitialiser le compteur de sauts
                         onPlatform = true;
                     }
+                    // Vérifier les collisions latérales avec les plateformes
+                    else if (
+                        player.y < platform.y + platform.height &&
+                        player.y + player.height > platform.y &&
+                        prevY > platform.y &&
+                        player.velocityY < 0
+                    ) {
+                        // Collision par le bas de la plateforme
+                        if (player.x + player.width > platform.x && player.x < platform.x + platform.width) {
+                            player.velocityY = -player.velocityY * 0.3; // Rebond léger
+                        }
+                    }
                 });
-                
-                // Sauter si sur une plateforme ou le sol
-                if ((platformState.keys['ArrowUp'] || platformState.keys[' '] || platformState.keys['w'] || platformState.keys['z']) && !player.isJumping) {
-                    player.velocityY = player.jumpPower;
-                    player.isJumping = true;
-                    playSound('jump');
-                }
                 
                 // Si le joueur tombe en dehors de l'écran
                 if (player.y < 0) {
                     loseLife();
                 }
                 
+                // Effet d'invincibilité
+                if (player.isInvincible) {
+                    // Faire clignoter le joueur
+                    gamePlayer.style.opacity = Math.sin(Date.now() / 50) > 0 ? 1 : 0.3;
+                }
+                
                 updatePlayerPosition();
             }
             
             function updatePlayerPosition() {
-                gamePlayer.style.left = `${platformState.player.x}px`;
-                gamePlayer.style.bottom = `${platformState.player.y}px`;
+                // Position absolue du joueur (sans tenir compte du viewport)
+                gamePlayer.style.left = `${gameState.player.x}px`;
+                gamePlayer.style.bottom = `${gameState.player.y}px`;
             }
             
-            function updateEnemies() {
-                platformState.enemies.forEach(enemy => {
-                    const platform = platformState.platforms[enemy.platformIndex];
+            function updateEnemies(deltaTime) {
+                const smoothingFactor = deltaTime / 16.67;
+                
+                gameState.enemies.forEach(enemy => {
+                    const platform = gameState.platforms[enemy.platformIndex];
                     
                     // Déplacer l'ennemi sur sa plateforme
-                    enemy.x += enemy.direction * enemy.speed;
+                    enemy.x += enemy.direction * enemy.speed * smoothingFactor;
                     
                     // Inverser la direction aux bords de la plateforme
                     if (enemy.x <= platform.x || enemy.x + enemy.width >= platform.x + platform.width) {
                         enemy.direction *= -1;
                     }
                     
-                    // Mettre à jour la position et la direction
+                    // Mettre à jour la position absolue (sans tenir compte du viewport)
                     enemy.element.style.left = `${enemy.x}px`;
+                    
                     if (enemy.direction > 0) {
                         enemy.element.style.transform = 'scaleX(1)';
                     } else {
@@ -645,27 +1561,98 @@
                 });
             }
             
+            function updateClouds(deltaTime) {
+                const smoothingFactor = deltaTime / 16.67;
+                
+                gameState.clouds.forEach(cloud => {
+                    cloud.x -= cloud.speed * smoothingFactor;
+                    
+                    // Repositionner le nuage s'il sort de l'écran
+                    if (cloud.x < -100) {
+                        cloud.x = gameState.levelWidth + 100;
+                    }
+                    
+                    const viewX = cloud.x - gameState.viewportX * 0.2; // Parallaxe
+                    cloud.element.style.left = `${viewX}px`;
+                });
+            }
+            
+            // Mise à jour de la vue - focus permanent sur le joueur
+            function updateViewport() {
+                const viewWidth = window.innerWidth;
+                const player = gameState.player;
+                
+                // Centrer directement la vue sur le joueur sans zone morte ni transition douce
+                // Pour un suivi parfait du personnage
+                gameState.viewportX = player.x - viewWidth / 2 + player.width / 2;
+                
+                // Limites du niveau
+                if (gameState.viewportX < 0) gameState.viewportX = 0;
+                if (gameState.viewportX > gameState.levelWidth - viewWidth) {
+                    gameState.viewportX = gameState.levelWidth - viewWidth;
+                }
+                
+                // Appliquer la transformation à tout le niveau
+                level.style.transform = `translateX(-${gameState.viewportX}px)`;
+            }
+            
+            // Fonction pour afficher un message au joueur - AJOUTÉE
+            function showMessage(title, message, callback) {
+                gameMessageTitle.textContent = title;
+                gameMessageBody.innerHTML = message;
+                gameMessage.style.display = 'block';
+                
+                // Si un callback est fourni, l'utiliser au lieu du comportement par défaut
+                if (callback) {
+                    const originalClickHandler = gameMessageButton.onclick;
+                    gameMessageButton.onclick = function() {
+                        gameMessage.style.display = 'none';
+                        callback();
+                        // Restaurer le gestionnaire d'origine
+                        gameMessageButton.onclick = originalClickHandler;
+                    };
+                }
+            }
+            
+            // Fonction pour téléporter le joueur à l'arène du boss - AJOUTÉE
+            function teleportToBossArena() {
+                if (gameState.boss.isDefeated) {
+                    // Si le boss est déjà vaincu, aller directement à la victoire
+                    winGame();
+                    return;
+                }
+                
+                // Téléporter le joueur vers l'arène du boss
+                gameState.player.x = gameState.boss.x - 200;
+                gameState.player.y = gameState.boss.y + 50;
+                updatePlayerPosition();
+                
+                // Démarrer le combat
+                startBossFight();
+            }
+            
+            // === COLLISIONS ET INTERACTIONS ===
+            // Vérifier les collisions
             function checkCollisions() {
-                const player = platformState.player;
+                const player = gameState.player;
+                
+                // Ignorer les collisions si invincible
+                if (player.isInvincible) return;
                 
                 // Collisions avec les pièces
-                platformState.coins.forEach(coin => {
+                gameState.coins.forEach(coin => {
                     if (!coin.collected &&
                         player.x < coin.x + coin.width &&
                         player.x + player.width > coin.x &&
                         player.y < coin.y + coin.height &&
                         player.y + player.height > coin.y
                     ) {
-                        coin.collected = true;
-                        coin.element.style.display = 'none';
-                        platformState.collectedCoins++;
-                        coinCount.textContent = platformState.collectedCoins;
-                        playSound('coin');
+                        collectCoin(coin);
                     }
                 });
                 
                 // Collisions avec les ennemis
-                platformState.enemies.forEach(enemy => {
+                gameState.enemies.forEach(enemy => {
                     if (
                         player.x < enemy.x + enemy.width &&
                         player.x + player.width > enemy.x &&
@@ -674,16 +1661,7 @@
                     ) {
                         // Si le joueur saute sur l'ennemi
                         if (player.velocityY < 0 && player.y > enemy.y + enemy.height / 2) {
-                            // Écraser l'ennemi
-                            enemy.element.style.display = 'none';
-                            
-                            // Faire rebondir le joueur
-                            player.velocityY = player.jumpPower * 0.6;
-                            
-                            // Supprimer l'ennemi de la liste
-                            platformState.enemies = platformState.enemies.filter(e => e !== enemy);
-                            
-                            playSound('hit');
+                            defeatEnemy(enemy);
                         } else {
                             // Sinon, perdre une vie
                             loseLife();
@@ -691,60 +1669,162 @@
                     }
                 });
                 
-                // Collision avec le boss
-                if (platformState.boss && 
-                    player.x < platformState.boss.x + platformState.boss.width &&
-                    player.x + player.width > platformState.boss.x &&
-                    player.y < platformState.boss.y + platformState.boss.height &&
-                    player.y + player.height > platformState.boss.y
+                // Collision avec le drapeau d'arrivée
+                if (gameState.flag && 
+                    player.x < gameState.flag.x + gameState.flag.width &&
+                    player.x + player.width > gameState.flag.x &&
+                    player.y < gameState.flag.y + gameState.flag.height &&
+                    player.y + player.height > gameState.flag.y
                 ) {
-                    if (platformState.collectedCoins >= platformState.totalCoins) {
-                        // Si toutes les pièces sont collectées, victoire
-                        winGame();
+                    // Si toutes les pièces sont collectées, téléporter vers le boss
+                    if (gameState.collectedCoins >= gameState.totalCoins) {
+                        teleportToBossArena();
                     } else {
-                        // Sinon, perdre une vie
-                        loseLife();
+                        // Message pour collecter toutes les pièces
+                        showMessage("Collectez toutes les pièces d'abord!", 
+                                   "Vous devez collecter toutes les pièces avant de pouvoir affronter le boss.");
                     }
+                }
+                
+                // Collision avec le boss
+                if (gameState.boss && 
+                    player.x < gameState.boss.x + gameState.boss.width &&
+                    player.x + player.width > gameState.boss.x &&
+                    player.y < gameState.boss.y + gameState.boss.height &&
+                    player.y + player.height > gameState.boss.y
+                ) {
+                    // Si le boss est actif (combat en cours)
+                    if (gameState.boss.isActive && !gameState.boss.isDefeated) {
+                        // Si le joueur saute sur la tête du boss
+                        if (player.velocityY < 0 && player.y > gameState.boss.y + gameState.boss.height / 2) {
+                            hitBoss();
+                            // Faire rebondir le joueur
+                            player.velocityY = player.jumpPower * 0.8;
+                        } else {
+                            // Sinon, perdre une vie
+                            loseLife();
+                        }
+                    }
+                }
+                
+                // Collision avec les attaques du boss
+                if (gameState.boss && gameState.boss.isActive) {
+                    document.querySelectorAll('.boss-attack').forEach(attack => {
+                        const attackRect = attack.getBoundingClientRect();
+                        const playerRect = gamePlayer.getBoundingClientRect();
+                        
+                        if (
+                            playerRect.left < attackRect.right &&
+                            playerRect.right > attackRect.left &&
+                            playerRect.top < attackRect.bottom &&
+                            playerRect.bottom > attackRect.top
+                        ) {
+                            loseLife();
+                        }
+                    });
                 }
             }
             
-            function loseLife() {
-                if (platformState.gameOver) return;
+            function collectCoin(coin) {
+                coin.collected = true;
+                coin.element.style.display = 'none';
+                gameState.collectedCoins++;
+                coinCount.textContent = gameState.collectedCoins;
                 
-                platformState.lives--;
-                livesCount.textContent = platformState.lives;
+                // Ajouter une particule pour l'effet visuel
+                createParticle(coin.x, coin.y, 'coin');
+                
+                playSound('coin');
+            }
+            
+            function defeatEnemy(enemy) {
+                // Écraser l'ennemi
+                enemy.element.style.display = 'none';
+                
+                // Faire rebondir le joueur
+                gameState.player.velocityY = gameState.player.jumpPower * 0.7;
+                
+                // Créer un effet d'explosion
+                createParticle(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 'hit');
+                
+                // Supprimer l'ennemi de la liste
+                gameState.enemies = gameState.enemies.filter(e => e !== enemy);
+                
+                playSound('hit');
+            }
+            
+            function loseLife() {
+                if (gameState.gameOver || gameState.player.isInvincible) return;
+                
+                gameState.lives--;
+                livesCount.textContent = gameState.lives;
                 playSound('death');
                 
-                // Repositionner le joueur
-                platformState.player.x = 100;
-                platformState.player.y = 450;
-                platformState.player.velocityX = 0;
-                platformState.player.velocityY = 0;
-                updatePlayerPosition();
+                // Rendre le joueur invincible brièvement
+                gameState.player.isInvincible = true;
+                setTimeout(() => {
+                    gameState.player.isInvincible = false;
+                    gamePlayer.style.opacity = 1;
+                }, gameState.player.invincibilityTime);
                 
-                if (platformState.lives <= 0) {
+                // Effet visuel de dégât - CORRIGÉ pour tenir compte du viewport
+                const currentTransform = `translateX(-${gameState.viewportX}px)`;
+                level.style.animation = 'none';
+                level.offsetWidth; // Forcer un reflow
+                
+                // Ajouter une animation de secousse dynamique
+                const styleSheet = document.styleSheets[0];
+                const keyframesRule = `
+                @keyframes shake {
+                    0%, 100% { transform: ${currentTransform}; }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-${gameState.viewportX - 10}px); }
+                    20%, 40%, 60%, 80% { transform: translateX(-${gameState.viewportX + 10}px); }
+                }`;
+                
+                // Ajouter la règle si elle n'existe pas
+                try {
+                    styleSheet.insertRule(keyframesRule, styleSheet.cssRules.length);
+                } catch (e) {
+                    console.log("Impossible d'ajouter la règle keyframes:", e);
+                }
+                
+                level.style.animation = 'shake 0.5s';
+                
+                // Si plus de vies, game over
+                if (gameState.lives <= 0) {
                     loseGame();
                 }
             }
             
             function loseGame() {
-                platformState.gameOver = true;
+                gameState.gameOver = true;
                 
                 // Afficher un message de défaite
                 gameMessageTitle.textContent = "GAME OVER";
-                gameMessageBody.textContent = "Vous avez perdu toutes vos vies ! Camille le Nul vous a vaincu.";
+                gameMessageBody.innerHTML = "Vous avez perdu toutes vos vies ! Camille le Nul vous a vaincu.<br><br>Appuyez sur OK pour recommencer.";
                 gameMessage.style.display = 'block';
                 
                 playSound('lose');
             }
             
             function winGame() {
-                platformState.gameOver = true;
+                gameState.gameOver = true;
                 
                 // Afficher un message de victoire
                 gameMessageTitle.textContent = "VICTOIRE !";
-                gameMessageBody.textContent = "Vous avez battu Camille le Nul et collecté toutes les pièces ! Félicitations !";
+                gameMessageBody.innerHTML = "Vous avez vaincu Camille le Nul !<br>Félicitations pour avoir terminé le niveau !<br><br>Appuyez sur OK pour rejouer.";
                 gameMessage.style.display = 'block';
+                
+                // Effet de victoire
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        createParticle(
+                            gameState.boss.x + Math.random() * gameState.boss.width,
+                            gameState.boss.y + Math.random() * gameState.boss.height,
+                            'coin'
+                        );
+                    }, i * 100);
+                }
                 
                 playSound('win');
                 
@@ -752,16 +1832,13 @@
                 addVictory('platform');
             }
             
-            function handleGameMessageClose() {
-                gameMessage.style.display = 'none';
-                initPlatformGame();
-            }
-            
-            // Initialiser le jeu de plateforme
-            initPlatformGame();
-            
-            // Mettre à jour l'affichage des victoires
+            // === INITIALISATION ===
+            // Charger les victoires et démarrer le jeu
             loadVictories();
+            initGame();
+            
+            // Décommenter pour activer le mode debug
+            // setTimeout(toggleDebugMode, 1000);
         });
     </script>
 </body>

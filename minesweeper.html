@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Démineur vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-style.css">
+    <style>
+        /* --- JEU DE DÉMINEUR --- */
+        #minesweeper-game {
+            background-color: #2c3e50; /* Bleu foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .minesweeper-container {
+            width: 90%;
+            max-width: 600px;
+            background-color: #34495e;
+            border: 10px solid #7f8c8d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+        
+        .minesweeper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #2c3e50;
+            padding: 10px;
+            border: 3px solid #7f8c8d;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .mines-counter, .timer {
+            background-color: #000;
+            color: #f00;
+            font-family: 'Digital-7', monospace;
+            font-size: 24px;
+            padding: 5px 10px;
+            min-width: 80px;
+            text-align: center;
+            border: 2px solid #555;
+        }
+        
+        .restart-button {
+            background-color: #ecf0f1;
+            border: 2px solid #555;
+            border-radius: 5px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .restart-button:hover {
+            background-color: #bdc3c7;
+        }
+        
+        .minesweeper-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-gap: 1px;
+            background-color: #7f8c8d;
+            border: 3px solid #7f8c8d;
+            margin-bottom: 15px;
+        }
+        
+        .minesweeper-cell {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #bdc3c7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: all 0.1s;
+        }
+        
+        .minesweeper-cell:hover {
+            background-color: #ecf0f1;
+        }
+        
+        .minesweeper-cell.revealed {
+            background-color: #95a5a6;
+        }
+        
+        .minesweeper-cell.flagged::after {
+            content: "🚩";
+            position: absolute;
+            font-size: 14px;
+        }
+        
+        .minesweeper-cell.mine {
+            background-color: #e74c3c;
+        }
+        
+        .minesweeper-cell.mine::after {
+            content: "💣";
+            position: absolute;
+            font-size: 14px;
+        }
+        
+        .minesweeper-cell.num-1 { color: #3498db; }
+        .minesweeper-cell.num-2 { color: #2ecc71; }
+        .minesweeper-cell.num-3 { color: #e74c3c; }
+        .minesweeper-cell.num-4 { color: #9b59b6; }
+        .minesweeper-cell.num-5 { color: #e67e22; }
+        .minesweeper-cell.num-6 { color: #1abc9c; }
+        .minesweeper-cell.num-7 { color: #34495e; }
+        .minesweeper-cell.num-8 { color: #7f8c8d; }
+        
+        .difficulty-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .difficulty-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .difficulty-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .difficulty-button.selected {
+            background-color: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.7);
+        }
+        
+        .minesweeper-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .help-text {
+            color: white;
+            font-size: 10px;
+            max-width: 60%;
+        }
+        
+        .minesweeper-vsmode {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #2c3e50;
+            border: 3px solid #7f8c8d;
+            border-radius: 5px;
+        }
+        
+        .player-status, .opponent-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .status-avatar {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .status-progress {
+            width: 120px;
+            height: 10px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .player-bar {
+            background-color: #3498db;
+        }
+        
+        .opponent-bar {
+            background-color: #e74c3c;
+        }
+        
+        .status-score {
+            font-size: 10px;
+            color: white;
+            margin-top: 5px;
+        }
+        
+        .minesweeper-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #e74c3c;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 300px;
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.5);
+        }
+        
+        .minesweeper-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #f1c40f;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+        }
+        
+        .minesweeper-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .minesweeper-message-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .minesweeper-message-button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 50;
+        }
+        
+        .camille-speech {
+            bottom: 100px;
+            right: 30px;
+        }
+        
+        .camille-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-left-color: white;
+        }
+        
+        .player-speech {
+            bottom: 100px;
+            left: 30px;
+        }
+        
+        .player-speech:after {
+            content: "";
+            position: absolute;
+            left: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-right-color: white;
+        }
+
+        .camille-figure {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 40px;
+            z-index: 5;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        @keyframes celebrate {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(-5deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+            75% { transform: translateY(-10px) rotate(-5deg); }
+        }
+        
+        .celebrate {
+            animation: celebrate 1s ease infinite;
+        }
+        
+        @media (max-width: 600px) {
+            .minesweeper-grid {
+                grid-template-columns: repeat(9, 1fr);
+            }
+            
+            .minesweeper-cell {
+                font-size: 14px;
+            }
+            
+            .difficulty-button {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+            
+            .mines-counter, .timer {
+                font-size: 18px;
+                min-width: 60px;
+            }
+            
+            .restart-button {
+                width: 30px;
+                height: 30px;
+                font-size: 18px;
+            }
+            
+            .minesweeper-header, .minesweeper-vsmode {
+                padding: 8px;
+            }
+            
+            .status-avatar {
+                font-size: 20px;
+            }
+            
+            .status-progress {
+                width: 80px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .minesweeper-grid {
+                grid-template-columns: repeat(9, 1fr);
+            }
+            
+            .minesweeper-cell {
+                font-size: 12px;
+            }
+            
+            .difficulty-button {
+                font-size: 8px;
+                padding: 5px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Démineur -->
+        <div id="minesweeper-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="minesweeper-victories">0</span></div>
+            
+            <div class="minesweeper-container">
+                <div class="minesweeper-header">
+                    <div class="mines-counter" id="mines-counter">010</div>
+                    <div class="restart-button" id="restart-button">😊</div>
+                    <div class="timer" id="timer">000</div>
+                </div>
+                
+                <div class="difficulty-selector">
+                    <button class="difficulty-button selected" data-level="beginner">Débutant</button>
+                    <button class="difficulty-button" data-level="intermediate">Intermédiaire</button>
+                    <button class="difficulty-button" data-level="expert">Expert</button>
+                </div>
+                
+                <div class="minesweeper-grid" id="minesweeper-grid">
+                    <!-- Les cellules seront générées dynamiquement -->
+                </div>
+                
+                <div class="minesweeper-footer">
+                    <div class="help-text">
+                        Clic gauche: Révéler une case<br>
+                        Clic droit: Placer/retirer un drapeau
+                    </div>
+                </div>
+                
+                <div class="minesweeper-vsmode">
+                    <div class="player-status">
+                        <div class="status-avatar">👤</div>
+                        <div class="status-progress">
+                            <div class="status-bar player-bar" id="player-progress"></div>
+                        </div>
+                        <div class="status-score">Cases: <span id="player-score">0</span>/<span id="total-cells">0</span></div>
+                    </div>
+                    
+                    <div class="opponent-status">
+                        <div class="status-avatar">👨</div>
+                        <div class="status-progress">
+                            <div class="status-bar opponent-bar" id="opponent-progress"></div>
+                        </div>
+                        <div class="status-score">Cases: <span id="opponent-score">0</span>/<span id="total-cells2">0</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="camille-figure" id="camille-figure">👨</div>
+            <div id="camille-speech" class="speech-bubble camille-speech"></div>
+            <div id="player-speech" class="speech-bubble player-speech"></div>
+            
+            <div id="minesweeper-message" class="minesweeper-message">
+                <div id="minesweeper-message-title" class="minesweeper-message-title"></div>
+                <div id="minesweeper-message-body" class="minesweeper-message-body"></div>
+                <button id="minesweeper-message-button" class="minesweeper-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('minesweeper-victories').textContent = gameVictories.minesweeper || 0;
+            };
+            
+            // Éléments DOM
+            const grid = document.getElementById('minesweeper-grid');
+            const minesCounter = document.getElementById('mines-counter');
+            const timer = document.getElementById('timer');
+            const restartButton = document.getElementById('restart-button');
+            const difficultyButtons = document.querySelectorAll('.difficulty-button');
+            const playerProgress = document.getElementById('player-progress');
+            const opponentProgress = document.getElementById('opponent-progress');
+            const playerScore = document.getElementById('player-score');
+            const opponentScore = document.getElementById('opponent-score');
+            const totalCells = document.querySelectorAll('#total-cells, #total-cells2');
+            const camilleFigure = document.getElementById('camille-figure');
+            const camilleSpeech = document.getElementById('camille-speech');
+            const playerSpeech = document.getElementById('player-speech');
+            const minesweeperMessage = document.getElementById('minesweeper-message');
+            const minesweeperMessageTitle = document.getElementById('minesweeper-message-title');
+            const minesweeperMessageBody = document.getElementById('minesweeper-message-body');
+            const minesweeperMessageButton = document.getElementById('minesweeper-message-button');
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je suis un expert en démineur !",
+                "Tu ne trouveras jamais toutes les mines !",
+                "J'ai un sixième sens pour les mines !",
+                "Mon record est de 10 secondes en mode expert !",
+                "Les mines sont mes amies, elles ne me font pas peur !",
+                "Je peux trouver une mine les yeux fermés !",
+                "Je suis le meilleur démineur du monde !",
+                "Tu cliques au hasard, je le vois bien !",
+                "Attention, BOUM ! Haha, je plaisante !"
+            ];
+            
+            // Messages pour le joueur
+            const playerMessages = [
+                "Je vais trouver toutes les mines !",
+                "C'est un jeu de logique, pas de chance !",
+                "J'ai une stratégie infaillible !",
+                "Les coins sont toujours sûrs pour commencer !",
+                "Je vais finir ce niveau en un temps record !",
+                "La patience est la clé dans ce jeu !",
+                "Je vois déjà où sont toutes les mines !",
+                "C'est un jeu d'enfant pour moi !"
+            ];
+            
+            // Configuration des niveaux de difficulté
+            const difficultyLevels = {
+                beginner: { rows: 9, cols: 9, mines: 10 },
+                intermediate: { rows: 16, cols: 16, mines: 40 },
+                expert: { rows: 16, cols: 30, mines: 99 }
+            };
+            
+            // État du jeu
+            let gameState = {
+                cells: [],
+                mines: [],
+                flagsPlaced: 0,
+                cellsRevealed: 0,
+                difficulty: 'beginner',
+                gameStarted: false,
+                gameOver: false,
+                timerInterval: null,
+                timeElapsed: 0,
+                opponentCellsRevealed: 0,
+                opponentSpeed: 1, // cellules par seconde
+                opponentInterval: null,
+                opponentThinking: false,
+                gamesPlayed: 0,
+                playerWins: 0,
+                opponentWins: 0
+            };
+            
+            // Initialiser le jeu
+            function initMinesweeperGame() {
+                // Réinitialiser l'état du jeu
+                gameState = {
+                    cells: [],
+                    mines: [],
+                    flagsPlaced: 0,
+                    cellsRevealed: 0,
+                    difficulty: gameState.difficulty || 'beginner',
+                    gameStarted: false,
+                    gameOver: false,
+                    timerInterval: null,
+                    timeElapsed: 0,
+                    opponentCellsRevealed: 0,
+                    opponentSpeed: 1,
+                    opponentInterval: null,
+                    opponentThinking: false,
+                    gamesPlayed: 0,
+                    playerWins: 0,
+                    opponentWins: 0
+                };
+                
+                // Réinitialiser l'interface
+                restartButton.textContent = '😊';
+                timer.textContent = '000';
+                
+                // Définir la configuration selon la difficulté
+                const config = difficultyLevels[gameState.difficulty];
+                
+                // Mettre à jour le compteur de mines
+                minesCounter.textContent = String(config.mines).padStart(3, '0');
+                
+                // Créer la grille
+                createGrid(config);
+                
+                // Mettre à jour les cellules totales pour le joueur et l'adversaire
+                const totalSafeCells = config.rows * config.cols - config.mines;
+                totalCells.forEach(el => el.textContent = totalSafeCells);
+                
+                // Réinitialiser les scores
+                playerScore.textContent = '0';
+                opponentScore.textContent = '0';
+                playerProgress.style.width = '0%';
+                opponentProgress.style.width = '0%';
+                
+                // Arrêter les intervalles précédents
+                if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+                if (gameState.opponentInterval) clearInterval(gameState.opponentInterval);
+                
+                // Masquer le message
+                minesweeperMessage.style.display = 'none';
+                
+                // Réinitialiser l'adversaire
+                camilleFigure.className = '';
+                
+                // Message de bienvenue
+                showCamilleSpeech("Prêt à désamorcer quelques mines ? Bonne chance !");
+            }
+            
+            // Créer la grille
+            function createGrid(config) {
+                // Vider la grille existante
+                grid.innerHTML = '';
+                
+                // Définir le nombre de colonnes
+                grid.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+                
+                // Initialiser le tableau des cellules
+                gameState.cells = Array(config.rows).fill().map(() => Array(config.cols).fill(null));
+                
+                // Créer les cellules
+                for (let row = 0; row < config.rows; row++) {
+                    for (let col = 0; col < config.cols; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'minesweeper-cell';
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        
+                        // Événements de clic
+                        cell.addEventListener('click', handleCellClick);
+                        cell.addEventListener('contextmenu', handleCellRightClick);
+                        
+                        // Ajouter la cellule à la grille
+                        grid.appendChild(cell);
+                        
+                        // Stocker la référence à l'élément dans le tableau
+                        gameState.cells[row][col] = {
+                            element: cell,
+                            isMine: false,
+                            isRevealed: false,
+                            isFlagged: false,
+                            neighborMines: 0
+                        };
+                    }
+                }
+            }
+            
+            // Générer les mines
+            function generateMines(config, firstRow, firstCol) {
+                // Réinitialiser les mines
+                gameState.mines = [];
+                
+                // Générer les mines aléatoirement
+                let minesPlaced = 0;
+                while (minesPlaced < config.mines) {
+                    const row = Math.floor(Math.random() * config.rows);
+                    const col = Math.floor(Math.random() * config.cols);
+                    
+                    // Éviter de placer une mine sur la première cellule cliquée et celles adjacentes
+                    if (Math.abs(row - firstRow) <= 1 && Math.abs(col - firstCol) <= 1) {
+                        continue;
+                    }
+                    
+                    // Éviter de placer une mine sur une cellule qui en a déjà une
+                    if (!gameState.cells[row][col].isMine) {
+                        gameState.cells[row][col].isMine = true;
+                        gameState.mines.push({ row, col });
+                        minesPlaced++;
+                    }
+                }
+                
+                // Calculer le nombre de mines voisines pour chaque cellule
+                for (let row = 0; row < config.rows; row++) {
+                    for (let col = 0; col < config.cols; col++) {
+                        if (!gameState.cells[row][col].isMine) {
+                            gameState.cells[row][col].neighborMines = countNeighborMines(row, col);
+                        }
+                    }
+                }
+            }
+            
+            // Compter les mines voisines
+            function countNeighborMines(row, col) {
+                let count = 0;
+                
+                // Vérifier les 8 cellules adjacentes
+                for (let r = Math.max(0, row - 1); r <= Math.min(row + 1, gameState.cells.length - 1); r++) {
+                    for (let c = Math.max(0, col - 1); c <= Math.min(col + 1, gameState.cells[0].length - 1); c++) {
+                        if (r === row && c === col) continue; // Ignorer la cellule actuelle
+                        if (gameState.cells[r][c].isMine) count++;
+                    }
+                }
+                
+                return count;
+            }
+            
+            // Gérer le clic sur une cellule
+            function handleCellClick(event) {
+                if (gameState.gameOver) return;
+                
+                const row = parseInt(this.dataset.row);
+                const col = parseInt(this.dataset.col);
+                const cell = gameState.cells[row][col];
+                
+                // Ignorer les cellules déjà révélées ou marquées d'un drapeau
+                if (cell.isRevealed || cell.isFlagged) return;
+                
+                // Démarrer le jeu si c'est le premier clic
+                if (!gameState.gameStarted) {
+                    startGame(row, col);
+                }
+                
+                // Révéler la cellule
+                revealCell(row, col);
+            }
+            
+            // Gérer le clic droit sur une cellule
+            function handleCellRightClick(event) {
+                event.preventDefault();
+                
+                if (gameState.gameOver) return;
+                
+                const row = parseInt(this.dataset.row);
+                const col = parseInt(this.dataset.col);
+                const cell = gameState.cells[row][col];
+                
+                // Ignorer les cellules déjà révélées
+                if (cell.isRevealed) return;
+                
+                // Placer ou retirer un drapeau
+                toggleFlag(row, col);
+            }
+            
+            // Démarrer le jeu
+            function startGame(firstRow, firstCol) {
+                gameState.gameStarted = true;
+                
+                // Générer les mines (éviter la première cellule cliquée)
+                const config = difficultyLevels[gameState.difficulty];
+                generateMines(config, firstRow, firstCol);
+                
+                // Démarrer le chronomètre
+                gameState.timerInterval = setInterval(() => {
+                    gameState.timeElapsed++;
+                    timer.textContent = String(gameState.timeElapsed).padStart(3, '0');
+                }, 1000);
+                
+                // Démarrer l'adversaire
+                gameState.opponentInterval = setInterval(() => {
+                    if (!gameState.gameOver && !gameState.opponentThinking) {
+                        simulateOpponentMove();
+                    }
+                }, 1000 / gameState.opponentSpeed);
+            }
+            
+            // Révéler une cellule
+            function revealCell(row, col) {
+                const cell = gameState.cells[row][col];
+                
+                // Ignorer les cellules déjà révélées ou marquées d'un drapeau
+                if (cell.isRevealed || cell.isFlagged) return;
+                
+                // Marquer la cellule comme révélée
+                cell.isRevealed = true;
+                cell.element.classList.add('revealed');
+                
+                // Si c'est une mine, fin de la partie
+                if (cell.isMine) {
+                    // Afficher toutes les mines
+                    gameState.mines.forEach(mine => {
+                        gameState.cells[mine.row][mine.col].element.classList.add('mine');
+                    });
+                    
+                    // Fin du jeu
+                    endGame(false);
+                    return;
+                }
+                
+                // Incrémenter le nombre de cellules révélées
+                gameState.cellsRevealed++;
+                
+                // Mettre à jour le score du joueur
+                updatePlayerScore();
+                
+                // Afficher le nombre de mines voisines
+                if (cell.neighborMines > 0) {
+                    cell.element.textContent = cell.neighborMines;
+                    cell.element.classList.add(`num-${cell.neighborMines}`);
+                } else {
+                    // Si aucune mine voisine, révéler récursivement les cellules adjacentes
+                    revealAdjacentCells(row, col);
+                }
+                
+                // Vérifier si le joueur a gagné
+                checkWinCondition();
+            }
+            
+            // Révéler les cellules adjacentes (pour les cellules sans mines voisines)
+            function revealAdjacentCells(row, col) {
+                // Vérifier les 8 cellules adjacentes
+                for (let r = Math.max(0, row - 1); r <= Math.min(row + 1, gameState.cells.length - 1); r++) {
+                    for (let c = Math.max(0, col - 1); c <= Math.min(col + 1, gameState.cells[0].length - 1); c++) {
+                        if (r === row && c === col) continue; // Ignorer la cellule actuelle
+                        revealCell(r, c);
+                    }
+                }
+            }
+            
+            // Placer ou retirer un drapeau
+            function toggleFlag(row, col) {
+                const cell = gameState.cells[row][col];
+                
+                if (!cell.isFlagged) {
+                    // Placer un drapeau
+                    cell.isFlagged = true;
+                    cell.element.classList.add('flagged');
+                    gameState.flagsPlaced++;
+                } else {
+                    // Retirer un drapeau
+                    cell.isFlagged = false;
+                    cell.element.classList.remove('flagged');
+                    gameState.flagsPlaced--;
+                }
+                
+                // Mettre à jour le compteur de mines
+                const minesLeft = difficultyLevels[gameState.difficulty].mines - gameState.flagsPlaced;
+                minesCounter.textContent = String(minesLeft).padStart(3, '0');
+            }
+            
+            // Vérifier si le joueur a gagné
+            function checkWinCondition() {
+                const config = difficultyLevels[gameState.difficulty];
+                const totalSafeCells = config.rows * config.cols - config.mines;
+                
+                if (gameState.cellsRevealed === totalSafeCells) {
+                    // Victoire !
+                    endGame(true);
+                }
+            }
+            
+            // Mettre à jour le score du joueur
+            function updatePlayerScore() {
+                const config = difficultyLevels[gameState.difficulty];
+                const totalSafeCells = config.rows * config.cols - config.mines;
+                
+                playerScore.textContent = gameState.cellsRevealed;
+                const percentage = (gameState.cellsRevealed / totalSafeCells) * 100;
+                playerProgress.style.width = `${percentage}%`;
+                
+                // Vérifier si le joueur est en avance sur l'adversaire
+                if (gameState.cellsRevealed > gameState.opponentCellsRevealed) {
+                    showPlayerSpeech("Je suis en tête !");
+                }
+            }
+            
+            // Simuler un mouvement de l'adversaire
+            function simulateOpponentMove() {
+                if (gameState.gameOver) return;
+                
+                gameState.opponentThinking = true;
+                
+                // Trouver une cellule sûre à révéler
+                const config = difficultyLevels[gameState.difficulty];
+                const totalSafeCells = config.rows * config.cols - config.mines;
+                
+                // Simuler un "temps de réflexion"
+                setTimeout(() => {
+                    // Incrémenter le score de l'adversaire
+                    gameState.opponentCellsRevealed++;
+                    
+                    // Mettre à jour l'affichage
+                    opponentScore.textContent = gameState.opponentCellsRevealed;
+                    const percentage = (gameState.opponentCellsRevealed / totalSafeCells) * 100;
+                    opponentProgress.style.width = `${percentage}%`;
+                    
+                    // Messages aléatoires
+                    if (Math.random() < 0.2) {
+                        showCamilleSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
+                    }
+                    
+                    // Vérifier si l'adversaire a gagné
+                    if (gameState.opponentCellsRevealed >= totalSafeCells) {
+                        endGame(false, true);
+                    }
+                    
+                    gameState.opponentThinking = false;
+                }, Math.random() * 1000 + 500);
+            }
+            
+            // Terminer le jeu
+            function endGame(playerWon, opponentWon = false) {
+                gameState.gameOver = true;
+                
+                // Arrêter le chronomètre
+                if (gameState.timerInterval) {
+                    clearInterval(gameState.timerInterval);
+                    gameState.timerInterval = null;
+                }
+                
+                // Arrêter l'adversaire
+                if (gameState.opponentInterval) {
+                    clearInterval(gameState.opponentInterval);
+                    gameState.opponentInterval = null;
+                }
+                
+                // Changer l'emoji du bouton de redémarrage
+                restartButton.textContent = playerWon ? '😎' : '😵';
+                
+                // Animation de l'adversaire
+                if (playerWon) {
+                    camilleFigure.className = 'shake';
+                    showCamilleSpeech("Non ! Comment as-tu fait ça ? Tu as triché !");
+                    gameState.playerWins++;
+                    
+                    // Jouer un son
+                    playSound('win');
+                } else if (opponentWon) {
+                    camilleFigure.className = 'celebrate';
+                    showCamilleSpeech("Ha ha ! J'ai gagné ! Je suis le meilleur démineur !");
+                    gameState.opponentWins++;
+                    
+                    // Jouer un son
+                    playSound('lose');
+                } else {
+                    camilleFigure.className = 'celebrate';
+                    showCamilleSpeech("BOUM ! Tu as fait exploser une mine ! Je t'avais prévenu !");
+                    gameState.opponentWins++;
+                    
+                    // Jouer un son
+                    playSound('lose');
+                }
+                
+                // Incrémenter le compteur de parties jouées
+                gameState.gamesPlayed++;
+                
+                // Afficher le message de fin
+                let title, body;
+                
+                if (playerWon) {
+                    title = "VICTOIRE !";
+                    body = `Félicitations ! Vous avez déminé toutes les mines en ${gameState.timeElapsed} secondes !`;
+                    
+                    // Ajouter une victoire
+                    if (!gameVictories.minesweeper) {
+                        gameVictories.minesweeper = 0;
+                    }
+                    addVictory('minesweeper');
+                } else {
+                    title = "DÉFAITE !";
+                    if (opponentWon) {
+                        body = "Camille Le Nul a déminé plus de cases que vous !";
+                    } else {
+                        body = "BOUM ! Vous avez fait exploser une mine !";
+                    }
+                }
+                
+                // Afficher le message après un court délai
+                setTimeout(() => {
+                    minesweeperMessageTitle.textContent = title;
+                    minesweeperMessageBody.textContent = body;
+                    minesweeperMessage.style.display = 'block';
+                }, 1500);
+            }
+            
+            // Changer la difficulté
+            function changeDifficulty(level) {
+                // Ignorer si le jeu est en cours
+                if (gameState.gameStarted && !gameState.gameOver) return;
+                
+                // Mettre à jour la difficulté
+                gameState.difficulty = level;
+                
+                // Mettre à jour les boutons
+                difficultyButtons.forEach(button => {
+                    button.classList.toggle('selected', button.dataset.level === level);
+                });
+                
+                // Ajuster la vitesse de l'adversaire selon la difficulté
+                switch (level) {
+                    case 'beginner':
+                        gameState.opponentSpeed = 0.5;
+                        break;
+                    case 'intermediate':
+                        gameState.opponentSpeed = 0.8;
+                        break;
+                    case 'expert':
+                        gameState.opponentSpeed = 1.2;
+                        break;
+                }
+                
+                // Réinitialiser le jeu
+                initMinesweeperGame();
+            }
+            
+            // Afficher un message de l'adversaire
+            function showCamilleSpeech(text) {
+                camilleSpeech.textContent = text;
+                camilleSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    camilleSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Afficher un message du joueur
+            function showPlayerSpeech(text) {
+                playerSpeech.textContent = text;
+                playerSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    playerSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Configurer les événements
+            restartButton.addEventListener('click', () => {
+                initMinesweeperGame();
+                playSound('select');
+            });
+            
+            difficultyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    changeDifficulty(button.dataset.level);
+                    playSound('select');
+                });
+            });
+            
+            minesweeperMessageButton.addEventListener('click', () => {
+                minesweeperMessage.style.display = 'none';
+                initMinesweeperGame();
+            });
+            
+            // Initialiser le jeu
+            initMinesweeperGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

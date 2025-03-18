@@ -22,18 +22,18 @@
         
         .slots-machine {
             width: 90%;
-            max-width: 600px;
-            height: 80%;
+            max-width: 700px;
             background-color: #800020; /* Bordeaux */
-            border: 8px solid #ffd700; /* Or */
-            border-radius: 15px;
+            border: 12px solid #ffd700; /* Or */
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 20px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            padding: 25px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
             position: relative;
+            margin: 40px 0;
         }
         
         .slots-header {
@@ -41,175 +41,264 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            border-bottom: 3px solid #ffd700;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-bottom: 4px solid #ffd700;
+            margin-bottom: 30px;
         }
         
         .slots-title {
-            font-size: 20px;
+            font-size: 24px;
             color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
         
         .slots-credits {
             background-color: black;
             color: #ffd700;
-            padding: 10px 15px;
-            border: 2px solid #ffd700;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 12px 20px;
+            border: 3px solid #ffd700;
+            border-radius: 8px;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
         
         .slots-reels-container {
-            width: 100%;
-            height: 200px;
+            width: 95%;
+            height: 240px;
             background-color: black;
-            border: 5px solid #ffd700;
-            border-radius: 10px;
+            border: 8px solid #ffd700;
+            border-radius: 15px;
             display: flex;
             justify-content: space-around;
             align-items: center;
             overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .slots-reel {
-            height: 180px;
-            width: 30%;
-            background-color: white;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
-            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.5);
             position: relative;
         }
         
-        .slots-symbol {
+        .slots-reel {
+            height: 200px;
+            width: 30%;
+            border: 4px solid #ffd700;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            background-color: white;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slots-reel-container {
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.3, 1, 0.5, 1);
+        }
+        
+        .slots-symbol {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s;
+            font-size: 80px;
+            flex-shrink: 0;
         }
         
         .slots-controls {
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         
         .slots-spin-button {
-            background-color: #ffd700;
+            background: linear-gradient(to bottom, #ffd700, #e6b800);
             color: #800020;
             border: none;
             border-radius: 50%;
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 16px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slots-spin-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
         .slots-spin-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.7);
+        }
+        
+        .slots-spin-button:hover::after {
+            opacity: 1;
         }
         
         .slots-spin-button:active {
             transform: scale(0.95);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
         }
         
         .slots-spin-button.disabled {
-            background-color: #999;
+            background: linear-gradient(to bottom, #aaa, #888);
             cursor: not-allowed;
-            box-shadow: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            color: #555;
         }
         
         .slots-bet-controls {
             display: flex;
             align-items: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ffd700;
         }
         
         .slots-bet-button {
-            background-color: #444;
+            background: linear-gradient(to bottom, #444, #222);
             color: white;
-            border: 2px solid #ffd700;
-            border-radius: 5px;
-            padding: 10px 15px;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px 20px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 12px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.2s;
-            margin: 0 10px;
+            margin: 0 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 50px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .slots-bet-button:hover {
-            background-color: #666;
+        .slots-bet-button:hover:not(:disabled) {
+            background: linear-gradient(to bottom, #666, #444);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .slots-bet-button:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slots-bet-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
         }
         
         .slots-bet-amount {
             background-color: black;
             color: #ffd700;
-            padding: 10px 15px;
-            border: 2px solid #ffd700;
-            border-radius: 5px;
-            font-size: 14px;
-            min-width: 80px;
+            padding: 15px 20px;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            font-size: 18px;
+            min-width: 120px;
             text-align: center;
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
         }
         
         .slots-result {
             width: 100%;
             text-align: center;
-            margin-top: 20px;
-            min-height: 40px;
+            margin-top: 25px;
+            min-height: 50px;
             color: #ffd700;
-            font-size: 14px;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .slots-result.win {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
         }
         
         .slots-camille {
             position: absolute;
-            bottom: 20px;
-            right: -50px;
-            font-size: 60px;
+            bottom: 30px;
+            right: -30px;
+            font-size: 70px;
             transform: rotate(10deg);
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+            transition: transform 0.3s;
+        }
+        
+        .slots-camille.excited {
+            animation: camilleBounce 0.5s infinite alternate;
+        }
+        
+        @keyframes camilleBounce {
+            0% { transform: rotate(10deg) translateY(0); }
+            100% { transform: rotate(10deg) translateY(-10px); }
         }
         
         .slots-paytable {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 30px;
+            left: 30px;
             background-color: rgba(0, 0, 0, 0.8);
-            border: 2px solid #ffd700;
-            border-radius: 8px;
-            padding: 15px;
+            border: 3px solid #ffd700;
+            border-radius: 12px;
+            padding: 20px;
             color: white;
-            font-size: 10px;
-            line-height: 1.6;
-            max-width: 200px;
+            font-size: 14px;
+            line-height: 1.8;
+            max-width: 250px;
             z-index: 100;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
         
         .slots-paytable-title {
             color: #ffd700;
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .slots-paytable-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.3);
+            padding-bottom: 8px;
+        }
+        
+        .slots-paytable-row:last-child {
+            border-bottom: none;
         }
         
         .slots-message {
@@ -219,45 +308,60 @@
             transform: translate(-50%, -50%);
             background-color: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 30px;
-            border-radius: 10px;
-            border: 3px solid #ffd700;
+            padding: 40px;
+            border-radius: 15px;
+            border: 4px solid #ffd700;
             text-align: center;
             z-index: 200;
             display: none;
-            min-width: 400px;
+            min-width: 450px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
         }
         
         .slots-message-title {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 28px;
+            margin-bottom: 25px;
             color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
         }
         
         .slots-message-body {
-            margin-bottom: 30px;
-            line-height: 1.5;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            font-size: 18px;
         }
         
         .slots-message-button {
-            background-color: #ffd700;
+            background: linear-gradient(to bottom, #ffd700, #e6b800);
             color: #800020;
             border: none;
-            padding: 15px 30px;
+            padding: 18px 35px;
             font-family: 'Press Start 2P', cursive;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
             transition: all 0.3s;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         
         .slots-message-button:hover {
-            background-color: white;
-            transform: scale(1.1);
+            background: linear-gradient(to bottom, #ffe347, #ffd700);
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         }
         
-        @keyframes spinReel {
+        .slots-message-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes spin {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-900px); }
+            100% { transform: translateY(calc(-100% + 200px)); }
+        }
+        
+        .spinning {
+            animation: spin 0.5s linear infinite;
         }
         
         @keyframes winGlow {
@@ -267,35 +371,166 @@
         }
         
         .slots-win {
-            animation: winGlow 1s infinite;
+            animation: winGlow 1.5s infinite;
         }
         
         .speech-bubble {
             position: absolute;
             background-color: white;
             color: black;
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 200px;
-            font-size: 12px;
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 250px;
+            font-size: 14px;
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 10;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #333;
         }
         
         .camille-speech {
-            right: 80px;
-            bottom: 100px;
+            right: 120px;
+            bottom: 130px;
         }
         
         .camille-speech:after {
             content: "";
             position: absolute;
-            right: -10px;
-            bottom: 20px;
-            border: 10px solid transparent;
+            right: -15px;
+            bottom: 30px;
+            border: 15px solid transparent;
             border-left-color: white;
-            margin-top: -10px;
+            margin-top: -15px;
+        }
+        
+        .back-button, .game-victory-counter {
+            position: absolute;
+            top: 20px;
+            z-index: 100;
+            font-size: 16px;
+            padding: 12px 18px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+        }
+        
+        .back-button {
+            left: 20px;
+        }
+        
+        .game-victory-counter {
+            right: 20px;
+        }
+        
+        /* Animation pour les symboles pendant le spin */
+        @keyframes symbolFadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .symbol-reveal {
+            animation: symbolFadeIn 0.3s forwards;
+        }
+        
+        /* Animation flash pour les gains */
+        @keyframes resultFlash {
+            0% { background-color: rgba(255, 215, 0, 0.3); }
+            50% { background-color: rgba(255, 215, 0, 0.7); }
+            100% { background-color: rgba(0, 0, 0, 0.5); }
+        }
+        
+        .result-flash {
+            animation: resultFlash 0.8s 3;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .slots-machine {
+                padding: 15px;
+                width: 95%;
+            }
+            
+            .slots-title {
+                font-size: 18px;
+            }
+            
+            .slots-credits {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            
+            .slots-reels-container {
+                height: 180px;
+            }
+            
+            .slots-reel {
+                height: 150px;
+            }
+            
+            .slots-symbol {
+                font-size: 60px;
+            }
+            
+            .slots-spin-button {
+                width: 100px;
+                height: 100px;
+                font-size: 16px;
+            }
+            
+            .slots-bet-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .slots-bet-button {
+                font-size: 14px;
+                padding: 10px 15px;
+                margin: 5px;
+            }
+            
+            .slots-bet-amount {
+                font-size: 14px;
+                padding: 10px;
+                min-width: 100px;
+            }
+            
+            .slots-result {
+                font-size: 14px;
+            }
+            
+            .slots-paytable {
+                max-width: 200px;
+                font-size: 12px;
+                top: 60px;
+            }
+            
+            .slots-message {
+                min-width: 300px;
+                padding: 20px;
+            }
+            
+            .slots-message-title {
+                font-size: 20px;
+            }
+            
+            .slots-message-body {
+                font-size: 14px;
+            }
+            
+            .slots-message-button {
+                font-size: 14px;
+                padding: 12px 25px;
+            }
+            
+            .slots-camille {
+                font-size: 50px;
+                right: -20px;
+                bottom: 20px;
+            }
         }
     </style>
 </head>
@@ -346,23 +581,29 @@
                 
                 <div class="slots-reels-container">
                     <div class="slots-reel" id="reel1">
-                        <div class="slots-symbol">🍒</div>
+                        <div class="slots-reel-container">
+                            <div class="slots-symbol">🍒</div>
+                        </div>
                     </div>
                     <div class="slots-reel" id="reel2">
-                        <div class="slots-symbol">🍋</div>
+                        <div class="slots-reel-container">
+                            <div class="slots-symbol">🍋</div>
+                        </div>
                     </div>
                     <div class="slots-reel" id="reel3">
-                        <div class="slots-symbol">🍊</div>
+                        <div class="slots-reel-container">
+                            <div class="slots-symbol">🍊</div>
+                        </div>
                     </div>
                 </div>
+                
+                <div class="slots-result" id="slots-result"></div>
                 
                 <div class="slots-bet-controls">
                     <button class="slots-bet-button" id="bet-down">-</button>
                     <div class="slots-bet-amount">Mise: <span id="bet-amount">10</span></div>
                     <button class="slots-bet-button" id="bet-up">+</button>
                 </div>
-                
-                <div class="slots-result" id="slots-result"></div>
                 
                 <div class="slots-controls">
                     <button class="slots-spin-button" id="spin-button">SPIN</button>
@@ -395,9 +636,9 @@
             };
             
             // Éléments DOM
-            const reel1 = document.getElementById('reel1');
-            const reel2 = document.getElementById('reel2');
-            const reel3 = document.getElementById('reel3');
+            const reel1 = document.getElementById('reel1').querySelector('.slots-reel-container');
+            const reel2 = document.getElementById('reel2').querySelector('.slots-reel-container');
+            const reel3 = document.getElementById('reel3').querySelector('.slots-reel-container');
             const spinButton = document.getElementById('spin-button');
             const betDownButton = document.getElementById('bet-down');
             const betUpButton = document.getElementById('bet-up');
@@ -470,7 +711,25 @@
                 // Mettre à jour l'affichage
                 updateSlotsDisplay();
                 
-                // Configurez les événements
+                // Vider les conteneurs de rouleaux
+                reel1.innerHTML = '<div class="slots-symbol">🍒</div>';
+                reel2.innerHTML = '<div class="slots-symbol">🍋</div>';
+                reel3.innerHTML = '<div class="slots-symbol">🍊</div>';
+                
+                // Réinitialiser le style des rouleaux
+                reel1.style.transform = 'translateY(0)';
+                reel2.style.transform = 'translateY(0)';
+                reel3.style.transform = 'translateY(0)';
+                
+                // Supprimer les classes d'animation
+                resultDisplay.classList.remove('win', 'result-flash');
+                slotsMachine.classList.remove('slots-win');
+                camilleFigure.classList.remove('excited');
+                
+                // Effacer le message de résultat
+                resultDisplay.textContent = '';
+                
+                // Configurer les événements
                 spinButton.removeEventListener('click', spinReels);
                 betDownButton.removeEventListener('click', decreaseBet);
                 betUpButton.removeEventListener('click', increaseBet);
@@ -484,9 +743,6 @@
                 // Masquer le message
                 slotsMessage.style.display = 'none';
                 
-                // Afficher les symboles initiaux
-                updateReelDisplay();
-                
                 // Message de bienvenue
                 showCamilleSpeech("Prêt à perdre tes crédits contre moi ? Je suis super chanceux !");
             }
@@ -498,21 +754,11 @@
                 
                 // Activer/désactiver les boutons selon les crédits disponibles
                 spinButton.disabled = slotsState.spinning || slotsState.credits < slotsState.betAmount;
-                spinButton.classList.toggle('disabled', spinButton.disabled);
-                
                 betDownButton.disabled = slotsState.spinning || slotsState.betAmount <= 5;
                 betUpButton.disabled = slotsState.spinning || slotsState.betAmount >= 50 || slotsState.betAmount >= slotsState.credits;
-            }
-            
-            // Mettre à jour l'affichage des rouleaux
-            function updateReelDisplay() {
-                const reels = [reel1, reel2, reel3];
                 
-                for (let i = 0; i < 3; i++) {
-                    const symbolElement = reels[i].querySelector('.slots-symbol');
-                    symbolElement.textContent = slotsState.reelSymbols[i];
-                    symbolElement.style.transform = 'translateY(0)';
-                }
+                // Ajouter/retirer la classe disabled au bouton spin
+                spinButton.classList.toggle('disabled', spinButton.disabled);
             }
             
             // Diminuer la mise
@@ -533,6 +779,17 @@
                 playSound('select');
             }
             
+            // Générer les symboles pour chaque rouleau
+            function generateReelSymbols(count) {
+                const reelSymbols = [];
+                
+                for (let i = 0; i < count; i++) {
+                    reelSymbols.push(symbols[Math.floor(Math.random() * symbols.length)]);
+                }
+                
+                return reelSymbols;
+            }
+            
             // Faire tourner les rouleaux
             function spinReels() {
                 if (slotsState.spinning || slotsState.credits < slotsState.betAmount) return;
@@ -540,6 +797,7 @@
                 // Préparer l'animation
                 slotsState.spinning = true;
                 resultDisplay.textContent = '';
+                resultDisplay.classList.remove('win', 'result-flash');
                 slotsMachine.classList.remove('slots-win');
                 
                 // Déduire la mise
@@ -554,67 +812,83 @@
                 // Jouer un son
                 playSound('start');
                 
-                // Lancer les animations de rotation
-                const reels = [reel1, reel2, reel3];
-                const finalSymbols = [];
-                
-                // Définir les symboles finaux (aléatoires)
-                for (let i = 0; i < 3; i++) {
-                    finalSymbols.push(symbols[Math.floor(Math.random() * symbols.length)]);
-                }
+                // Animation de Camille
+                camilleFigure.classList.add('excited');
                 
                 // Message de Camille pendant les rotations
                 showCamilleSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
                 
-                // Démarrer l'animation pour chaque rouleau avec un délai
+                // Générer les symboles pour chaque rouleau
+                const reelSymbolsCount = 10; // Nombre de symboles par rouleau pour l'animation
+                
+                // Préparer les symboles finaux (définitifs)
+                const finalSymbols = [
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)]
+                ];
+                
+                slotsState.reelSymbols = finalSymbols;
+                
+                // Préparer les contenus des rouleaux pour l'animation
+                const reels = [reel1, reel2, reel3];
+                
                 reels.forEach((reel, index) => {
-                    const symbolElement = reel.querySelector('.slots-symbol');
+                    // Créer les symboles aléatoires pour l'animation
+                    const reelSymbols = generateReelSymbols(reelSymbolsCount);
                     
-                    // Générer des symboles aléatoires pour l'animation
-                    let reelHtml = '';
-                    for (let i = 0; i < 15; i++) {
-                        reelHtml += `<div>${symbols[Math.floor(Math.random() * symbols.length)]}</div>`;
-                    }
-                    // Ajouter le symbole final à la fin
-                    reelHtml += `<div>${finalSymbols[index]}</div>`;
-                    symbolElement.innerHTML = reelHtml;
+                    // Ajouter le symbole final à la fin pour qu'il s'arrête dessus
+                    reelSymbols.push(finalSymbols[index]);
                     
-                    // Animer la rotation avec un délai croissant pour chaque rouleau
+                    // Construire le HTML du rouleau
+                    let reelHTML = '';
+                    reelSymbols.forEach(symbol => {
+                        reelHTML += `<div class="slots-symbol">${symbol}</div>`;
+                    });
+                    
+                    // Mettre à jour le contenu du rouleau
+                    reel.innerHTML = reelHTML;
+                    
+                    // Appliquer l'animation avec délai
                     setTimeout(() => {
-                        symbolElement.style.transition = 'transform 2s cubic-bezier(0.5, 0, 0.5, 1)';
-                        symbolElement.style.transform = `translateY(calc(-100% + 60px))`;
+                        // Calculer la hauteur exacte pour que le symbole final soit au centre
+                        const symbolHeight = 200; // Hauteur d'un symbole en pixels
+                        const finalPosition = -((reelSymbolsCount) * symbolHeight);
+                        
+                        // Animation du rouleau
+                        reel.style.transition = `transform ${1 + index * 0.5}s cubic-bezier(0.3, 1, 0.5, 1)`;
+                        reel.style.transform = `translateY(${finalPosition}px)`;
                         
                         // Son de rouleau
                         playSound('card');
-                    }, index * 300);
+                    }, index * 400);
                 });
                 
-                // Attendre la fin des animations
+                // Attendre la fin des animations avant de révéler le résultat
                 setTimeout(() => {
-                    // Mettre à jour les symboles dans l'état
-                    slotsState.reelSymbols = finalSymbols;
+                    // Arrêter l'animation de Camille
+                    camilleFigure.classList.remove('excited');
                     
-                    // Simplifier l'affichage à la fin de l'animation
+                    // Simplifier l'affichage des rouleaux après l'animation
                     reels.forEach((reel, index) => {
-                        const symbolElement = reel.querySelector('.slots-symbol');
-                        symbolElement.innerHTML = finalSymbols[index];
-                        symbolElement.style.transition = 'none';
-                        symbolElement.style.transform = 'translateY(0)';
+                        reel.innerHTML = `<div class="slots-symbol symbol-reveal">${finalSymbols[index]}</div>`;
+                        reel.style.transition = 'none';
+                        reel.style.transform = 'translateY(0)';
                     });
                     
                     // Vérifier les résultats
                     checkResults();
                     
-                    // Jeu terminé, activer les boutons
+                    // Fin du tour, réactiver les contrôles
                     slotsState.spinning = false;
                     updateSlotsDisplay();
                     
                     // Incrémenter le compteur de parties jouées
                     slotsState.gamesPlayed++;
                     
-                    // Vérifier si le joueur a gagné ou perdu la partie globale
+                    // Vérifier si le jeu est terminé
                     checkGameEnd();
-                }, 3000);
+                }, 3000); // Attendre que toutes les animations soient terminées
             }
             
             // Vérifier les résultats
@@ -627,6 +901,7 @@
                     const winAmount = slotsState.betAmount * payouts[result];
                     slotsState.credits += winAmount;
                     resultDisplay.textContent = `Vous avez gagné ${winAmount} crédits !`;
+                    resultDisplay.classList.add('win', 'result-flash');
                     
                     // Animation de victoire
                     slotsMachine.classList.add('slots-win');
@@ -649,6 +924,7 @@
                         const winAmount = Math.floor(slotsState.betAmount * 0.5);
                         slotsState.credits += winAmount;
                         resultDisplay.textContent = `2 symboles identiques ! Vous récupérez ${winAmount} crédits.`;
+                        resultDisplay.classList.add('result-flash');
                         playSound('card');
                     } else {
                         // Perdu
