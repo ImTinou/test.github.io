@@ -216,8 +216,35 @@ function getRandomColor() {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
-// Charger les victoires au démarrage
+// Fonction pour adapter l'affichage aux appareils mobiles
+function adaptToMobileDevices() {
+    // Détection de l'appareil mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                    window.innerWidth < 768;
+    
+    if (isMobile) {
+        // Adapter le conteneur de jeu pour les mobiles
+        const gameContainer = document.getElementById('game-container');
+        if (gameContainer) {
+            gameContainer.style.height = 'auto';
+            gameContainer.style.minHeight = '500px';
+            gameContainer.style.maxHeight = '90vh';
+        }
+        
+        // Désactiver certains effets visuels qui pourraient ralentir les appareils mobiles
+        const effects = document.querySelectorAll('.scanline, .crt-effect');
+        effects.forEach(effect => {
+            effect.style.opacity = '0.3';
+        });
+    }
+}
+
+// Charger les victoires au démarrage et adapter aux mobiles
 document.addEventListener('DOMContentLoaded', () => {
     loadVictories();
     createTransition();
+    adaptToMobileDevices();
+    
+    // Réexécuter l'adaptation lors du redimensionnement de la fenêtre
+    window.addEventListener('resize', adaptToMobileDevices);
 });

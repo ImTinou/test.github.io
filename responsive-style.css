@@ -1,0 +1,44 @@
+/* Styles responsives pour tous les jeux */
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    #game-container {
+        height: auto;
+        min-height: 500px;
+        max-height: 90vh;
+    }
+    
+    .back-button {
+        font-size: 8px;
+        padding: 4px 8px;
+    }
+    
+    .game-victory-counter {
+        font-size: 8px;
+        padding: 4px 8px;
+    }
+    
+    /* Styles communs pour tous les jeux en mode responsive */
+    .scanline, .vignette, .crt-effect {
+        pointer-events: none;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+    
+    #game-container {
+        min-height: 450px;
+        border-width: 2px;
+    }
+    
+    .back-button, .game-victory-counter {
+        font-size: 7px;
+        padding: 3px 6px;
+    }
+}
