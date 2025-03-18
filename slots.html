@@ -7,33 +7,41 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* --- STYLE GÉNÉRAL --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+        }
+        
         /* --- JEU DE MACHINE À SOUS --- */
         #slots-game {
-            background-color: #1e1e3c; /* Bleu très foncé */
-            font-family: 'Press Start 2P', cursive;
+            background-color: #2b2b4a; /* Bleu foncé un peu plus clair */
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             height: 100%;
             position: relative;
             overflow: hidden;
         }
         
         .slots-machine {
-            width: 90%;
-            max-width: 700px;
-            background-color: #800020; /* Bordeaux */
-            border: 12px solid #ffd700; /* Or */
-            border-radius: 20px;
+            width: 85%;
+            max-width: 550px; /* Réduit de 700px */
+            background-color: #5a1020; /* Rouge bordeaux plus clair */
+            border: 8px solid #e6c200; /* Or un peu moins vif */
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 25px;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(230, 194, 0, 0.4);
             position: relative;
-            margin: 40px 0;
+            margin: 30px 0; /* Réduit de 40px */
         }
         
         .slots-header {
@@ -41,51 +49,52 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            border-bottom: 4px solid #ffd700;
-            margin-bottom: 30px;
+            padding: 10px; /* Réduit de 15px */
+            border-bottom: 3px solid #e6c200; /* Réduit de 4px */
+            margin-bottom: 20px; /* Réduit de 30px */
         }
         
         .slots-title {
-            font-size: 24px;
-            color: #ffd700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            font-size: 20px; /* Réduit de 24px */
+            color: #e6c200;
+            text-shadow: 0 0 10px rgba(230, 194, 0, 0.5);
+            font-weight: bold;
         }
         
         .slots-credits {
-            background-color: black;
-            color: #ffd700;
-            padding: 12px 20px;
-            border: 3px solid #ffd700;
-            border-radius: 8px;
-            font-size: 18px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            background-color: #111;
+            color: #e6c200;
+            padding: 8px 15px; /* Réduit de 12px 20px */
+            border: 2px solid #e6c200; /* Réduit de 3px */
+            border-radius: 6px; /* Réduit de 8px */
+            font-size: 16px; /* Réduit de 18px */
+            box-shadow: 0 0 10px rgba(230, 194, 0, 0.2);
         }
         
         .slots-reels-container {
-            width: 95%;
-            height: 240px;
-            background-color: black;
-            border: 8px solid #ffd700;
-            border-radius: 15px;
+            width: 90%;
+            height: 180px; /* Réduit de 240px */
+            background-color: #181818; /* Noir un peu plus clair */
+            border: 5px solid #e6c200; /* Réduit de 8px */
+            border-radius: 10px; /* Réduit de 15px */
             display: flex;
             justify-content: space-around;
             align-items: center;
             overflow: hidden;
-            margin-bottom: 30px;
-            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px; /* Réduit de 30px */
+            box-shadow: inset 0 0 15px rgba(230, 194, 0, 0.4);
             position: relative;
         }
         
         .slots-reel {
-            height: 200px;
+            height: 150px; /* Réduit de 200px */
             width: 30%;
-            border: 4px solid #ffd700;
-            border-radius: 10px;
+            border: 3px solid #e6c200; /* Réduit de 4px */
+            border-radius: 8px; /* Réduit de 10px */
             overflow: hidden;
             position: relative;
-            background-color: white;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+            background-color: #f0f0f0; /* Blanc un peu cassé */
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
         }
         
         .slots-reel-container {
@@ -106,7 +115,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
+            font-size: 60px; /* Réduit de 80px */
             flex-shrink: 0;
         }
         
@@ -114,21 +123,22 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-top: 30px;
+            margin-top: 20px; /* Réduit de 30px */
         }
         
         .slots-spin-button {
-            background: linear-gradient(to bottom, #ffd700, #e6b800);
-            color: #800020;
+            background: linear-gradient(to bottom, #e6c200, #cca900);
+            color: #5a1020;
             border: none;
             border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 20px;
+            width: 90px; /* Réduit de 120px */
+            height: 90px; /* Réduit de 120px */
+            font-family: 'Arial', sans-serif;
+            font-size: 18px; /* Réduit de 20px */
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 15px rgba(230, 194, 0, 0.4);
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
@@ -148,7 +158,7 @@
         
         .slots-spin-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.7);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), 0 0 20px rgba(230, 194, 0, 0.5);
         }
         
         .slots-spin-button:hover::after {
@@ -157,54 +167,55 @@
         
         .slots-spin-button:active {
             transform: scale(0.95);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
         
         .slots-spin-button.disabled {
             background: linear-gradient(to bottom, #aaa, #888);
             cursor: not-allowed;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
             color: #555;
         }
         
         .slots-bet-controls {
             display: flex;
             align-items: center;
-            margin-top: 30px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid #ffd700;
+            margin-top: 20px; /* Réduit de 30px */
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 12px; /* Réduit de 15px */
+            border-radius: 10px; /* Réduit de 15px */
+            border: 2px solid #e6c200; /* Réduit de 3px */
         }
         
         .slots-bet-button {
-            background: linear-gradient(to bottom, #444, #222);
+            background: linear-gradient(to bottom, #333, #222);
             color: white;
-            border: 3px solid #ffd700;
-            border-radius: 10px;
-            padding: 15px 20px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 16px;
+            border: 2px solid #e6c200; /* Réduit de 3px */
+            border-radius: 8px; /* Réduit de 10px */
+            padding: 10px 15px; /* Réduit de 15px 20px */
+            font-family: 'Arial', sans-serif;
+            font-size: 14px; /* Réduit de 16px */
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
-            margin: 0 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            min-width: 50px;
-            min-height: 50px;
+            margin: 0 12px; /* Réduit de 15px */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            min-width: 40px; /* Réduit de 50px */
+            min-height: 40px; /* Réduit de 50px */
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         .slots-bet-button:hover:not(:disabled) {
-            background: linear-gradient(to bottom, #666, #444);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #555, #333);
+            transform: translateY(-2px); /* Réduit de -3px */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
         }
         
         .slots-bet-button:active:not(:disabled) {
             transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .slots-bet-button:disabled {
@@ -214,45 +225,45 @@
         }
         
         .slots-bet-amount {
-            background-color: black;
-            color: #ffd700;
-            padding: 15px 20px;
-            border: 3px solid #ffd700;
-            border-radius: 10px;
-            font-size: 18px;
-            min-width: 120px;
+            background-color: #111;
+            color: #e6c200;
+            padding: 10px 15px; /* Réduit de 15px 20px */
+            border: 2px solid #e6c200; /* Réduit de 3px */
+            border-radius: 8px; /* Réduit de 10px */
+            font-size: 16px; /* Réduit de 18px */
+            min-width: 100px; /* Réduit de 120px */
             text-align: center;
-            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
+            box-shadow: inset 0 0 8px rgba(230, 194, 0, 0.2);
         }
         
         .slots-result {
             width: 100%;
             text-align: center;
-            margin-top: 25px;
-            min-height: 50px;
-            color: #ffd700;
-            font-size: 18px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            margin-top: 15px; /* Réduit de 25px */
+            min-height: 40px; /* Réduit de 50px */
+            color: #e6c200;
+            font-size: 16px; /* Réduit de 18px */
+            text-shadow: 0 0 8px rgba(230, 194, 0, 0.4);
+            padding: 8px; /* Réduit de 10px */
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 8px; /* Réduit de 10px */
+            border: 2px solid #e6c200;
+            box-shadow: 0 0 10px rgba(230, 194, 0, 0.2);
             transition: transform 0.3s, box-shadow 0.3s;
         }
         
         .slots-result.win {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            transform: scale(1.03); /* Réduit de 1.05 */
+            box-shadow: 0 0 18px rgba(230, 194, 0, 0.6);
         }
         
         .slots-camille {
             position: absolute;
-            bottom: 30px;
-            right: -30px;
-            font-size: 70px;
+            bottom: 20px; /* Réduit de 30px */
+            right: -20px; /* Réduit de -30px */
+            font-size: 50px; /* Réduit de 70px */
             transform: rotate(10deg);
-            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
             transition: transform 0.3s;
         }
         
@@ -262,39 +273,40 @@
         
         @keyframes camilleBounce {
             0% { transform: rotate(10deg) translateY(0); }
-            100% { transform: rotate(10deg) translateY(-10px); }
+            100% { transform: rotate(10deg) translateY(-8px); } /* Réduit de -10px */
         }
         
         .slots-paytable {
             position: absolute;
-            top: 30px;
-            left: 30px;
+            top: 20px; /* Réduit de 30px */
+            left: 20px; /* Réduit de 30px */
             background-color: rgba(0, 0, 0, 0.8);
-            border: 3px solid #ffd700;
-            border-radius: 12px;
-            padding: 20px;
+            border: 2px solid #e6c200; /* Réduit de 3px */
+            border-radius: 10px; /* Réduit de 12px */
+            padding: 15px; /* Réduit de 20px */
             color: white;
-            font-size: 14px;
-            line-height: 1.8;
-            max-width: 250px;
+            font-size: 12px; /* Réduit de 14px */
+            line-height: 1.7;
+            max-width: 200px; /* Réduit de 250px */
             z-index: 100;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px rgba(230, 194, 0, 0.2);
         }
         
         .slots-paytable-title {
-            color: #ffd700;
+            color: #e6c200;
             text-align: center;
-            margin-bottom: 15px;
-            font-size: 16px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin-bottom: 12px; /* Réduit de 15px */
+            font-size: 14px; /* Réduit de 16px */
+            text-shadow: 0 0 8px rgba(230, 194, 0, 0.4);
+            font-weight: bold;
         }
         
         .slots-paytable-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            border-bottom: 1px dashed rgba(255, 215, 0, 0.3);
-            padding-bottom: 8px;
+            margin-bottom: 6px; /* Réduit de 8px */
+            border-bottom: 1px dashed rgba(230, 194, 0, 0.3);
+            padding-bottom: 6px; /* Réduit de 8px */
         }
         
         .slots-paytable-row:last-child {
@@ -308,46 +320,48 @@
             transform: translate(-50%, -50%);
             background-color: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 40px;
-            border-radius: 15px;
-            border: 4px solid #ffd700;
+            padding: 30px; /* Réduit de 40px */
+            border-radius: 12px; /* Réduit de 15px */
+            border: 3px solid #e6c200; /* Réduit de 4px */
             text-align: center;
             z-index: 200;
             display: none;
-            min-width: 450px;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+            min-width: 350px; /* Réduit de 450px */
+            box-shadow: 0 0 30px rgba(230, 194, 0, 0.5);
         }
         
         .slots-message-title {
-            font-size: 28px;
-            margin-bottom: 25px;
-            color: #ffd700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            font-size: 22px; /* Réduit de 28px */
+            margin-bottom: 20px; /* Réduit de 25px */
+            color: #e6c200;
+            text-shadow: 0 0 10px rgba(230, 194, 0, 0.5);
+            font-weight: bold;
         }
         
         .slots-message-body {
-            margin-bottom: 35px;
-            line-height: 1.6;
-            font-size: 18px;
+            margin-bottom: 25px; /* Réduit de 35px */
+            line-height: 1.5;
+            font-size: 16px; /* Réduit de 18px */
         }
         
         .slots-message-button {
-            background: linear-gradient(to bottom, #ffd700, #e6b800);
-            color: #800020;
+            background: linear-gradient(to bottom, #e6c200, #cca900);
+            color: #5a1020;
             border: none;
-            padding: 18px 35px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 18px;
+            padding: 12px 25px; /* Réduit de 18px 35px */
+            font-family: 'Arial', sans-serif;
+            font-size: 16px; /* Réduit de 18px */
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 8px; /* Réduit de 10px */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         }
         
         .slots-message-button:hover {
-            background: linear-gradient(to bottom, #ffe347, #ffd700);
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #f0cc00, #e6c200);
+            transform: scale(1.03); /* Réduit de 1.05 */
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
         }
         
         .slots-message-button:active {
@@ -355,75 +369,56 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         
-        @keyframes spin {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(calc(-100% + 200px)); }
-        }
-        
-        .spinning {
-            animation: spin 0.5s linear infinite;
-        }
-        
-        @keyframes winGlow {
-            0% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
-            100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-        }
-        
-        .slots-win {
-            animation: winGlow 1.5s infinite;
-        }
-        
         .speech-bubble {
             position: absolute;
             background-color: white;
             color: black;
-            padding: 15px;
-            border-radius: 15px;
-            max-width: 250px;
-            font-size: 14px;
+            padding: 12px; /* Réduit de 15px */
+            border-radius: 12px; /* Réduit de 15px */
+            max-width: 200px; /* Réduit de 250px */
+            font-size: 12px; /* Réduit de 14px */
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 10;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             border: 2px solid #333;
         }
         
         .camille-speech {
-            right: 120px;
-            bottom: 130px;
+            right: 90px; /* Réduit de 120px */
+            bottom: 100px; /* Réduit de 130px */
         }
         
         .camille-speech:after {
             content: "";
             position: absolute;
-            right: -15px;
-            bottom: 30px;
-            border: 15px solid transparent;
+            right: -12px; /* Réduit de -15px */
+            bottom: 25px; /* Réduit de 30px */
+            border: 12px solid transparent; /* Réduit de 15px */
             border-left-color: white;
-            margin-top: -15px;
+            margin-top: -12px; /* Réduit de -15px */
         }
         
         .back-button, .game-victory-counter {
             position: absolute;
-            top: 20px;
+            top: 15px; /* Réduit de 20px */
             z-index: 100;
-            font-size: 16px;
-            padding: 12px 18px;
+            font-size: 14px; /* Réduit de 16px */
+            padding: 8px 14px; /* Réduit de 12px 18px */
             background-color: rgba(0, 0, 0, 0.7);
             border: 2px solid #fff;
-            border-radius: 8px;
+            border-radius: 6px; /* Réduit de 8px */
             color: white;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
             text-decoration: none;
         }
         
         .back-button {
-            left: 20px;
+            left: 15px; /* Réduit de 20px */
         }
         
         .game-victory-counter {
-            right: 20px;
+            right: 15px; /* Réduit de 20px */
         }
         
         /* Animation pour les symboles pendant le spin */
@@ -438,9 +433,9 @@
         
         /* Animation flash pour les gains */
         @keyframes resultFlash {
-            0% { background-color: rgba(255, 215, 0, 0.3); }
-            50% { background-color: rgba(255, 215, 0, 0.7); }
-            100% { background-color: rgba(0, 0, 0, 0.5); }
+            0% { background-color: rgba(230, 194, 0, 0.3); }
+            50% { background-color: rgba(230, 194, 0, 0.6); }
+            100% { background-color: rgba(0, 0, 0, 0.4); }
         }
         
         .result-flash {
@@ -450,35 +445,35 @@
         /* Responsive styles */
         @media (max-width: 768px) {
             .slots-machine {
-                padding: 15px;
+                padding: 12px;
                 width: 95%;
             }
             
             .slots-title {
-                font-size: 18px;
+                font-size: 16px;
             }
             
             .slots-credits {
-                font-size: 14px;
-                padding: 8px 12px;
+                font-size: 12px;
+                padding: 6px 10px;
             }
             
             .slots-reels-container {
-                height: 180px;
-            }
-            
-            .slots-reel {
                 height: 150px;
             }
             
+            .slots-reel {
+                height: 120px;
+            }
+            
             .slots-symbol {
-                font-size: 60px;
+                font-size: 45px;
             }
             
             .slots-spin-button {
-                width: 100px;
-                height: 100px;
-                font-size: 16px;
+                width: 80px;
+                height: 80px;
+                font-size: 14px;
             }
             
             .slots-bet-controls {
@@ -487,50 +482,72 @@
             }
             
             .slots-bet-button {
-                font-size: 14px;
-                padding: 10px 15px;
-                margin: 5px;
+                font-size: 12px;
+                padding: 8px 12px;
+                margin: 4px;
             }
             
             .slots-bet-amount {
-                font-size: 14px;
-                padding: 10px;
-                min-width: 100px;
+                font-size: 12px;
+                padding: 8px;
+                min-width: 80px;
             }
             
             .slots-result {
-                font-size: 14px;
+                font-size: 12px;
             }
             
             .slots-paytable {
-                max-width: 200px;
-                font-size: 12px;
-                top: 60px;
+                max-width: 180px;
+                font-size: 10px;
+                top: 50px;
             }
             
             .slots-message {
-                min-width: 300px;
-                padding: 20px;
+                min-width: 280px;
+                padding: 15px;
             }
             
             .slots-message-title {
-                font-size: 20px;
+                font-size: 18px;
             }
             
             .slots-message-body {
-                font-size: 14px;
+                font-size: 12px;
             }
             
             .slots-message-button {
-                font-size: 14px;
-                padding: 12px 25px;
+                font-size: 12px;
+                padding: 10px 20px;
             }
             
             .slots-camille {
-                font-size: 50px;
-                right: -20px;
-                bottom: 20px;
+                font-size: 40px;
+                right: -15px;
+                bottom: 15px;
             }
+        }
+        
+        /* Ajout d'un style plus moderne */
+        #slots-game {
+            background: linear-gradient(135deg, #2b2b4a 0%, #1a1a30 100%);
+        }
+        
+        .slots-machine {
+            background: linear-gradient(to bottom, #5a1020 0%, #48081a 100%);
+        }
+        
+        .slots-reels-container, .slots-reel {
+            transition: all 0.3s ease;
+        }
+        
+        .slots-reels-container:hover {
+            box-shadow: 0 0 20px rgba(230, 194, 0, 0.5);
+        }
+        
+        /* Ajout de quelques effets subtils */
+        .slots-header, .slots-bet-controls, .slots-result {
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
@@ -852,7 +869,7 @@
                     // Appliquer l'animation avec délai
                     setTimeout(() => {
                         // Calculer la hauteur exacte pour que le symbole final soit au centre
-                        const symbolHeight = 200; // Hauteur d'un symbole en pixels
+                        const symbolHeight = 150; // Hauteur d'un symbole en pixels (ajusté à la nouvelle taille)
                         const finalPosition = -((reelSymbolsCount) * symbolHeight);
                         
                         // Animation du rouleau

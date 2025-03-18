@@ -10,11 +10,11 @@
         /* --- JEU DE ROULETTE --- */
         #roulette-game {
             background-color: #004d00; /* Vert foncé */
-            font-family: 'Press Start 2P', cursive;
+            font-family: 'Arial', sans-serif; /* Changé pour une police plus lisible */
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 30px; /* Augmenté de 20px à 30px */
             height: 100%;
             position: relative;
             overflow: hidden;
@@ -27,36 +27,37 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            background: linear-gradient(to bottom, #007700, #005500);
-            border: 5px solid #daa520; /* Or foncé */
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 40px;
-            box-shadow: 0 0 30px rgba(218, 165, 32, 0.3);
+            background: linear-gradient(to bottom, #008800, #006600); /* Vert plus vif */
+            border: 8px solid #daa520; /* Augmenté de 5px à 8px */
+            border-radius: 25px; /* Augmenté de 20px à 25px */
+            padding: 30px; /* Augmenté de 20px à 30px */
+            margin-top: 50px; /* Augmenté de 40px à 50px */
+            box-shadow: 0 0 40px rgba(218, 165, 32, 0.4); /* Augmenté de 30px à 40px */
         }
         
         .roulette-header {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            margin-bottom: 25px;
+            margin-bottom: 30px; /* Augmenté de 25px à 30px */
         }
         
         .roulette-credits {
             background-color: rgba(0, 0, 0, 0.7);
             color: #daa520;
-            padding: 15px 20px;
-            border: 3px solid #daa520;
-            border-radius: 10px;
-            font-size: 18px;
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+            padding: 18px 25px; /* Augmenté de 15px 20px à 18px 25px */
+            border: 4px solid #daa520; /* Augmenté de 3px à 4px */
+            border-radius: 12px; /* Augmenté de 10px à 12px */
+            font-size: 22px; /* Augmenté de 18px à 22px */
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.4); /* Augmenté de 15px à 20px */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .roulette-wheel-container {
             position: relative;
-            width: 350px;
-            height: 350px;
-            margin-bottom: 30px;
+            width: 400px; /* Augmenté de 350px à 400px */
+            height: 400px; /* Augmenté de 350px à 400px */
+            margin-bottom: 40px; /* Augmenté de 30px à 40px */
             perspective: 1000px;
         }
         
@@ -64,17 +65,24 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: linear-gradient(135deg, #9a0000, #800000);
-            border: 12px solid #daa520;
+            background: linear-gradient(135deg, #b40000, #800000); /* Rouge plus vif */
+            border: 15px solid #daa520; /* Augmenté de 12px à 15px */
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            transition: transform 5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 0 30px rgba(218, 165, 32, 0.5), 
-                inset 0 0 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 40px rgba(218, 165, 32, 0.6), 
+                inset 0 0 60px rgba(0, 0, 0, 0.6); /* Augmenté les ombres */
             transform-style: preserve-3d;
+            /* Animation continue et lente de la roue */
+            animation: wheelRotate 15s linear infinite;
+        }
+        
+        /* Animation de la roue qui tourne lentement en continu */
+        @keyframes wheelRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
         }
         
         .roulette-wheel::after {
@@ -83,13 +91,13 @@
             width: 90%;
             height: 90%;
             border-radius: 50%;
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8); /* Augmenté de 30px à 40px */
             pointer-events: none;
         }
         
         .roulette-wheel-center {
-            width: 80px;
-            height: 80px;
+            width: 100px; /* Augmenté de 80px à 100px */
+            height: 100px; /* Augmenté de 80px à 100px */
             border-radius: 50%;
             background: linear-gradient(to bottom, #ffd700, #daa520);
             z-index: 10;
@@ -98,74 +106,99 @@
             align-items: center;
             color: #800000;
             font-weight: bold;
-            font-size: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            border: 3px solid #ffd700;
+            font-size: 24px; /* Augmenté de 20px à 24px */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6); /* Augmenté de 15px à 20px */
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre du texte */
+            border: 4px solid #ffd700; /* Augmenté de 3px à 4px */
+            position: absolute; /* Ajouté pour assurer que le centre est bien fixe */
+            /* Contre-animation pour garder le texte SPIN droit malgré la rotation de la roue */
+            animation: counterRotate 15s linear infinite;
+        }
+
+        @keyframes counterRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .roulette-wheel-center:hover {
             cursor: pointer;
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); /* Augmenté de 20px à 25px */
         }
         
         .roulette-number {
             position: absolute;
-            width: 40px;
-            height: 140px;
+            width: 45px; /* Augmenté de 40px à 45px */
+            height: 160px; /* Augmenté de 140px à 160px */
             transform-origin: bottom center;
             display: flex;
             justify-content: center;
-            padding-top: 15px;
-            font-size: 18px;
+            padding-top: 20px; /* Augmenté de 15px à 20px */
+            font-size: 22px; /* Augmenté de 18px à 22px */
             color: white;
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.9); /* Augmenté l'ombre du texte */
             font-weight: bold;
-            border-left: 1px solid rgba(255, 255, 255, 0.2);
-            border-right: 1px solid rgba(0, 0, 0, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-right: 1px solid rgba(0, 0, 0, 0.4);
+            /* Contre-animation pour maintenir les chiffres droits */
+            animation: counterRotate 15s linear infinite;
         }
         
         .roulette-ball {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 25px; /* Augmenté de 20px à 25px */
+            height: 25px; /* Augmenté de 20px à 25px */
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, white, #c0c0c0);
-            top: calc(50% - 10px);
-            left: calc(50% - 10px);
-            z-index: 5;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 15; /* Augmenté pour être sûr qu'elle est au-dessus de tout */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6); /* Augmenté l'ombre */
             display: none;
         }
         
+        /* Animation de la bille */
         @keyframes spinBall {
             0% {
-                transform: rotate(0deg) translateY(-140px) rotate(0deg);
+                transform: rotate(0deg) translateY(-160px) rotate(0deg);
+            }
+            10% {
+                transform: rotate(720deg) translateY(-160px) rotate(-720deg);
+            }
+            20% {
+                transform: rotate(1440deg) translateY(-160px) rotate(-1440deg);
             }
             30% {
-                transform: rotate(3600deg) translateY(-140px) rotate(-3600deg);
+                transform: rotate(2160deg) translateY(-160px) rotate(-2160deg);
             }
             40% {
-                transform: rotate(4320deg) translateY(-135px) rotate(-4320deg);
+                transform: rotate(2880deg) translateY(-160px) rotate(-2880deg);
             }
             50% {
-                transform: rotate(4680deg) translateY(-130px) rotate(-4680deg);
+                transform: rotate(3240deg) translateY(-155px) rotate(-3240deg);
             }
             60% {
-                transform: rotate(4860deg) translateY(-125px) rotate(-4860deg);
+                transform: rotate(3480deg) translateY(-150px) rotate(-3480deg);
             }
             70% {
-                transform: rotate(4950deg) translateY(-120px) rotate(-4950deg);
+                transform: rotate(3600deg) translateY(-140px) rotate(-3600deg);
             }
             80% {
-                transform: rotate(5040deg) translateY(-115px) rotate(-5040deg);
+                transform: rotate(3660deg) translateY(-130px) rotate(-3660deg);
             }
             90% {
-                transform: rotate(5085deg) translateY(-110px) rotate(-5085deg);
+                transform: rotate(3690deg) translateY(-120px) rotate(-3690deg);
             }
             100% {
-                transform: rotate(5120deg) translateY(-110px) rotate(-5120deg);
+                transform: rotate(3700deg) translateY(-110px) rotate(-3700deg);
+            }
+        }
+        
+        /* Animation pour la bille qui se place finalement sur le numéro gagnant */
+        @keyframes settleBall {
+            0% {
+                transform: rotate(0deg) translateY(-110px);
+            }
+            100% {
+                transform: rotate(var(--finalRotation)) translateY(-110px);
             }
         }
         
@@ -176,7 +209,8 @@
             top: 0;
             left: 0;
             transform-style: preserve-3d;
-            z-index: 6;
+            z-index: 16; /* Augmenté pour être sûr qu'il est au-dessus de tout */
+            pointer-events: none; /* Ajouté pour ne pas interférer avec les clics */
         }
         
         .spin-track {
@@ -185,106 +219,102 @@
             height: 100%;
             border-radius: 50%;
             border: 5px solid transparent;
-            border-top: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid rgba(255, 255, 255, 0.4); /* Légèrement plus visible */
             box-sizing: border-box;
             top: -5px;
             left: -5px;
-            animation: spinTrack 5s linear infinite;
             display: none;
             pointer-events: none;
-        }
-        
-        @keyframes spinTrack {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         
         .roulette-selection {
             display: flex;
             justify-content: space-around;
             width: 95%;
-            margin-top: 30px;
-            gap: 20px;
+            margin-top: 40px; /* Augmenté de 30px à 40px */
+            gap: 30px; /* Augmenté de 20px à 30px */
         }
         
         .roulette-bet-option {
-            background: linear-gradient(to bottom, #333, #222);
+            background: linear-gradient(to bottom, #444, #222); /* Légèrement plus clair */
             color: white;
-            border: 3px solid #daa520;
-            border-radius: 10px;
-            padding: 15px;
+            border: 4px solid #daa520; /* Augmenté de 3px à 4px */
+            border-radius: 15px; /* Augmenté de 10px à 15px */
+            padding: 20px; /* Augmenté de 15px à 20px */
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 30%;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
         }
         
         .roulette-bet-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(218, 165, 32, 0.5);
+            transform: translateY(-8px); /* Augmenté de -5px à -8px */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(218, 165, 32, 0.6);
         }
         
         .roulette-bet-option.selected {
             border-color: white;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.9); /* Augmenté le halo */
+            transform: scale(1.08); /* Augmenté de 1.05 à 1.08 */
         }
         
         .bet-label {
-            margin-bottom: 15px;
-            font-size: 16px;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            margin-bottom: 18px; /* Augmenté de 15px à 18px */
+            font-size: 20px; /* Augmenté de 16px à 20px */
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.6); /* Augmenté l'ombre du texte */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .bet-color-display {
-            width: 50px;
-            height: 50px;
+            width: 70px; /* Augmenté de 50px à 70px */
+            height: 70px; /* Augmenté de 50px à 70px */
             border-radius: 50%;
-            margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 18px; /* Augmenté de 15px à 18px */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6); /* Augmenté l'ombre */
+            border: 3px solid rgba(255, 255, 255, 0.6); /* Augmenté de 2px à 3px */
             transition: all 0.3s;
         }
         
         .roulette-bet-option:hover .bet-color-display {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: scale(1.15); /* Augmenté de 1.1 à 1.15 */
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4); /* Augmenté l'ombre */
         }
         
         .bet-color-red {
-            background: linear-gradient(135deg, #ff0000, #cc0000);
+            background: linear-gradient(135deg, #ff1a1a, #cc0000); /* Rouge plus vif */
         }
         
         .bet-color-black {
-            background: linear-gradient(135deg, #333, #000);
+            background: linear-gradient(135deg, #444, #000);
         }
         
         .bet-color-green {
-            background: linear-gradient(135deg, #00cc00, #009900);
+            background: linear-gradient(135deg, #00e600, #009900); /* Vert plus vif */
         }
         
         .bet-payout {
-            font-size: 14px;
-            color: #daa520;
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 8px 12px;
-            border-radius: 5px;
-            margin-top: 10px;
+            font-size: 18px; /* Augmenté de 14px à 18px */
+            color: #ffd700; /* Or plus vif */
+            background-color: rgba(0, 0, 0, 0.4); /* Légèrement plus transparent */
+            padding: 10px 15px; /* Augmenté de 8px 12px à 10px 15px */
+            border-radius: 8px; /* Augmenté de 5px à 8px */
+            margin-top: 12px; /* Augmenté de 10px à 12px */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .roulette-controls {
             display: flex;
             justify-content: space-around;
             width: 95%;
-            margin-top: 30px;
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid rgba(218, 165, 32, 0.5);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 40px; /* Augmenté de 30px à 40px */
+            background-color: rgba(0, 0, 0, 0.4); /* Légèrement plus transparent */
+            padding: 25px; /* Augmenté de 20px à 25px */
+            border-radius: 20px; /* Augmenté de 15px à 20px */
+            border: 3px solid rgba(218, 165, 32, 0.6); /* Augmenté de 2px à 3px */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
         }
         
         .roulette-bet-amount {
@@ -293,33 +323,34 @@
         }
         
         .bet-button {
-            background: linear-gradient(to bottom, #555, #333);
+            background: linear-gradient(to bottom, #666, #444); /* Légèrement plus clair */
             color: white;
-            border: 3px solid #daa520;
-            border-radius: 10px;
+            border: 4px solid #daa520; /* Augmenté de 3px à 4px */
+            border-radius: 12px; /* Augmenté de 10px à 12px */
             padding: 15px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 20px;
-            width: 50px;
-            height: 50px;
+            font-family: 'Arial', sans-serif; /* Changé pour une police plus lisible */
+            font-size: 24px; /* Augmenté de 20px à 24px */
+            width: 60px; /* Augmenté de 50px à 60px */
+            height: 60px; /* Augmenté de 50px à 60px */
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: all 0.2s;
-            margin: 0 15px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            margin: 0 20px; /* Augmenté de 15px à 20px */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .bet-button:hover:not(:disabled) {
-            background: linear-gradient(to bottom, #777, #555);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #888, #666); /* Légèrement plus clair */
+            transform: translateY(-4px); /* Augmenté de -3px à -4px */
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.5); /* Augmenté l'ombre */
         }
         
         .bet-button:active:not(:disabled) {
             transform: translateY(2px);
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
         }
         
         .bet-button:disabled {
@@ -330,30 +361,32 @@
         
         .bet-amount-display {
             background-color: rgba(0, 0, 0, 0.7);
-            color: #daa520;
-            padding: 15px 20px;
-            border: 3px solid #daa520;
-            border-radius: 10px;
-            min-width: 120px;
+            color: #ffd700; /* Or plus vif */
+            padding: 18px 25px; /* Augmenté de 15px 20px à 18px 25px */
+            border: 4px solid #daa520; /* Augmenté de 3px à 4px */
+            border-radius: 12px; /* Augmenté de 10px à 12px */
+            min-width: 150px; /* Augmenté de 120px à 150px */
             text-align: center;
-            font-size: 16px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            font-size: 20px; /* Augmenté de 16px à 20px */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6); /* Augmenté l'ombre interne */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .spin-button {
             background: linear-gradient(to bottom, #daa520, #b8860b);
             color: #000;
             border: none;
-            border-radius: 12px;
-            padding: 18px 30px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 18px;
+            border-radius: 15px; /* Augmenté de 12px à 15px */
+            padding: 22px 35px; /* Augmenté de 18px 30px à 22px 35px */
+            font-family: 'Arial', sans-serif; /* Changé pour une police plus lisible */
+            font-size: 22px; /* Augmenté de 18px à 22px */
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4); /* Augmenté l'ombre du texte */
             position: relative;
             overflow: hidden;
+            font-weight: bold; /* Ajout du gras */
         }
         
         .spin-button::after {
@@ -363,15 +396,15 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%); /* Légèrement plus visible */
             opacity: 0;
             transition: opacity 0.3s;
         }
         
         .spin-button:hover:not(:disabled) {
             background: linear-gradient(to bottom, #ffd700, #daa520);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(-6px); /* Augmenté de -5px à -6px */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5); /* Augmenté l'ombre */
         }
         
         .spin-button:hover::after {
@@ -380,55 +413,56 @@
         
         .spin-button:active:not(:disabled) {
             transform: translateY(2px);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
         }
         
         .spin-button:disabled {
-            background: linear-gradient(to bottom, #aaa, #888);
+            background: linear-gradient(to bottom, #bbb, #999); /* Légèrement plus clair */
             cursor: not-allowed;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            color: #555;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            color: #666;
         }
         
         .roulette-result {
-            margin-top: 25px;
-            min-height: 50px;
-            font-size: 18px;
+            margin-top: 30px; /* Augmenté de 25px à 30px */
+            min-height: 60px; /* Augmenté de 50px à 60px */
+            font-size: 22px; /* Augmenté de 18px à 22px */
             color: white;
             text-align: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.6); /* Légèrement plus opaque */
+            padding: 18px; /* Augmenté de 15px à 18px */
+            border-radius: 15px; /* Augmenté de 10px à 15px */
             width: 90%;
-            border: 2px solid #daa520;
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            border: 3px solid #daa520; /* Augmenté de 2px à 3px */
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.4); /* Augmenté l'ombre */
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.6); /* Augmenté l'ombre du texte */
             transition: all 0.3s;
+            font-weight: bold; /* Ajout du gras */
         }
         
         .roulette-result.win {
-            background-color: rgba(0, 100, 0, 0.7);
+            background-color: rgba(0, 120, 0, 0.8); /* Plus opaque et plus vif */
             border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); /* Augmenté l'ombre */
             animation: resultPulse 1.5s infinite;
         }
         
         .roulette-result.lose {
-            background-color: rgba(100, 0, 0, 0.7);
+            background-color: rgba(120, 0, 0, 0.8); /* Plus opaque et plus vif */
         }
         
         @keyframes resultPulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+            50% { transform: scale(1.04); } /* Augmenté de 1.03 à 1.04 */
             100% { transform: scale(1); }
         }
         
         .roulette-camille {
             position: absolute;
-            bottom: 30px;
-            right: 30px;
-            font-size: 60px;
-            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+            bottom: 40px; /* Augmenté de 30px à 40px */
+            right: 40px; /* Augmenté de 30px à 40px */
+            font-size: 75px; /* Augmenté de 60px à 75px */
+            filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.6)); /* Augmenté l'ombre */
             transition: all 0.3s;
         }
         
@@ -437,8 +471,8 @@
         }
         
         @keyframes camilleExcited {
-            0% { transform: rotate(-5deg) scale(1); }
-            100% { transform: rotate(5deg) scale(1.1); }
+            0% { transform: rotate(-6deg) scale(1.05); } /* Légèrement plus accentué */
+            100% { transform: rotate(6deg) scale(1.15); } /* Légèrement plus accentué */
         }
         
         .roulette-message {
@@ -446,257 +480,262 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.92); /* Plus opaque */
             color: white;
-            padding: 40px;
-            border-radius: 15px;
-            border: 4px solid #daa520;
+            padding: 50px; /* Augmenté de 40px à 50px */
+            border-radius: 20px; /* Augmenté de 15px à 20px */
+            border: 5px solid #daa520; /* Augmenté de 4px à 5px */
             text-align: center;
             z-index: 200;
             display: none;
-            min-width: 450px;
-            box-shadow: 0 0 40px rgba(218, 165, 32, 0.4);
+            min-width: 500px; /* Augmenté de 450px à 500px */
+            box-shadow: 0 0 50px rgba(218, 165, 32, 0.5); /* Augmenté l'ombre */
         }
         
         .roulette-message-title {
-            font-size: 28px;
-            margin-bottom: 25px;
-            color: #daa520;
-            text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+            font-size: 32px; /* Augmenté de 28px à 32px */
+            margin-bottom: 30px; /* Augmenté de 25px à 30px */
+            color: #ffd700; /* Or plus vif */
+            text-shadow: 0 0 15px rgba(218, 165, 32, 0.6); /* Augmenté l'ombre */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .roulette-message-body {
-            margin-bottom: 35px;
-            line-height: 1.6;
-            font-size: 18px;
+            margin-bottom: 40px; /* Augmenté de 35px à 40px */
+            line-height: 1.7; /* Augmenté de 1.6 à 1.7 pour meilleur espacement */
+            font-size: 20px; /* Augmenté de 18px à 20px */
         }
         
         .roulette-message-button {
             background: linear-gradient(to bottom, #daa520, #b8860b);
             color: #000;
             border: none;
-            padding: 18px 35px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 18px;
+            padding: 22px 40px; /* Augmenté de 18px 35px à 22px 40px */
+            font-family: 'Arial', sans-serif; /* Changé pour une police plus lisible */
+            font-size: 22px; /* Augmenté de 18px à 22px */
             cursor: pointer;
             transition: all 0.3s;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 12px; /* Augmenté de 10px à 12px */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
+            font-weight: bold; /* Ajout du gras */
         }
         
         .roulette-message-button:hover {
             background: linear-gradient(to bottom, #ffd700, #daa520);
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transform: scale(1.08); /* Augmenté de 1.05 à 1.08 */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); /* Augmenté l'ombre */
         }
         
         .roulette-message-button:active {
             transform: scale(0.98);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
         }
         
         .speech-bubble {
             position: absolute;
             background-color: white;
             color: black;
-            padding: 15px;
-            border-radius: 15px;
-            max-width: 250px;
-            font-size: 14px;
+            padding: 20px; /* Augmenté de 15px à 20px */
+            border-radius: 18px; /* Augmenté de 15px à 18px */
+            max-width: 300px; /* Augmenté de 250px à 300px */
+            font-size: 18px; /* Augmenté de 14px à 18px */
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 10;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            border: 2px solid #333;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); /* Augmenté l'ombre */
+            border: 3px solid #333; /* Augmenté de 2px à 3px */
         }
         
         .camille-speech {
-            right: 120px;
-            bottom: 80px;
+            right: 150px; /* Augmenté de 120px à 150px */
+            bottom: 100px; /* Augmenté de 80px à 100px */
         }
         
         .camille-speech:after {
             content: "";
             position: absolute;
-            right: -15px;
-            bottom: 30px;
-            border: 15px solid transparent;
+            right: -20px; /* Augmenté de -15px à -20px */
+            bottom: 35px; /* Augmenté de 30px à 35px */
+            border: 20px solid transparent; /* Augmenté de 15px à 20px */
             border-left-color: white;
-            margin-top: -15px;
+            margin-top: -20px; /* Augmenté de -15px à -20px */
         }
         
         .back-button, .game-victory-counter {
             position: absolute;
-            top: 20px;
+            top: 25px; /* Augmenté de 20px à 25px */
             z-index: 100;
-            font-size: 16px;
-            padding: 12px 18px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 2px solid #fff;
-            border-radius: 8px;
+            font-size: 20px; /* Augmenté de 16px à 20px */
+            padding: 15px 22px; /* Augmenté de 12px 18px à 15px 22px */
+            background-color: rgba(0, 0, 0, 0.75); /* Plus opaque */
+            border: 3px solid #fff; /* Augmenté de 2px à 3px */
+            border-radius: 10px; /* Augmenté de 8px à 10px */
             color: white;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); /* Augmenté l'ombre */
             text-decoration: none;
+            font-weight: bold; /* Ajout du gras */
         }
         
         .back-button {
-            left: 20px;
+            left: 25px; /* Augmenté de 20px à 25px */
         }
         
         .game-victory-counter {
-            right: 20px;
+            right: 25px; /* Augmenté de 20px à 25px */
         }
         
         /* Responsive design */
-        @media (max-width: 992px) {
+        @media (max-width: 1200px) {
             .roulette-wheel-container {
-                width: 300px;
-                height: 300px;
+                width: 350px; /* Augmenté de 300px à 350px */
+                height: 350px; /* Augmenté de 300px à 350px */
             }
             
             .roulette-wheel-center {
-                width: 70px;
-                height: 70px;
-                font-size: 18px;
+                width: 80px; /* Augmenté de 70px à 80px */
+                height: 80px; /* Augmenté de 70px à 80px */
+                font-size: 20px; /* Augmenté de 18px à 20px */
             }
             
             .roulette-number {
-                width: 35px;
-                height: 120px;
-                font-size: 16px;
+                width: 40px; /* Augmenté de 35px à 40px */
+                height: 140px; /* Augmenté de 120px à 140px */
+                font-size: 18px; /* Augmenté de 16px à 18px */
             }
             
             .roulette-bet-option {
-                padding: 12px;
+                padding: 15px; /* Augmenté de 12px à 15px */
             }
             
             .bet-label {
-                font-size: 14px;
+                font-size: 18px; /* Augmenté de 14px à 18px */
             }
             
             .bet-color-display {
-                width: 40px;
-                height: 40px;
+                width: 50px; /* Augmenté de 40px à 50px */
+                height: 50px; /* Augmenté de 40px à 50px */
             }
             
             .bet-payout {
-                font-size: 12px;
+                font-size: 16px; /* Augmenté de 12px à 16px */
             }
-            
+        }
+        
+        @media (max-width: 992px) {
             .roulette-controls {
                 flex-direction: column;
                 align-items: center;
-                gap: 20px;
+                gap: 25px; /* Augmenté de 20px à 25px */
             }
             
             .spin-button {
-                padding: 15px 25px;
-                font-size: 16px;
+                padding: 18px 30px; /* Augmenté de 15px 25px à 18px 30px */
+                font-size: 20px; /* Augmenté de 16px à 20px */
             }
             
             .roulette-message {
-                min-width: 350px;
-                padding: 30px;
+                min-width: 400px; /* Augmenté de 350px à 400px */
+                padding: 35px; /* Augmenté de 30px à 35px */
             }
             
             .roulette-message-title {
-                font-size: 24px;
+                font-size: 28px; /* Augmenté de 24px à 28px */
             }
             
             .roulette-message-body {
-                font-size: 16px;
+                font-size: 18px; /* Augmenté de 16px à 18px */
             }
             
             .roulette-message-button {
-                padding: 15px 25px;
-                font-size: 16px;
+                padding: 18px 30px; /* Augmenté de 15px 25px à 18px 30px */
+                font-size: 18px; /* Augmenté de 16px à 18px */
             }
         }
         
         @media (max-width: 768px) {
             .roulette-wheel-container {
-                width: 250px;
-                height: 250px;
+                width: 300px; /* Augmenté de 250px à 300px */
+                height: 300px; /* Augmenté de 250px à 300px */
             }
             
             .roulette-wheel-center {
-                width: 60px;
-                height: 60px;
-                font-size: 16px;
+                width: 70px; /* Augmenté de 60px à 70px */
+                height: 70px; /* Augmenté de 60px à 70px */
+                font-size: 18px; /* Augmenté de 16px à 18px */
             }
             
             .roulette-number {
-                width: 30px;
-                height: 100px;
-                font-size: 14px;
+                width: 35px; /* Augmenté de 30px à 35px */
+                height: 120px; /* Augmenté de 100px à 120px */
+                font-size: 16px; /* Augmenté de 14px à 16px */
             }
             
             .roulette-selection {
                 flex-direction: column;
                 align-items: center;
-                gap: 15px;
+                gap: 20px; /* Augmenté de 15px à 20px */
             }
             
             .roulette-bet-option {
-                width: 80%;
+                width: 90%; /* Augmenté de 80% à 90% */
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
-                padding: 10px 15px;
+                padding: 12px 18px; /* Augmenté de 10px 15px à 12px 18px */
             }
             
             .bet-label {
                 margin-bottom: 0;
-                font-size: 12px;
+                font-size: 16px; /* Augmenté de 12px à 16px */
                 flex: 1;
                 text-align: left;
             }
             
             .bet-color-display {
-                width: 30px;
-                height: 30px;
+                width: 40px; /* Augmenté de 30px à 40px */
+                height: 40px; /* Augmenté de 30px à 40px */
                 margin-bottom: 0;
-                margin-right: 10px;
+                margin-right: 15px; /* Augmenté de 10px à 15px */
             }
             
             .bet-payout {
-                font-size: 10px;
+                font-size: 14px; /* Augmenté de 10px à 14px */
                 margin-top: 0;
             }
             
             .roulette-result {
-                font-size: 14px;
+                font-size: 18px; /* Augmenté de 14px à 18px */
             }
             
             .roulette-camille {
-                font-size: 40px;
-                right: 20px;
-                bottom: 20px;
+                font-size: 60px; /* Augmenté de 40px à 60px */
+                right: 25px; /* Augmenté de 20px à 25px */
+                bottom: 25px; /* Augmenté de 20px à 25px */
             }
             
             .camille-speech {
-                right: 80px;
-                bottom: 60px;
-                max-width: 200px;
-                font-size: 12px;
+                right: 100px; /* Augmenté de 80px à 100px */
+                bottom: 80px; /* Augmenté de 60px à 80px */
+                max-width: 250px; /* Augmenté de 200px à 250px */
+                font-size: 16px; /* Augmenté de 12px à 16px */
             }
             
             .roulette-message {
-                min-width: 300px;
-                padding: 20px;
+                min-width: 320px; /* Augmenté de 300px à 320px */
+                padding: 25px; /* Augmenté de 20px à 25px */
             }
             
             .roulette-message-title {
-                font-size: 20px;
+                font-size: 24px; /* Augmenté de 20px à 24px */
             }
             
             .roulette-message-body {
-                font-size: 14px;
+                font-size: 16px; /* Augmenté de 14px à 16px */
             }
             
             .roulette-message-button {
-                padding: 12px 20px;
-                font-size: 14px;
+                padding: 15px 25px; /* Augmenté de 12px 20px à 15px 25px */
+                font-size: 16px; /* Augmenté de 14px à 16px */
             }
         }
     </style>
@@ -717,11 +756,11 @@
                     <div class="roulette-wheel" id="roulette-wheel">
                         <!-- Les numéros seront ajoutés dynamiquement -->
                     </div>
-                    <div class="roulette-wheel-center">
+                    <div class="roulette-wheel-center" id="spin-center">
                         <span>SPIN</span>
                     </div>
                     <div class="spin-track" id="spin-track"></div>
-                    <div class="roulette-ball-container">
+                    <div class="roulette-ball-container" id="ball-container">
                         <div class="roulette-ball" id="roulette-ball"></div>
                     </div>
                 </div>
@@ -748,7 +787,7 @@
                 
                 <div class="roulette-controls">
                     <div class="roulette-bet-amount">
-                        <button class="bet-button" id="bet-down">-</button>
+                        <button class="bet-button" id="bet-down">−</button>
                         <div class="bet-amount-display">Mise: <span id="bet-amount">10</span></div>
                         <button class="bet-button" id="bet-up">+</button>
                     </div>
@@ -785,9 +824,10 @@
             // Éléments DOM
             const rouletteWheel = document.getElementById('roulette-wheel');
             const rouletteBall = document.getElementById('roulette-ball');
+            const ballContainer = document.getElementById('ball-container');
             const spinTrack = document.getElementById('spin-track');
             const spinButton = document.getElementById('spin-button');
-            const rouletteWheelCenter = document.querySelector('.roulette-wheel-center');
+            const spinCenter = document.getElementById('spin-center');
             const betOptions = document.querySelectorAll('.roulette-bet-option');
             const betDownButton = document.getElementById('bet-down');
             const betUpButton = document.getElementById('bet-up');
@@ -894,21 +934,22 @@
                 updateRouletteDisplay();
                 
                 // Réinitialiser les styles et animations
-                rouletteWheel.style.transform = 'rotate(0deg)';
+                rouletteWheel.style.animation = 'wheelRotate 15s linear infinite';
                 resultDisplay.textContent = '';
                 resultDisplay.classList.remove('win', 'lose');
                 camilleFigure.classList.remove('excited');
                 
-                // Masquer la balle et la piste
+                // Masquer la bille et la piste
                 rouletteBall.style.display = 'none';
                 spinTrack.style.display = 'none';
                 
-                // Réinitialiser l'animation de la balle
+                // Réinitialiser l'animation de la bille
                 rouletteBall.style.animation = 'none';
+                ballContainer.style.animation = 'none';
                 
                 // Configurer les événements
                 spinButton.removeEventListener('click', spinRouletteWheel);
-                rouletteWheelCenter.removeEventListener('click', spinRouletteWheel);
+                spinCenter.removeEventListener('click', spinRouletteWheel);
                 betOptions.forEach(option => {
                     option.removeEventListener('click', selectBet);
                     option.addEventListener('click', selectBet);
@@ -916,7 +957,7 @@
                 betDownButton.removeEventListener('click', decreaseBet);
                 betUpButton.removeEventListener('click', increaseBet);
                 spinButton.addEventListener('click', spinRouletteWheel);
-                rouletteWheelCenter.addEventListener('click', spinRouletteWheel);
+                spinCenter.addEventListener('click', spinRouletteWheel);
                 betDownButton.addEventListener('click', decreaseBet);
                 betUpButton.addEventListener('click', increaseBet);
                 rouletteMessageButton.removeEventListener('click', handleRouletteMessageClose);
@@ -1007,7 +1048,7 @@
                 
                 // Préparer le lancement
                 rouletteState.spinning = true;
-                resultDisplay.textContent = 'La balle tourne...';
+                resultDisplay.textContent = 'La bille tourne...';
                 resultDisplay.classList.remove('win', 'lose');
                 
                 // Animation de Camille
@@ -1058,29 +1099,24 @@
                 rouletteState.winningNumber = rouletteNumbers[winningIndex].number;
                 rouletteState.winningColor = rouletteNumbers[winningIndex].color;
                 
-                // Calculer l'angle de rotation
-                const rotationAngle = 360 * 10 + (360 - (winningIndex * (360 / rouletteNumbers.length)));
-                
                 // Jouer un son
                 playSound('start');
                 
-                // Afficher la balle et la piste
+                // Afficher et positionner la bille
                 rouletteBall.style.display = 'block';
                 spinTrack.style.display = 'block';
                 
-                // Animer la roue
-                rouletteWheel.style.transition = 'transform 5s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                rouletteWheel.style.transform = `rotate(${rotationAngle}deg)`;
-                
-                // Animer la balle
-                setTimeout(() => {
-                    rouletteBall.style.animation = 'spinBall 5s forwards';
-                }, 10);
+                // Animation de la bille qui tourne dans le sens opposé puis ralentit
+                ballContainer.style.animation = 'none';
+                rouletteBall.style.animation = 'spinBall 5s forwards';
                 
                 // Attendre la fin de l'animation
                 setTimeout(() => {
                     // Arrêter l'animation de la piste
                     spinTrack.style.display = 'none';
+                    
+                    // Animation finale de la bille qui se place sur le numéro gagnant
+                    ballContainer.style.setProperty('--finalRotation', `${winningIndex * (360 / rouletteNumbers.length)}deg`);
                     
                     // Arrêter l'animation de Camille
                     camilleFigure.classList.remove('excited');

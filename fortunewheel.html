@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fortune Wheel vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE FORTUNE WHEEL --- */
+        #fortune-game {
+            background: linear-gradient(135deg, #090F2E, #2C3364);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fortune-container {
+            width: 95%;
+            height: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: rgba(25, 32, 72, 0.7);
+            border: 8px solid #FFC107;
+            border-radius: 25px;
+            padding: 30px;
+            margin-top: 50px;
+            box-shadow: 0 0 40px rgba(255, 193, 7, 0.4);
+        }
+        
+        .fortune-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .fortune-credits {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #FFC107;
+            padding: 18px 25px;
+            border: 4px solid #FFC107;
+            border-radius: 12px;
+            font-size: 22px;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
+            font-weight: bold;
+        }
+        
+        .fortune-wheel-container {
+            position: relative;
+            width: 450px;
+            height: 450px;
+            margin-bottom: 40px;
+            perspective: 1000px;
+        }
+        
+        .fortune-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(255, 193, 7, 0.6), 
+                inset 0 0 60px rgba(0, 0, 0, 0.6);
+            transform-style: preserve-3d;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            background: #111;
+            border: 15px solid #FFC107;
+            background-image: repeating-conic-gradient(
+                from 0deg,
+                #9C27B0 0deg 20deg,
+                #3F51B5 20deg 40deg,
+                #4CAF50 40deg 60deg,
+                #FF5722 60deg 80deg,
+                #F44336 80deg 100deg,
+                #FFEB3B 100deg 120deg,
+                #2196F3 120deg 140deg,
+                #673AB7 140deg 160deg,
+                #FF9800 160deg 180deg,
+                #E91E63 180deg 200deg,
+                #00BCD4 200deg 220deg,
+                #8BC34A 220deg 240deg,
+                #FF4081 240deg 260deg,
+                #009688 260deg 280deg,
+                #CDDC39 280deg 300deg,
+                #795548 300deg 320deg,
+                #FFEB3B 320deg 340deg,
+                #3F51B5 340deg 360deg
+            );
+        }
+        
+        .fortune-wheel::after {
+            content: '';
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+        
+        .fortune-wheel-center {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, #FFD700, #FFC107);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #800000;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            border: 4px solid #FFD700;
+            position: absolute;
+            cursor: pointer;
+        }
+        
+        .fortune-wheel-center:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+        }
+        
+        .fortune-wheel-segment {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            transform-origin: center;
+            display: flex;
+            justify-content: center;
+            clip-path: polygon(50% 0%, 50% 50%, 100% 50%, 100% 0%);
+            transform: rotate(var(--rotation));
+        }
+        
+        .segment-text {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%) rotate(90deg);
+            color: white;
+            font-size: 26px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            z-index: 5;
+            width: 80px;
+            text-align: center;
+        }
+        
+        .fortune-marker {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background-color: #FFD700;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            top: -30px;
+            left: calc(50% - 20px);
+            z-index: 20;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .fortune-selection {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 95%;
+            margin-top: 40px;
+            gap: 20px;
+        }
+        
+        .fortune-bet-option {
+            background: linear-gradient(to bottom, #333, #222);
+            color: white;
+            border: 4px solid #FFC107;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 22%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+        
+        .fortune-bet-option:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 193, 7, 0.6);
+        }
+        
+        .fortune-bet-option.selected {
+            border-color: white;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
+            transform: scale(1.08);
+        }
+        
+        .bet-label {
+            margin-bottom: 18px;
+            font-size: 20px;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+            font-weight: bold;
+        }
+        
+        .bet-multiplier {
+            font-size: 32px;
+            color: #FFC107;
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+            font-weight: bold;
+        }
+        
+        .bet-desc {
+            font-size: 16px;
+            color: #bbbbbb;
+            text-align: center;
+        }
+        
+        .fortune-controls {
+            display: flex;
+            justify-content: space-around;
+            width: 95%;
+            margin-top: 40px;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 20px;
+            border: 3px solid rgba(255, 193, 7, 0.6);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+        
+        .fortune-bet-amount {
+            display: flex;
+            align-items: center;
+        }
+        
+        .bet-button {
+            background: linear-gradient(to bottom, #666, #444);
+            color: white;
+            border: 4px solid #FFC107;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+        }
+        
+        .bet-button:hover:not(:disabled) {
+            background: linear-gradient(to bottom, #888, #666);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.5);
+        }
+        
+        .bet-button:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .bet-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .bet-amount-display {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #FFC107;
+            padding: 18px 25px;
+            border: 4px solid #FFC107;
+            border-radius: 12px;
+            min-width: 150px;
+            text-align: center;
+            font-size: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+            font-weight: bold;
+        }
+        
+        .spin-button {
+            background: linear-gradient(to bottom, #FFC107, #FF9800);
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            padding: 22px 35px;
+            font-family: 'Arial', sans-serif;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+        }
+        
+        .spin-button::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .spin-button:hover:not(:disabled) {
+            background: linear-gradient(to bottom, #FFD54F, #FFC107);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+        }
+        
+        .spin-button:hover::after {
+            opacity: 1;
+        }
+        
+        .spin-button:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .spin-button:disabled {
+            background: linear-gradient(to bottom, #bbb, #999);
+            cursor: not-allowed;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            color: #666;
+        }
+        
+        .fortune-result {
+            margin-top: 30px;
+            min-height: 60px;
+            font-size: 22px;
+            color: white;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 18px;
+            border-radius: 15px;
+            width: 90%;
+            border: 3px solid #FFC107;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .fortune-result.win {
+            background-color: rgba(76, 175, 80, 0.8);
+            border-color: #FFEB3B;
+            box-shadow: 0 0 25px rgba(255, 235, 59, 0.7);
+            animation: resultPulse 1.5s infinite;
+        }
+        
+        .fortune-result.lose {
+            background-color: rgba(244, 67, 54, 0.8);
+        }
+        
+        @keyframes resultPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+        
+        .fortune-camille {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 75px;
+            filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.6));
+            transition: all 0.3s;
+        }
+        
+        .fortune-camille.excited {
+            animation: camilleExcited 0.5s infinite alternate;
+        }
+        
+        @keyframes camilleExcited {
+            0% { transform: rotate(-6deg) scale(1.05); }
+            100% { transform: rotate(6deg) scale(1.15); }
+        }
+        
+        .fortune-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.92);
+            color: white;
+            padding: 50px;
+            border-radius: 20px;
+            border: 5px solid #FFC107;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 500px;
+            box-shadow: 0 0 50px rgba(255, 193, 7, 0.5);
+        }
+        
+        .fortune-message-title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #FFC107;
+            text-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
+            font-weight: bold;
+        }
+        
+        .fortune-message-body {
+            margin-bottom: 40px;
+            line-height: 1.7;
+            font-size: 20px;
+        }
+        
+        .fortune-message-button {
+            background: linear-gradient(to bottom, #FFC107, #FF9800);
+            color: #000;
+            border: none;
+            padding: 22px 40px;
+            font-family: 'Arial', sans-serif;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+        }
+        
+        .fortune-message-button:hover {
+            background: linear-gradient(to bottom, #FFD54F, #FFC107);
+            transform: scale(1.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .fortune-message-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 18px;
+            max-width: 300px;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+            border: 3px solid #333;
+        }
+        
+        .camille-speech {
+            right: 150px;
+            bottom: 100px;
+        }
+        
+        .camille-speech:after {
+            content: "";
+            position: absolute;
+            right: -20px;
+            bottom: 35px;
+            border: 20px solid transparent;
+            border-left-color: white;
+            margin-top: -20px;
+        }
+        
+        .back-button, .game-victory-counter {
+            position: absolute;
+            top: 25px;
+            z-index: 100;
+            font-size: 20px;
+            padding: 15px 22px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 3px solid #fff;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .back-button {
+            left: 25px;
+        }
+        
+        .game-victory-counter {
+            right: 25px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .fortune-wheel-container {
+                width: 400px;
+                height: 400px;
+            }
+            
+            .fortune-wheel-center {
+                width: 90px;
+                height: 90px;
+                font-size: 22px;
+            }
+            
+            .fortune-bet-option {
+                width: 30%;
+            }
+            
+            .bet-multiplier {
+                font-size: 28px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .fortune-wheel-container {
+                width: 350px;
+                height: 350px;
+            }
+            
+            .fortune-wheel-center {
+                width: 80px;
+                height: 80px;
+                font-size: 20px;
+            }
+            
+            .fortune-controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 25px;
+            }
+            
+            .spin-button {
+                padding: 18px 30px;
+                font-size: 20px;
+            }
+            
+            .fortune-message {
+                min-width: 400px;
+                padding: 35px;
+            }
+            
+            .fortune-message-title {
+                font-size: 28px;
+            }
+            
+            .fortune-message-body {
+                font-size: 18px;
+            }
+            
+            .fortune-message-button {
+                padding: 18px 30px;
+                font-size: 18px;
+            }
+            
+            .fortune-bet-option {
+                width: 45%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .fortune-wheel-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .fortune-wheel-center {
+                width: 70px;
+                height: 70px;
+                font-size: 18px;
+            }
+            
+            .fortune-result {
+                font-size: 18px;
+            }
+            
+            .fortune-camille {
+                font-size: 60px;
+                right: 25px;
+                bottom: 25px;
+            }
+            
+            .camille-speech {
+                right: 100px;
+                bottom: 80px;
+                max-width: 250px;
+                font-size: 16px;
+            }
+            
+            .fortune-message {
+                min-width: 320px;
+                padding: 25px;
+            }
+            
+            .fortune-message-title {
+                font-size: 24px;
+            }
+            
+            .fortune-message-body {
+                font-size: 16px;
+            }
+            
+            .fortune-message-button {
+                padding: 15px 25px;
+                font-size: 16px;
+            }
+            
+            .fortune-bet-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Fortune Wheel -->
+        <div id="fortune-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="fortune-victories">0</span></div>
+            
+            <div class="fortune-container">
+                <div class="fortune-header">
+                    <div class="fortune-credits">Crédits: <span id="fortune-credits">1000</span></div>
+                </div>
+                
+                <div class="fortune-wheel-container">
+                    <div class="fortune-marker"></div>
+                    <div class="fortune-wheel" id="fortune-wheel">
+                        <!-- Les segments seront ajoutés dynamiquement -->
+                    </div>
+                    <div class="fortune-wheel-center" id="spin-center">
+                        <span>SPIN</span>
+                    </div>
+                </div>
+                
+                <div class="fortune-result" id="fortune-result"></div>
+                
+                <div class="fortune-selection">
+                    <div class="fortune-bet-option" data-multiplier="2">
+                        <div class="bet-label">PAIR</div>
+                        <div class="bet-multiplier">×2</div>
+                        <div class="bet-desc">Multiplie par 2 si la roue tombe sur un segment pair</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="2">
+                        <div class="bet-label">IMPAIR</div>
+                        <div class="bet-multiplier">×2</div>
+                        <div class="bet-desc">Multiplie par 2 si la roue tombe sur un segment impair</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="3">
+                        <div class="bet-label">x3</div>
+                        <div class="bet-multiplier">×3</div>
+                        <div class="bet-desc">Multiplie par 3 si la roue tombe sur un segment x3</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="5">
+                        <div class="bet-label">x5</div>
+                        <div class="bet-multiplier">×5</div>
+                        <div class="bet-desc">Multiplie par 5 si la roue tombe sur un segment x5</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="10">
+                        <div class="bet-label">x10</div>
+                        <div class="bet-multiplier">×10</div>
+                        <div class="bet-desc">Multiplie par 10 si la roue tombe sur un segment x10</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="20">
+                        <div class="bet-label">x20</div>
+                        <div class="bet-multiplier">×20</div>
+                        <div class="bet-desc">Multiplie par 20 si la roue tombe sur un segment x20</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="50">
+                        <div class="bet-label">x50</div>
+                        <div class="bet-multiplier">×50</div>
+                        <div class="bet-desc">Multiplie par 50 si la roue tombe sur un segment x50</div>
+                    </div>
+                    <div class="fortune-bet-option" data-multiplier="100">
+                        <div class="bet-label">x100</div>
+                        <div class="bet-multiplier">×100</div>
+                        <div class="bet-desc">Multiplie par 100 si la roue tombe sur un segment x100</div>
+                    </div>
+                </div>
+                
+                <div class="fortune-controls">
+                    <div class="fortune-bet-amount">
+                        <button class="bet-button" id="bet-down">−</button>
+                        <div class="bet-amount-display">Mise: <span id="bet-amount">50</span></div>
+                        <button class="bet-button" id="bet-up">+</button>
+                    </div>
+                    
+                    <button class="spin-button" id="spin-button">TOURNER</button>
+                </div>
+                
+                <div class="fortune-camille" id="fortune-camille">👨</div>
+            </div>
+            
+            <div id="camille-speech" class="speech-bubble camille-speech"></div>
+            
+            <div id="fortune-message" class="fortune-message">
+                <div id="fortune-message-title" class="fortune-message-title"></div>
+                <div id="fortune-message-body" class="fortune-message-body"></div>
+                <button id="fortune-message-button" class="fortune-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('fortune-victories').textContent = gameVictories.fortune || 0;
+            };
+            
+            // Éléments DOM
+            const fortuneWheel = document.getElementById('fortune-wheel');
+            const spinCenter = document.getElementById('spin-center');
+            const spinButton = document.getElementById('spin-button');
+            const betOptions = document.querySelectorAll('.fortune-bet-option');
+            const betDownButton = document.getElementById('bet-down');
+            const betUpButton = document.getElementById('bet-up');
+            const betAmountDisplay = document.getElementById('bet-amount');
+            const creditsDisplay = document.getElementById('fortune-credits');
+            const resultDisplay = document.getElementById('fortune-result');
+            const camilleFigure = document.getElementById('fortune-camille');
+            const camilleSpeech = document.getElementById('camille-speech');
+            const fortuneMessage = document.getElementById('fortune-message');
+            const fortuneMessageTitle = document.getElementById('fortune-message-title');
+            const fortuneMessageBody = document.getElementById('fortune-message-body');
+            const fortuneMessageButton = document.getElementById('fortune-message-button');
+            
+            // Configuration des segments de la roue
+            const wheelSegments = [
+                { value: 1, multiplier: 1, color: '#9C27B0', type: 'odd' },
+                { value: 2, multiplier: 2, color: '#3F51B5', type: 'even' },
+                { value: 3, multiplier: 3, color: '#4CAF50', type: 'odd' },
+                { value: 4, multiplier: 1, color: '#FF5722', type: 'even' },
+                { value: 5, multiplier: 5, color: '#F44336', type: 'odd' },
+                { value: 6, multiplier: 1, color: '#FFEB3B', type: 'even' },
+                { value: 7, multiplier: 1, color: '#2196F3', type: 'odd' },
+                { value: 8, multiplier: 2, color: '#673AB7', type: 'even' },
+                { value: 9, multiplier: 1, color: '#FF9800', type: 'odd' },
+                { value: 10, multiplier: 10, color: '#E91E63', type: 'even' },
+                { value: 11, multiplier: 1, color: '#00BCD4', type: 'odd' },
+                { value: 12, multiplier: 1, color: '#8BC34A', type: 'even' },
+                { value: 13, multiplier: 1, color: '#FF4081', type: 'odd' },
+                { value: 14, multiplier: 1, color: '#009688', type: 'even' },
+                { value: 15, multiplier: 3, color: '#CDDC39', type: 'odd' },
+                { value: 16, multiplier: 1, color: '#795548', type: 'even' },
+                { value: 20, multiplier: 20, color: '#FFEB3B', type: 'even' },
+                { value: 50, multiplier: 50, color: '#3F51B5', type: 'even' },
+                { value: 100, multiplier: 100, color: '#F44336', type: 'even' },
+                { value: 0, multiplier: 0, color: '#000000', type: 'zero' }
+            ];
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je mise toujours sur les gros multiplicateurs !",
+                "Laisse-moi te montrer comment on gagne à la roue de la fortune !",
+                "Je sens que le x100 va sortir cette fois-ci !",
+                "J'ai un système infaillible pour ce jeu !",
+                "Tu ne peux pas battre mon instinct pour la roue !",
+                "Le x50 va sortir... ou pas !",
+                "La fortune wheel, c'est mon jeu préféré !",
+                "La chance est de mon côté aujourd'hui !",
+                "Je mise tout sur le x20, c'est ma stratégie secrète !"
+            ];
+            
+            // État du jeu
+            let fortuneState = {
+                credits: 1000,
+                betAmount: 50,
+                selectedBet: null,
+                spinning: false,
+                winningSegment: null,
+                camilleCredits: 1000,
+                camilleBet: null,
+                camilleMultiplier: null,
+                gamesPlayed: 0,
+                playerWins: 0,
+                camilleWins: 0
+            };
+            
+            // Initialiser le jeu
+            function initFortuneGame() {
+                // Réinitialiser l'état du jeu
+                fortuneState = {
+                    credits: 1000,
+                    betAmount: 50,
+                    selectedBet: null,
+                    spinning: false,
+                    winningSegment: null,
+                    camilleCredits: 1000,
+                    camilleBet: null,
+                    camilleMultiplier: null,
+                    gamesPlayed: 0,
+                    playerWins: 0,
+                    camilleWins: 0
+                };
+                
+                // Créer la roue de la fortune
+                createFortuneWheel();
+                
+                // Mettre à jour l'affichage
+                updateFortuneDisplay();
+                
+                // Réinitialiser les styles et animations
+                fortuneWheel.style.transform = 'rotate(0deg)';
+                resultDisplay.textContent = '';
+                resultDisplay.classList.remove('win', 'lose');
+                camilleFigure.classList.remove('excited');
+                
+                // Configurer les événements
+                spinButton.removeEventListener('click', spinFortuneWheel);
+                spinCenter.removeEventListener('click', spinFortuneWheel);
+                betOptions.forEach(option => {
+                    option.removeEventListener('click', selectBet);
+                    option.addEventListener('click', selectBet);
+                });
+                betDownButton.removeEventListener('click', decreaseBet);
+                betUpButton.removeEventListener('click', increaseBet);
+                spinButton.addEventListener('click', spinFortuneWheel);
+                spinCenter.addEventListener('click', spinFortuneWheel);
+                betDownButton.addEventListener('click', decreaseBet);
+                betUpButton.addEventListener('click', increaseBet);
+                fortuneMessageButton.removeEventListener('click', handleFortuneMessageClose);
+                fortuneMessageButton.addEventListener('click', handleFortuneMessageClose);
+                
+                // Désélectionner tous les paris
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Masquer le message
+                fortuneMessage.style.display = 'none';
+                
+                // Message de bienvenue
+                showCamilleSpeech("Prêt à tenter ta chance à la roue de la fortune ? Je vais te montrer comment on gagne !");
+            }
+            
+            // Créer la roue de la fortune
+            function createFortuneWheel() {
+                fortuneWheel.innerHTML = '';
+                
+                // Créer les segments de la roue
+                wheelSegments.forEach((segment, index) => {
+                    const segmentAngle = 360 / wheelSegments.length;
+                    const rotation = index * segmentAngle;
+                    
+                    const segmentElement = document.createElement('div');
+                    segmentElement.className = 'fortune-wheel-segment';
+                    segmentElement.style.setProperty('--rotation', `${rotation}deg`);
+                    segmentElement.style.transform = `rotate(${rotation}deg)`;
+                    segmentElement.style.backgroundColor = segment.color;
+                    
+                    const segmentText = document.createElement('div');
+                    segmentText.className = 'segment-text';
+                    segmentText.textContent = segment.multiplier === 1 ? (segment.value === 0 ? '0' : '×1') : `×${segment.multiplier}`;
+                    segmentElement.appendChild(segmentText);
+                    
+                    fortuneWheel.appendChild(segmentElement);
+                });
+            }
+            
+            // Mettre à jour l'affichage
+            function updateFortuneDisplay() {
+                creditsDisplay.textContent = fortuneState.credits;
+                betAmountDisplay.textContent = fortuneState.betAmount;
+                
+                // Activer/désactiver le bouton de lancement
+                const canSpin = !fortuneState.spinning && fortuneState.selectedBet !== null && fortuneState.credits >= fortuneState.betAmount;
+                spinButton.disabled = !canSpin;
+                
+                // Activer/désactiver les boutons de mise
+                betDownButton.disabled = fortuneState.spinning || fortuneState.betAmount <= 25;
+                betUpButton.disabled = fortuneState.spinning || fortuneState.betAmount >= 500 || fortuneState.betAmount >= fortuneState.credits;
+            }
+            
+            // Sélectionner un pari
+            function selectBet() {
+                if (fortuneState.spinning) return;
+                
+                // Désélectionner tous les paris
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Sélectionner le pari actuel
+                this.classList.add('selected');
+                fortuneState.selectedBet = this.getAttribute('data-multiplier');
+                
+                // Mettre à jour l'affichage
+                updateFortuneDisplay();
+                
+                // Jouer un son
+                playSound('select');
+            }
+            
+            // Diminuer la mise
+            function decreaseBet() {
+                if (fortuneState.spinning) return;
+                
+                fortuneState.betAmount = Math.max(25, fortuneState.betAmount - 25);
+                updateFortuneDisplay();
+                playSound('select');
+            }
+            
+            // Augmenter la mise
+            function increaseBet() {
+                if (fortuneState.spinning) return;
+                
+                fortuneState.betAmount = Math.min(fortuneState.credits, Math.min(500, fortuneState.betAmount + 25));
+                updateFortuneDisplay();
+                playSound('select');
+            }
+            
+            // Faire tourner la roue
+            function spinFortuneWheel() {
+                if (fortuneState.spinning || fortuneState.selectedBet === null || fortuneState.credits < fortuneState.betAmount) return;
+                
+                // Préparer le lancement
+                fortuneState.spinning = true;
+                resultDisplay.textContent = 'La roue tourne...';
+                resultDisplay.classList.remove('win', 'lose');
+                
+                // Animation de Camille
+                camilleFigure.classList.add('excited');
+                
+                // Déduire la mise
+                fortuneState.credits -= fortuneState.betAmount;
+                
+                // Choisir le pari de Camille (aléatoire)
+                const camilleMultiplierOptions = [2, 3, 5, 10, 20, 50, 100];
+                const camilleMultiplierIndex = Math.floor(Math.random() * camilleMultiplierOptions.length);
+                fortuneState.camilleMultiplier = camilleMultiplierOptions[camilleMultiplierIndex];
+                
+                // Montrer le pari de Camille
+                showCamilleSpeech(`Je mise sur le x${fortuneState.camilleMultiplier} cette fois !`);
+                
+                // Mettre à jour l'affichage
+                updateFortuneDisplay();
+                
+                // Choisir un segment gagnant aléatoire
+                const winningIndex = Math.floor(Math.random() * wheelSegments.length);
+                fortuneState.winningSegment = wheelSegments[winningIndex];
+                
+                // Calculer l'angle de rotation - plusieurs tours complets plus l'angle du segment gagnant
+                const segmentAngle = 360 / wheelSegments.length;
+                const destinationAngle = 360 * 5 + (winningIndex * segmentAngle);
+                
+                // Jouer un son
+                playSound('start');
+                
+                // Animer la roue
+                fortuneWheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+                fortuneWheel.style.transform = `rotate(-${destinationAngle}deg)`;
+                
+                // Attendre la fin de l'animation
+                setTimeout(() => {
+                    // Arrêter l'animation de Camille
+                    camilleFigure.classList.remove('excited');
+                    
+                    // Vérifier les résultats
+                    checkFortuneResults();
+                    
+                    // Jeu terminé, activer les boutons
+                    fortuneState.spinning = false;
+                    updateFortuneDisplay();
+                    
+                    // Incrémenter le compteur de parties jouées
+                    fortuneState.gamesPlayed++;
+                    
+                    // Vérifier si le joueur a gagné ou perdu la partie globale
+                    checkFortuneGameEnd();
+                }, 5500);
+            }
+            
+            // Vérifier les résultats
+            function checkFortuneResults() {
+                let playerWin = false;
+                let camilleWin = false;
+                let winMessage = '';
+                
+                // Effet sonore pour le résultat
+                setTimeout(() => {
+                    playSound('card');
+                }, 300);
+                
+                // Vérifier si le joueur a gagné
+                let playerMultiplier = parseInt(fortuneState.selectedBet);
+                let winningMultiplier = fortuneState.winningSegment.multiplier;
+                let segmentType = fortuneState.winningSegment.type;
+                
+                let playerWinCondition;
+                if (playerMultiplier === 2 && (segmentType === 'odd' || segmentType === 'even')) {
+                    // Si le joueur a parié sur pair/impair
+                    if (segmentType === 'odd' && betOptions[1].classList.contains('selected')) {
+                        playerWinCondition = true; // A parié sur impair et a gagné
+                    } else if (segmentType === 'even' && betOptions[0].classList.contains('selected')) {
+                        playerWinCondition = true; // A parié sur pair et a gagné
+                    } else {
+                        playerWinCondition = false;
+                    }
+                } else {
+                    // Si le joueur a parié sur un multiplicateur spécifique
+                    playerWinCondition = (playerMultiplier === winningMultiplier && winningMultiplier > 1);
+                }
+                
+                if (playerWinCondition) {
+                    const winAmount = fortuneState.betAmount * playerMultiplier;
+                    fortuneState.credits += winAmount;
+                    winMessage = `Vous avez misé sur ${playerMultiplier === 2 && betOptions[0].classList.contains('selected') ? 'PAIR' : playerMultiplier === 2 && betOptions[1].classList.contains('selected') ? 'IMPAIR' : 'x' + playerMultiplier} et gagné ${winAmount} crédits !`;
+                    playerWin = true;
+                    fortuneState.playerWins++;
+                    
+                    resultDisplay.classList.add('win');
+                    setTimeout(() => playSound('win'), 500);
+                } else {
+                    if (winningMultiplier === 0) {
+                        winMessage = `La roue est tombée sur 0. Tout le monde perd !`;
+                    } else {
+                        winMessage = `La roue est tombée sur x${winningMultiplier}. Vous perdez votre mise de ${fortuneState.betAmount} crédits.`;
+                    }
+                    resultDisplay.classList.add('lose');
+                    setTimeout(() => playSound('lose'), 500);
+                }
+                
+                // Vérifier si Camille a gagné
+                if (fortuneState.camilleMultiplier === winningMultiplier && winningMultiplier > 1) {
+                    camilleWin = true;
+                    fortuneState.camilleWins++;
+                    if (playerWin) {
+                        showCamilleSpeech("Nous avons tous les deux gagné cette fois !");
+                    } else {
+                        showCamilleSpeech("Ha ha ! J'ai gagné et tu as perdu ! Je te l'avais dit !");
+                    }
+                } else {
+                    if (playerWin) {
+                        showCamilleSpeech("Non ! J'ai perdu ! C'est impossible, j'ai un système infaillible !");
+                    } else if (winningMultiplier === 0) {
+                        showCamilleSpeech("Zéro ! Personne ne gagne... quelle malchance !");
+                    } else {
+                        showCamilleSpeech("Nous avons tous les deux perdu... ce n'est pas notre jour !");
+                    }
+                }
+                
+                resultDisplay.textContent = winMessage;
+                
+                // Mettre à jour l'affichage
+                updateFortuneDisplay();
+            }
+            
+            // Vérifier si le jeu est terminé
+            function checkFortuneGameEnd() {
+                if (fortuneState.credits < 25) {
+                    // Plus assez de crédits pour jouer
+                    endFortuneGame('lose');
+                } else if (fortuneState.credits >= 2000) {
+                    // Le joueur a doublé ses crédits
+                    endFortuneGame('win');
+                } else if (fortuneState.gamesPlayed >= 10) {
+                    // 10 tours joués, comparer les victoires
+                    if (fortuneState.playerWins > fortuneState.camilleWins) {
+                        endFortuneGame('win');
+                    } else if (fortuneState.playerWins < fortuneState.camilleWins) {
+                        endFortuneGame('lose');
+                    } else {
+                        // Égalité, comparer les crédits
+                        if (fortuneState.credits > 1000) {
+                            endFortuneGame('win');
+                        } else {
+                            endFortuneGame('lose');
+                        }
+                    }
+                }
+            }
+            
+            // Terminer le jeu
+            function endFortuneGame(result) {
+                let title, body;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE !";
+                        body = `Félicitations ! Vous avez terminé avec ${fortuneState.credits} crédits et ${fortuneState.playerWins} victoires, battant Camille Le Nul à la roue de la fortune !`;
+                        playSound('win');
+                        
+                        // Ajouter une victoire
+                        if (!gameVictories.fortune) {
+                            gameVictories.fortune = 0;
+                        }
+                        addVictory('fortune');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE !";
+                        body = `Dommage ! Vous avez terminé avec seulement ${fortuneState.credits} crédits et ${fortuneState.playerWins} victoires. Camille Le Nul vous a battu à la roue de la fortune !`;
+                        playSound('lose');
+                        break;
+                }
+                
+                // Afficher le message
+                fortuneMessageTitle.textContent = title;
+                fortuneMessageBody.textContent = body;
+                fortuneMessage.style.display = 'block';
+            }
+            
+            // Fermer le message
+            function handleFortuneMessageClose() {
+                fortuneMessage.style.display = 'none';
+                initFortuneGame(); // Réinitialiser le jeu
+            }
+            
+            // Afficher un message de Camille
+            function showCamilleSpeech(text) {
+                camilleSpeech.textContent = text;
+                camilleSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    camilleSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu
+            initFortuneGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>
