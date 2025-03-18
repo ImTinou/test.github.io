@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine à Sous vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE MACHINE À SOUS --- */
+        #slots-game {
+            background-color: #1e1e3c; /* Bleu très foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slots-machine {
+            width: 90%;
+            max-width: 600px;
+            height: 80%;
+            background-color: #800020; /* Bordeaux */
+            border: 8px solid #ffd700; /* Or */
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            position: relative;
+        }
+        
+        .slots-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 3px solid #ffd700;
+            margin-bottom: 20px;
+        }
+        
+        .slots-title {
+            font-size: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .slots-credits {
+            background-color: black;
+            color: #ffd700;
+            padding: 10px 15px;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .slots-reels-container {
+            width: 100%;
+            height: 200px;
+            background-color: black;
+            border: 5px solid #ffd700;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .slots-reel {
+            height: 180px;
+            width: 30%;
+            background-color: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slots-symbol {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+        
+        .slots-controls {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .slots-spin-button {
+            background-color: #ffd700;
+            color: #800020;
+            border: none;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .slots-spin-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+        }
+        
+        .slots-spin-button:active {
+            transform: scale(0.95);
+        }
+        
+        .slots-spin-button.disabled {
+            background-color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .slots-bet-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .slots-bet-button {
+            background-color: #444;
+            color: white;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 10px;
+        }
+        
+        .slots-bet-button:hover {
+            background-color: #666;
+        }
+        
+        .slots-bet-amount {
+            background-color: black;
+            color: #ffd700;
+            padding: 10px 15px;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .slots-result {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+            min-height: 40px;
+            color: #ffd700;
+            font-size: 14px;
+        }
+        
+        .slots-camille {
+            position: absolute;
+            bottom: 20px;
+            right: -50px;
+            font-size: 60px;
+            transform: rotate(10deg);
+        }
+        
+        .slots-paytable {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            font-size: 10px;
+            line-height: 1.6;
+            max-width: 200px;
+            z-index: 100;
+        }
+        
+        .slots-paytable-title {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .slots-paytable-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .slots-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #ffd700;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+        }
+        
+        .slots-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+        
+        .slots-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .slots-message-button {
+            background-color: #ffd700;
+            color: #800020;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .slots-message-button:hover {
+            background-color: white;
+            transform: scale(1.1);
+        }
+        
+        @keyframes spinReel {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-900px); }
+        }
+        
+        @keyframes winGlow {
+            0% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+            100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+        }
+        
+        .slots-win {
+            animation: winGlow 1s infinite;
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .camille-speech {
+            right: 80px;
+            bottom: 100px;
+        }
+        
+        .camille-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-left-color: white;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Machine à Sous -->
+        <div id="slots-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="slots-victories">0</span></div>
+            
+            <div class="slots-paytable">
+                <div class="slots-paytable-title">TABLE DE PAIEMENTS</div>
+                <div class="slots-paytable-row">
+                    <span>🍒 🍒 🍒</span>
+                    <span>x3</span>
+                </div>
+                <div class="slots-paytable-row">
+                    <span>🍋 🍋 🍋</span>
+                    <span>x5</span>
+                </div>
+                <div class="slots-paytable-row">
+                    <span>🍊 🍊 🍊</span>
+                    <span>x8</span>
+                </div>
+                <div class="slots-paytable-row">
+                    <span>🍇 🍇 🍇</span>
+                    <span>x10</span>
+                </div>
+                <div class="slots-paytable-row">
+                    <span>🍉 🍉 🍉</span>
+                    <span>x15</span>
+                </div>
+                <div class="slots-paytable-row">
+                    <span>💎 💎 💎</span>
+                    <span>x50</span>
+                </div>
+                <div class="slots-paytable-row">
+                    <span>🎰 🎰 🎰</span>
+                    <span>x100</span>
+                </div>
+            </div>
+            
+            <div class="slots-machine">
+                <div class="slots-header">
+                    <div class="slots-title">MACHINE À SOUS</div>
+                    <div class="slots-credits">Crédits: <span id="slots-credits">100</span></div>
+                </div>
+                
+                <div class="slots-reels-container">
+                    <div class="slots-reel" id="reel1">
+                        <div class="slots-symbol">🍒</div>
+                    </div>
+                    <div class="slots-reel" id="reel2">
+                        <div class="slots-symbol">🍋</div>
+                    </div>
+                    <div class="slots-reel" id="reel3">
+                        <div class="slots-symbol">🍊</div>
+                    </div>
+                </div>
+                
+                <div class="slots-bet-controls">
+                    <button class="slots-bet-button" id="bet-down">-</button>
+                    <div class="slots-bet-amount">Mise: <span id="bet-amount">10</span></div>
+                    <button class="slots-bet-button" id="bet-up">+</button>
+                </div>
+                
+                <div class="slots-result" id="slots-result"></div>
+                
+                <div class="slots-controls">
+                    <button class="slots-spin-button" id="spin-button">SPIN</button>
+                </div>
+                
+                <div class="slots-camille" id="slots-camille">👨</div>
+            </div>
+            
+            <div id="camille-speech" class="speech-bubble camille-speech"></div>
+            
+            <div id="slots-message" class="slots-message">
+                <div id="slots-message-title" class="slots-message-title"></div>
+                <div id="slots-message-body" class="slots-message-body"></div>
+                <button id="slots-message-button" class="slots-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('slots-victories').textContent = gameVictories.slots || 0;
+            };
+            
+            // Éléments DOM
+            const reel1 = document.getElementById('reel1');
+            const reel2 = document.getElementById('reel2');
+            const reel3 = document.getElementById('reel3');
+            const spinButton = document.getElementById('spin-button');
+            const betDownButton = document.getElementById('bet-down');
+            const betUpButton = document.getElementById('bet-up');
+            const betAmountDisplay = document.getElementById('bet-amount');
+            const creditsDisplay = document.getElementById('slots-credits');
+            const resultDisplay = document.getElementById('slots-result');
+            const slotsMachine = document.querySelector('.slots-machine');
+            const camilleFigure = document.getElementById('slots-camille');
+            const camilleSpeech = document.getElementById('camille-speech');
+            const slotsMessage = document.getElementById('slots-message');
+            const slotsMessageTitle = document.getElementById('slots-message-title');
+            const slotsMessageBody = document.getElementById('slots-message-body');
+            const slotsMessageButton = document.getElementById('slots-message-button');
+            
+            // Symboles disponibles
+            const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '💎', '🎰'];
+            
+            // Valeurs des combinaisons
+            const payouts = {
+                '🍒🍒🍒': 3,
+                '🍋🍋🍋': 5,
+                '🍊🍊🍊': 8,
+                '🍇🍇🍇': 10,
+                '🍉🍉🍉': 15,
+                '💎💎💎': 50,
+                '🎰🎰🎰': 100
+            };
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je sens que je vais gagner gros aujourd'hui !",
+                "Cette machine est truquée en ma faveur !",
+                "J'ai un 6ème sens pour les machines à sous !",
+                "Regarde comme je suis chanceux !",
+                "Je connais tous les secrets de cette machine !",
+                "Mes poches sont prêtes à se remplir !",
+                "Encore un tour ! Je suis sûr que je vais gagner !",
+                "La chance est de mon côté aujourd'hui !",
+                "Je vais te montrer comment jouer aux machines à sous !"
+            ];
+            
+            // État du jeu
+            let slotsState = {
+                credits: 100,
+                betAmount: 10,
+                spinning: false,
+                reelSymbols: [],
+                camilleBet: 0,
+                camilleCredits: 100,
+                gamesPlayed: 0,
+                playerWins: 0,
+                camilleWins: 0
+            };
+            
+            // Initialiser le jeu
+            function initSlotsGame() {
+                // Réinitialiser l'état du jeu
+                slotsState = {
+                    credits: 100,
+                    betAmount: 10,
+                    spinning: false,
+                    reelSymbols: ['🍒', '🍋', '🍊'],
+                    camilleBet: 0,
+                    camilleCredits: 100,
+                    gamesPlayed: 0,
+                    playerWins: 0,
+                    camilleWins: 0
+                };
+                
+                // Mettre à jour l'affichage
+                updateSlotsDisplay();
+                
+                // Configurez les événements
+                spinButton.removeEventListener('click', spinReels);
+                betDownButton.removeEventListener('click', decreaseBet);
+                betUpButton.removeEventListener('click', increaseBet);
+                slotsMessageButton.removeEventListener('click', handleSlotsMessageClose);
+                
+                spinButton.addEventListener('click', spinReels);
+                betDownButton.addEventListener('click', decreaseBet);
+                betUpButton.addEventListener('click', increaseBet);
+                slotsMessageButton.addEventListener('click', handleSlotsMessageClose);
+                
+                // Masquer le message
+                slotsMessage.style.display = 'none';
+                
+                // Afficher les symboles initiaux
+                updateReelDisplay();
+                
+                // Message de bienvenue
+                showCamilleSpeech("Prêt à perdre tes crédits contre moi ? Je suis super chanceux !");
+            }
+            
+            // Mettre à jour l'affichage
+            function updateSlotsDisplay() {
+                creditsDisplay.textContent = slotsState.credits;
+                betAmountDisplay.textContent = slotsState.betAmount;
+                
+                // Activer/désactiver les boutons selon les crédits disponibles
+                spinButton.disabled = slotsState.spinning || slotsState.credits < slotsState.betAmount;
+                spinButton.classList.toggle('disabled', spinButton.disabled);
+                
+                betDownButton.disabled = slotsState.spinning || slotsState.betAmount <= 5;
+                betUpButton.disabled = slotsState.spinning || slotsState.betAmount >= 50 || slotsState.betAmount >= slotsState.credits;
+            }
+            
+            // Mettre à jour l'affichage des rouleaux
+            function updateReelDisplay() {
+                const reels = [reel1, reel2, reel3];
+                
+                for (let i = 0; i < 3; i++) {
+                    const symbolElement = reels[i].querySelector('.slots-symbol');
+                    symbolElement.textContent = slotsState.reelSymbols[i];
+                    symbolElement.style.transform = 'translateY(0)';
+                }
+            }
+            
+            // Diminuer la mise
+            function decreaseBet() {
+                if (slotsState.spinning) return;
+                
+                slotsState.betAmount = Math.max(5, slotsState.betAmount - 5);
+                updateSlotsDisplay();
+                playSound('select');
+            }
+            
+            // Augmenter la mise
+            function increaseBet() {
+                if (slotsState.spinning) return;
+                
+                slotsState.betAmount = Math.min(slotsState.credits, Math.min(50, slotsState.betAmount + 5));
+                updateSlotsDisplay();
+                playSound('select');
+            }
+            
+            // Faire tourner les rouleaux
+            function spinReels() {
+                if (slotsState.spinning || slotsState.credits < slotsState.betAmount) return;
+                
+                // Préparer l'animation
+                slotsState.spinning = true;
+                resultDisplay.textContent = '';
+                slotsMachine.classList.remove('slots-win');
+                
+                // Déduire la mise
+                slotsState.credits -= slotsState.betAmount;
+                
+                // Choisir la mise de Camille (comparable à celle du joueur)
+                slotsState.camilleBet = slotsState.betAmount;
+                
+                // Mettre à jour l'affichage
+                updateSlotsDisplay();
+                
+                // Jouer un son
+                playSound('start');
+                
+                // Lancer les animations de rotation
+                const reels = [reel1, reel2, reel3];
+                const finalSymbols = [];
+                
+                // Définir les symboles finaux (aléatoires)
+                for (let i = 0; i < 3; i++) {
+                    finalSymbols.push(symbols[Math.floor(Math.random() * symbols.length)]);
+                }
+                
+                // Message de Camille pendant les rotations
+                showCamilleSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
+                
+                // Démarrer l'animation pour chaque rouleau avec un délai
+                reels.forEach((reel, index) => {
+                    const symbolElement = reel.querySelector('.slots-symbol');
+                    
+                    // Générer des symboles aléatoires pour l'animation
+                    let reelHtml = '';
+                    for (let i = 0; i < 15; i++) {
+                        reelHtml += `<div>${symbols[Math.floor(Math.random() * symbols.length)]}</div>`;
+                    }
+                    // Ajouter le symbole final à la fin
+                    reelHtml += `<div>${finalSymbols[index]}</div>`;
+                    symbolElement.innerHTML = reelHtml;
+                    
+                    // Animer la rotation avec un délai croissant pour chaque rouleau
+                    setTimeout(() => {
+                        symbolElement.style.transition = 'transform 2s cubic-bezier(0.5, 0, 0.5, 1)';
+                        symbolElement.style.transform = `translateY(calc(-100% + 60px))`;
+                        
+                        // Son de rouleau
+                        playSound('card');
+                    }, index * 300);
+                });
+                
+                // Attendre la fin des animations
+                setTimeout(() => {
+                    // Mettre à jour les symboles dans l'état
+                    slotsState.reelSymbols = finalSymbols;
+                    
+                    // Simplifier l'affichage à la fin de l'animation
+                    reels.forEach((reel, index) => {
+                        const symbolElement = reel.querySelector('.slots-symbol');
+                        symbolElement.innerHTML = finalSymbols[index];
+                        symbolElement.style.transition = 'none';
+                        symbolElement.style.transform = 'translateY(0)';
+                    });
+                    
+                    // Vérifier les résultats
+                    checkResults();
+                    
+                    // Jeu terminé, activer les boutons
+                    slotsState.spinning = false;
+                    updateSlotsDisplay();
+                    
+                    // Incrémenter le compteur de parties jouées
+                    slotsState.gamesPlayed++;
+                    
+                    // Vérifier si le joueur a gagné ou perdu la partie globale
+                    checkGameEnd();
+                }, 3000);
+            }
+            
+            // Vérifier les résultats
+            function checkResults() {
+                const result = slotsState.reelSymbols.join('');
+                
+                // Vérifier si c'est une combinaison gagnante
+                if (payouts[result]) {
+                    // Gagné!
+                    const winAmount = slotsState.betAmount * payouts[result];
+                    slotsState.credits += winAmount;
+                    resultDisplay.textContent = `Vous avez gagné ${winAmount} crédits !`;
+                    
+                    // Animation de victoire
+                    slotsMachine.classList.add('slots-win');
+                    
+                    // Son de victoire
+                    playSound('win');
+                    
+                    // Réaction de Camille
+                    showCamilleSpeech("Non ! C'est impossible ! J'ai toujours la poisse !");
+                    
+                    // Augmenter le compteur de victoires du joueur
+                    slotsState.playerWins++;
+                } else {
+                    // 2 identiques = petit gain
+                    if (
+                        (slotsState.reelSymbols[0] === slotsState.reelSymbols[1]) ||
+                        (slotsState.reelSymbols[1] === slotsState.reelSymbols[2]) ||
+                        (slotsState.reelSymbols[0] === slotsState.reelSymbols[2])
+                    ) {
+                        const winAmount = Math.floor(slotsState.betAmount * 0.5);
+                        slotsState.credits += winAmount;
+                        resultDisplay.textContent = `2 symboles identiques ! Vous récupérez ${winAmount} crédits.`;
+                        playSound('card');
+                    } else {
+                        // Perdu
+                        resultDisplay.textContent = "Pas de chance cette fois !";
+                        playSound('lose');
+                        
+                        // Réaction de Camille
+                        showCamilleSpeech("Ha ha ! Je te l'avais dit que j'étais plus chanceux que toi !");
+                        
+                        // Augmenter le compteur de victoires de Camille
+                        slotsState.camilleWins++;
+                    }
+                }
+                
+                // Mettre à jour l'affichage
+                updateSlotsDisplay();
+            }
+            
+            // Vérifier si le jeu est terminé (après 10 tours ou si le joueur n'a plus de crédits)
+            function checkGameEnd() {
+                if (slotsState.credits < 5) {
+                    // Plus assez de crédits pour jouer
+                    endSlotsGame('lose');
+                } else if (slotsState.credits >= 200) {
+                    // Le joueur a doublé ses crédits
+                    endSlotsGame('win');
+                } else if (slotsState.gamesPlayed >= 10) {
+                    // 10 tours joués
+                    if (slotsState.credits > 100) {
+                        endSlotsGame('win');
+                    } else {
+                        endSlotsGame('lose');
+                    }
+                }
+            }
+            
+            // Terminer le jeu
+            function endSlotsGame(result) {
+                let title, body;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE !";
+                        body = `Félicitations ! Vous avez terminé avec ${slotsState.credits} crédits, battant Camille Le Nul au jeu de la machine à sous !`;
+                        playSound('win');
+                        
+                        // Ajouter une victoire
+                        if (!gameVictories.slots) {
+                            gameVictories.slots = 0;
+                        }
+                        addVictory('slots');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE !";
+                        body = `Dommage ! Vous avez terminé avec seulement ${slotsState.credits} crédits. Camille Le Nul vous a battu à la machine à sous !`;
+                        playSound('lose');
+                        break;
+                }
+                
+                // Afficher le message
+                slotsMessageTitle.textContent = title;
+                slotsMessageBody.textContent = body;
+                slotsMessage.style.display = 'block';
+            }
+            
+            // Fermer le message
+            function handleSlotsMessageClose() {
+                slotsMessage.style.display = 'none';
+                initSlotsGame(); // Réinitialiser le jeu
+            }
+            
+            // Afficher un message de Camille
+            function showCamilleSpeech(text) {
+                camilleSpeech.textContent = text;
+                camilleSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    camilleSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu
+            initSlotsGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

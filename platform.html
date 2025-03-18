@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Camille Bros</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE PLATEFORME --- */
+        #platform-game {
+            background-color: #6495ED; /* Ciel bleu */
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+        }
+        
+        .level {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #8B4513; /* Marron */
+            border-top: 5px solid #556B2F; /* Vert foncé */
+        }
+        
+        .platform {
+            position: absolute;
+            height: 30px;
+            background-color: #8B4513; /* Marron */
+            border-top: 5px solid #556B2F; /* Vert foncé */
+        }
+        
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            font-size: 40px;
+            text-align: center;
+            line-height: 60px;
+            z-index: 10;
+        }
+        
+        .enemy {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            text-align: center;
+            line-height: 40px;
+            z-index: 5;
+        }
+        
+        .coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            font-size: 25px;
+            text-align: center;
+            line-height: 30px;
+            color: gold;
+            z-index: 5;
+            animation: coinSpin 1s infinite alternate;
+        }
+        
+        @keyframes coinSpin {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+        
+        .hud {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border: 2px solid white;
+            border-radius: 5px;
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .lives, .coins-counter {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .lives-icon, .coins-icon {
+            margin-right: 10px;
+        }
+        
+        .game-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            border: 3px solid var(--border-color);
+            display: none;
+        }
+        
+        .game-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        .game-message-body {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .game-message-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .game-message-button:hover {
+            background-color: var(--highlight-color);
+            transform: scale(1.1);
+        }
+        
+        .game-controls {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 50;
+        }
+        
+        .control {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 2px solid white;
+            border-radius: 10px;
+            font-size: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .control:active {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .control-jump {
+            background-color: rgba(255, 0, 0, 0.5);
+        }
+        
+        .camille-boss {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            font-size: 70px;
+            text-align: center;
+            line-height: 80px;
+            z-index: 15;
+            animation: bossBounce 2s infinite alternate;
+        }
+        
+        @keyframes bossBounce {
+            from { transform: translateY(0) rotate(0deg); }
+            to { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .finish-flag {
+            position: absolute;
+            font-size: 60px;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Plateforme -->
+        <div id="platform-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="platform-victories">0</span></div>
+            
+            <div class="hud">
+                <div class="lives">
+                    <span class="lives-icon">❤️</span>
+                    <span id="lives-count">3</span>
+                </div>
+                <div class="coins-counter">
+                    <span class="coins-icon">🪙</span>
+                    <span id="coin-count">0</span>/<span id="total-coins">0</span>
+                </div>
+            </div>
+            
+            <div id="level" class="level">
+                <div class="ground"></div>
+                <div id="game-player" class="player">🏃</div>
+                <!-- Les plateformes, ennemis et pièces seront ajoutés dynamiquement -->
+            </div>
+            
+            <div class="game-controls">
+                <div class="control" id="left-control">⬅️</div>
+                <div class="control control-jump" id="jump-control">⬆️</div>
+                <div class="control" id="right-control">➡️</div>
+            </div>
+            
+            <div id="game-message" class="game-message">
+                <div id="game-message-title" class="game-message-title"></div>
+                <div id="game-message-body" class="game-message-body"></div>
+                <button id="game-message-button" class="game-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        // ===== JEU DE PLATEFORME =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('platform-victories').textContent = gameVictories.platform;
+            };
+            
+            const level = document.getElementById('level');
+            const gamePlayer = document.getElementById('game-player');
+            const livesCount = document.getElementById('lives-count');
+            const coinCount = document.getElementById('coin-count');
+            const totalCoins = document.getElementById('total-coins');
+            const gameMessage = document.getElementById('game-message');
+            const gameMessageTitle = document.getElementById('game-message-title');
+            const gameMessageBody = document.getElementById('game-message-body');
+            const gameMessageButton = document.getElementById('game-message-button');
+            
+            // Contrôles tactiles
+            const leftControl = document.getElementById('left-control');
+            const rightControl = document.getElementById('right-control');
+            const jumpControl = document.getElementById('jump-control');
+            
+            // État du jeu de plateforme
+            let platformState = {
+                player: {
+                    x: 100,
+                    y: 450,
+                    width: 40,
+                    height: 60,
+                    velocityX: 0,
+                    velocityY: 0,
+                    speed: 5,
+                    jumpPower: 15,
+                    isJumping: false,
+                    direction: 1 // 1 = droite, -1 = gauche
+                },
+                platforms: [],
+                enemies: [],
+                coins: [],
+                boss: null,
+                lives: 3,
+                collectedCoins: 0,
+                totalCoins: 0,
+                keys: {},
+                gameLoopId: null,
+                gameOver: false
+            };
+            
+            function initPlatformGame() {
+                // Réinitialiser l'état du jeu
+                platformState = {
+                    player: {
+                        x: 100,
+                        y: 450,
+                        width: 40,
+                        height: 60,
+                        velocityX: 0,
+                        velocityY: 0,
+                        speed: 5,
+                        jumpPower: 15,
+                        isJumping: false,
+                        direction: 1
+                    },
+                    platforms: [],
+                    enemies: [],
+                    coins: [],
+                    boss: null,
+                    lives: 3,
+                    collectedCoins: 0,
+                    totalCoins: 0,
+                    keys: {},
+                    gameLoopId: null,
+                    gameOver: false
+                };
+                
+                // Nettoyer les éléments existants
+                clearLevel();
+                
+                // Créer le niveau
+                createLevel();
+                
+                // Mettre à jour l'affichage
+                livesCount.textContent = platformState.lives;
+                coinCount.textContent = platformState.collectedCoins;
+                totalCoins.textContent = platformState.totalCoins;
+                
+                // Positionner le joueur
+                updatePlayerPosition();
+                
+                // Configurer les contrôles
+                window.removeEventListener('keydown', handlePlatformKeyDown);
+                window.removeEventListener('keyup', handlePlatformKeyUp);
+                window.addEventListener('keydown', handlePlatformKeyDown);
+                window.addEventListener('keyup', handlePlatformKeyUp);
+                
+                // Configurer les contrôles tactiles
+                configureTouch();
+                
+                // Configurer le bouton de message
+                gameMessageButton.removeEventListener('click', handleGameMessageClose);
+                gameMessageButton.addEventListener('click', handleGameMessageClose);
+                
+                // Cacher le message
+                gameMessage.style.display = 'none';
+                
+                // Démarrer la boucle de jeu
+                if (platformState.gameLoopId) {
+                    cancelAnimationFrame(platformState.gameLoopId);
+                }
+                platformState.gameLoopId = requestAnimationFrame(gameLoop);
+            }
+            
+            function clearLevel() {
+                // Supprimer tous les éléments du niveau sauf le joueur et le sol
+                const elementsToRemove = level.querySelectorAll('.platform, .enemy, .coin, .camille-boss, .finish-flag');
+                elementsToRemove.forEach(element => element.remove());
+            }
+            
+            function createLevel() {
+                // Créer les plateformes
+                const platformData = [
+                    { x: 100, y: 400, width: 200 },
+                    { x: 350, y: 350, width: 200 },
+                    { x: 600, y: 300, width: 150 },
+                    { x: 400, y: 250, width: 150 },
+                    { x: 200, y: 200, width: 150 },
+                    { x: 400, y: 150, width: 350 }
+                ];
+                
+                platformData.forEach(data => {
+                    createPlatform(data.x, data.y, data.width);
+                });
+                
+                // Créer les ennemis
+                const enemyData = [
+                    { x: 150, y: 340, platform: 0 },
+                    { x: 400, y: 290, platform: 1 },
+                    { x: 650, y: 240, platform: 2 },
+                    { x: 450, y: 190, platform: 3 },
+                    { x: 250, y: 140, platform: 4 }
+                ];
+                
+                enemyData.forEach(data => {
+                    createEnemy(data.x, data.y, data.platform);
+                });
+                
+                // Créer les pièces
+                const coinData = [
+                    { x: 200, y: 370 },
+                    { x: 450, y: 320 },
+                    { x: 650, y: 270 },
+                    { x: 450, y: 220 },
+                    { x: 250, y: 170 },
+                    { x: 450, y: 120 },
+                    { x: 550, y: 120 },
+                    { x: 650, y: 120 }
+                ];
+                
+                coinData.forEach(data => {
+                    createCoin(data.x, data.y);
+                });
+                
+                platformState.totalCoins = coinData.length;
+                
+                // Créer le boss (Camille le Nul)
+                createBoss(700, 90);
+                
+                // Créer le drapeau d'arrivée
+                createFlag(750, 90);
+            }
+            
+            function createPlatform(x, y, width) {
+                const platform = document.createElement('div');
+                platform.className = 'platform';
+                platform.style.left = `${x}px`;
+                platform.style.bottom = `${y}px`;
+                platform.style.width = `${width}px`;
+                level.appendChild(platform);
+                
+                platformState.platforms.push({
+                    x,
+                    y,
+                    width,
+                    height: 30,
+                    element: platform
+                });
+            }
+            
+            function createEnemy(x, y, platformIndex) {
+                const enemy = document.createElement('div');
+                enemy.className = 'enemy';
+                enemy.textContent = '👾';
+                enemy.style.left = `${x}px`;
+                enemy.style.bottom = `${y}px`;
+                level.appendChild(enemy);
+                
+                platformState.enemies.push({
+                    x,
+                    y,
+                    width: 40,
+                    height: 40,
+                    direction: 1,
+                    speed: 2,
+                    platformIndex,
+                    element: enemy
+                });
+            }
+            
+            function createCoin(x, y) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.textContent = '🪙';
+                coin.style.left = `${x}px`;
+                coin.style.bottom = `${y}px`;
+                level.appendChild(coin);
+                
+                platformState.coins.push({
+                    x,
+                    y,
+                    width: 30,
+                    height: 30,
+                    collected: false,
+                    element: coin
+                });
+            }
+            
+            function createBoss(x, y) {
+                const boss = document.createElement('div');
+                boss.className = 'camille-boss';
+                boss.textContent = '👨';
+                boss.style.left = `${x}px`;
+                boss.style.bottom = `${y}px`;
+                level.appendChild(boss);
+                
+                platformState.boss = {
+                    x,
+                    y,
+                    width: 80,
+                    height: 80,
+                    element: boss
+                };
+            }
+            
+            function createFlag(x, y) {
+                const flag = document.createElement('div');
+                flag.className = 'finish-flag';
+                flag.textContent = '🏁';
+                flag.style.left = `${x}px`;
+                flag.style.bottom = `${y}px`;
+                level.appendChild(flag);
+            }
+            
+            function handlePlatformKeyDown(e) {
+                platformState.keys[e.key] = true;
+                
+                // Empêcher le défilement de la page avec les flèches
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                    e.preventDefault();
+                }
+            }
+            
+            function handlePlatformKeyUp(e) {
+                platformState.keys[e.key] = false;
+            }
+            
+            function configureTouch() {
+                leftControl.addEventListener('touchstart', handleLeftTouch);
+                leftControl.addEventListener('touchend', handleLeftTouchEnd);
+                rightControl.addEventListener('touchstart', handleRightTouch);
+                rightControl.addEventListener('touchend', handleRightTouchEnd);
+                jumpControl.addEventListener('touchstart', handleJumpTouch);
+            }
+            
+            function handleLeftTouch() {
+                platformState.keys['ArrowLeft'] = true;
+            }
+            
+            function handleLeftTouchEnd() {
+                platformState.keys['ArrowLeft'] = false;
+            }
+            
+            function handleRightTouch() {
+                platformState.keys['ArrowRight'] = true;
+            }
+            
+            function handleRightTouchEnd() {
+                platformState.keys['ArrowRight'] = false;
+            }
+            
+            function handleJumpTouch() {
+                if (!platformState.player.isJumping) {
+                    platformState.player.velocityY = platformState.player.jumpPower;
+                    platformState.player.isJumping = true;
+                    playSound('jump');
+                }
+            }
+            
+            function gameLoop() {
+                if (platformState.gameOver) return;
+                
+                // Mettre à jour la position du joueur
+                updatePlayer();
+                
+                // Mettre à jour les ennemis
+                updateEnemies();
+                
+                // Vérifier les collisions
+                checkCollisions();
+                
+                // Continuer la boucle
+                platformState.gameLoopId = requestAnimationFrame(gameLoop);
+            }
+            
+            function updatePlayer() {
+                const player = platformState.player;
+                
+                // Mouvement horizontal
+                player.velocityX = 0;
+                if (platformState.keys['ArrowLeft'] || platformState.keys['a'] || platformState.keys['q']) {
+                    player.velocityX = -player.speed;
+                    player.direction = -1;
+                    gamePlayer.style.transform = 'scaleX(-1)';
+                }
+                if (platformState.keys['ArrowRight'] || platformState.keys['d']) {
+                    player.velocityX = player.speed;
+                    player.direction = 1;
+                    gamePlayer.style.transform = 'scaleX(1)';
+                }
+                
+                // Appliquer la gravité
+                player.velocityY -= 0.5;
+                
+                // Mettre à jour la position
+                player.x += player.velocityX;
+                player.y += player.velocityY;
+                
+                // Limites de l'écran
+                if (player.x < 0) player.x = 0;
+                if (player.x + player.width > 800) player.x = 800 - player.width;
+                
+                // Collision avec le sol
+                if (player.y <= 80) {
+                    player.y = 80;
+                    player.velocityY = 0;
+                    player.isJumping = false;
+                }
+                
+                // Collision avec les plateformes
+                let onPlatform = false;
+                platformState.platforms.forEach(platform => {
+                    if (
+                        player.x + player.width > platform.x &&
+                        player.x < platform.x + platform.width &&
+                        player.y <= platform.y + platform.height &&
+                        player.y + player.velocityY >= platform.y + platform.height
+                    ) {
+                        player.y = platform.y + platform.height;
+                        player.velocityY = 0;
+                        player.isJumping = false;
+                        onPlatform = true;
+                    }
+                });
+                
+                // Sauter si sur une plateforme ou le sol
+                if ((platformState.keys['ArrowUp'] || platformState.keys[' '] || platformState.keys['w'] || platformState.keys['z']) && !player.isJumping) {
+                    player.velocityY = player.jumpPower;
+                    player.isJumping = true;
+                    playSound('jump');
+                }
+                
+                // Si le joueur tombe en dehors de l'écran
+                if (player.y < 0) {
+                    loseLife();
+                }
+                
+                updatePlayerPosition();
+            }
+            
+            function updatePlayerPosition() {
+                gamePlayer.style.left = `${platformState.player.x}px`;
+                gamePlayer.style.bottom = `${platformState.player.y}px`;
+            }
+            
+            function updateEnemies() {
+                platformState.enemies.forEach(enemy => {
+                    const platform = platformState.platforms[enemy.platformIndex];
+                    
+                    // Déplacer l'ennemi sur sa plateforme
+                    enemy.x += enemy.direction * enemy.speed;
+                    
+                    // Inverser la direction aux bords de la plateforme
+                    if (enemy.x <= platform.x || enemy.x + enemy.width >= platform.x + platform.width) {
+                        enemy.direction *= -1;
+                    }
+                    
+                    // Mettre à jour la position et la direction
+                    enemy.element.style.left = `${enemy.x}px`;
+                    if (enemy.direction > 0) {
+                        enemy.element.style.transform = 'scaleX(1)';
+                    } else {
+                        enemy.element.style.transform = 'scaleX(-1)';
+                    }
+                });
+            }
+            
+            function checkCollisions() {
+                const player = platformState.player;
+                
+                // Collisions avec les pièces
+                platformState.coins.forEach(coin => {
+                    if (!coin.collected &&
+                        player.x < coin.x + coin.width &&
+                        player.x + player.width > coin.x &&
+                        player.y < coin.y + coin.height &&
+                        player.y + player.height > coin.y
+                    ) {
+                        coin.collected = true;
+                        coin.element.style.display = 'none';
+                        platformState.collectedCoins++;
+                        coinCount.textContent = platformState.collectedCoins;
+                        playSound('coin');
+                    }
+                });
+                
+                // Collisions avec les ennemis
+                platformState.enemies.forEach(enemy => {
+                    if (
+                        player.x < enemy.x + enemy.width &&
+                        player.x + player.width > enemy.x &&
+                        player.y < enemy.y + enemy.height &&
+                        player.y + player.height > enemy.y
+                    ) {
+                        // Si le joueur saute sur l'ennemi
+                        if (player.velocityY < 0 && player.y > enemy.y + enemy.height / 2) {
+                            // Écraser l'ennemi
+                            enemy.element.style.display = 'none';
+                            
+                            // Faire rebondir le joueur
+                            player.velocityY = player.jumpPower * 0.6;
+                            
+                            // Supprimer l'ennemi de la liste
+                            platformState.enemies = platformState.enemies.filter(e => e !== enemy);
+                            
+                            playSound('hit');
+                        } else {
+                            // Sinon, perdre une vie
+                            loseLife();
+                        }
+                    }
+                });
+                
+                // Collision avec le boss
+                if (platformState.boss && 
+                    player.x < platformState.boss.x + platformState.boss.width &&
+                    player.x + player.width > platformState.boss.x &&
+                    player.y < platformState.boss.y + platformState.boss.height &&
+                    player.y + player.height > platformState.boss.y
+                ) {
+                    if (platformState.collectedCoins >= platformState.totalCoins) {
+                        // Si toutes les pièces sont collectées, victoire
+                        winGame();
+                    } else {
+                        // Sinon, perdre une vie
+                        loseLife();
+                    }
+                }
+            }
+            
+            function loseLife() {
+                if (platformState.gameOver) return;
+                
+                platformState.lives--;
+                livesCount.textContent = platformState.lives;
+                playSound('death');
+                
+                // Repositionner le joueur
+                platformState.player.x = 100;
+                platformState.player.y = 450;
+                platformState.player.velocityX = 0;
+                platformState.player.velocityY = 0;
+                updatePlayerPosition();
+                
+                if (platformState.lives <= 0) {
+                    loseGame();
+                }
+            }
+            
+            function loseGame() {
+                platformState.gameOver = true;
+                
+                // Afficher un message de défaite
+                gameMessageTitle.textContent = "GAME OVER";
+                gameMessageBody.textContent = "Vous avez perdu toutes vos vies ! Camille le Nul vous a vaincu.";
+                gameMessage.style.display = 'block';
+                
+                playSound('lose');
+            }
+            
+            function winGame() {
+                platformState.gameOver = true;
+                
+                // Afficher un message de victoire
+                gameMessageTitle.textContent = "VICTOIRE !";
+                gameMessageBody.textContent = "Vous avez battu Camille le Nul et collecté toutes les pièces ! Félicitations !";
+                gameMessage.style.display = 'block';
+                
+                playSound('win');
+                
+                // Ajouter une victoire
+                addVictory('platform');
+            }
+            
+            function handleGameMessageClose() {
+                gameMessage.style.display = 'none';
+                initPlatformGame();
+            }
+            
+            // Initialiser le jeu de plateforme
+            initPlatformGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

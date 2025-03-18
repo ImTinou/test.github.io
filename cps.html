@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de CPS vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE CPS --- */
+        #cps-game {
+            background-color: #400080; /* Violet foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+            position: relative;
+        }
+        
+        .cps-container {
+            width: 90%;
+            height: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 3px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .cps-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .cps-timer, .cps-score {
+            background-color: var(--background-light);
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            min-width: 150px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+        
+        .cps-arena {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            height: 60%;
+        }
+        
+        .cps-player, .cps-opponent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 45%;
+            height: 100%;
+        }
+        
+        .cps-avatar {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .cps-avatar.animated {
+            animation: clicking 0.2s infinite alternate;
+        }
+        
+        @keyframes clicking {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+        
+        .cps-progress {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            border: 2px solid white;
+            margin-bottom: 10px;
+        }
+        
+        .cps-progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+        
+        .cps-opponent .cps-progress-fill {
+            background-color: var(--highlight-color);
+        }
+        
+        .cps-count {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .cps-rate {
+            font-size: 16px;
+            color: var(--secondary-color);
+        }
+        
+        .cps-button {
+            width: 200px;
+            height: 200px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            font-size: 18px;
+            color: white;
+            text-align: center;
+            border: 5px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            transition: transform 0.1s, box-shadow 0.1s;
+            margin: 20px 0;
+        }
+        
+        .cps-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        .cps-button.disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .cps-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .cps-start-button {
+            background-color: var(--highlight-color);
+            color: black;
+            border: 3px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+        }
+        
+        .cps-start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--highlight-color);
+        }
+        
+        .cps-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid var(--border-color);
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+        }
+        
+        .cps-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        .cps-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .cps-message-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cps-message-button:hover {
+            background-color: var(--highlight-color);
+            transform: scale(1.1);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .player-speech {
+            left: 150px;
+            top: 200px;
+        }
+        
+        .player-speech:after {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            border: 10px solid transparent;
+            border-right-color: white;
+            margin-top: -10px;
+        }
+        
+        .opponent-speech {
+            right: 150px;
+            top: 200px;
+        }
+        
+        .opponent-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            border: 10px solid transparent;
+            border-left-color: white;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de CPS -->
+        <div id="cps-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="cps-victories">0</span></div>
+            
+            <div class="cps-container">
+                <div class="cps-header">
+                    <div class="cps-timer">Temps: <span id="cps-time-display">10</span>s</div>
+                    <div class="cps-score">Meilleur: <span id="cps-best-score">0</span> CPS</div>
+                </div>
+                
+                <div class="cps-arena">
+                    <div class="cps-player">
+                        <div class="cps-avatar" id="player-avatar">👨‍💻</div>
+                        <div class="cps-progress">
+                            <div class="cps-progress-fill" id="player-progress"></div>
+                        </div>
+                        <div class="cps-count"><span id="player-clicks">0</span> clics</div>
+                        <div class="cps-rate"><span id="player-cps">0.0</span> CPS</div>
+                    </div>
+                    
+                    <div class="cps-opponent">
+                        <div class="cps-avatar" id="opponent-avatar">👨</div>
+                        <div class="cps-progress">
+                            <div class="cps-progress-fill" id="opponent-progress"></div>
+                        </div>
+                        <div class="cps-count"><span id="opponent-clicks">0</span> clics</div>
+                        <div class="cps-rate"><span id="opponent-cps">0.0</span> CPS</div>
+                    </div>
+                </div>
+                
+                <div class="cps-button" id="cps-button">
+                    CLIQUEZ-MOI!
+                </div>
+                
+                <div class="cps-controls">
+                    <button id="cps-start-button" class="cps-start-button">DÉMARRER TEST</button>
+                </div>
+            </div>
+            
+            <div id="player-speech" class="speech-bubble player-speech"></div>
+            <div id="opponent-speech" class="speech-bubble opponent-speech"></div>
+            
+            <div id="cps-message" class="cps-message">
+                <div id="cps-message-title" class="cps-message-title"></div>
+                <div id="cps-message-body" class="cps-message-body"></div>
+                <button id="cps-message-button" class="cps-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('cps-victories').textContent = gameVictories.cps || 0;
+            };
+            
+            // Éléments DOM
+            const cpsButton = document.getElementById('cps-button');
+            const startButton = document.getElementById('cps-start-button');
+            const timeDisplay = document.getElementById('cps-time-display');
+            const playerClicks = document.getElementById('player-clicks');
+            const opponentClicks = document.getElementById('opponent-clicks');
+            const playerCps = document.getElementById('player-cps');
+            const opponentCps = document.getElementById('opponent-cps');
+            const playerProgress = document.getElementById('player-progress');
+            const opponentProgress = document.getElementById('opponent-progress');
+            const playerAvatar = document.getElementById('player-avatar');
+            const opponentAvatar = document.getElementById('opponent-avatar');
+            const bestScore = document.getElementById('cps-best-score');
+            const playerSpeech = document.getElementById('player-speech');
+            const opponentSpeech = document.getElementById('opponent-speech');
+            const cpsMessage = document.getElementById('cps-message');
+            const cpsMessageTitle = document.getElementById('cps-message-title');
+            const cpsMessageBody = document.getElementById('cps-message-body');
+            const cpsMessageButton = document.getElementById('cps-message-button');
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je clique plus vite que mon ombre !",
+                "Mes doigts sont comme des pistons !",
+                "J'ai le clic le plus rapide de l'Ouest !",
+                "Tu ne peux pas me battre, j'ai un clic surhumain !",
+                "Je m'entraîne tous les jours avec mon coach de clic !",
+                "Mon record est de 999 CPS ! (pas vraiment)",
+                "Je me suis cassé un doigt une fois en cliquant trop vite !",
+                "Ma souris est prête à exploser !",
+                "Trop lent, trop lent !"
+            ];
+            
+            // Messages pour le joueur
+            const playerMessages = [
+                "Je vais te montrer la vitesse de mon clic !",
+                "Tu n'as aucune chance contre mes clics rapides !",
+                "Je peux cliquer plus vite que toi les yeux fermés !",
+                "Camille le Nul ? Plutôt Camille le Lent !",
+                "Ma souris est en feu !",
+                "Regarde la vitesse de mes doigts !",
+                "Je suis le champion du monde de clics !",
+                "Même un autoclicker ne peut pas me battre !"
+            ];
+            
+            // État du jeu de CPS
+            let cpsState = {
+                playerClicks: 0,
+                opponentClicks: 0,
+                timeLeft: 10,
+                gameActive: false,
+                timerInterval: null,
+                bestScore: 0,
+                opponentCpsRate: 0
+            };
+            
+            // Charger le meilleur score depuis le localStorage
+            if (localStorage.getItem('cpsBestScore')) {
+                cpsState.bestScore = parseFloat(localStorage.getItem('cpsBestScore'));
+                bestScore.textContent = cpsState.bestScore.toFixed(1);
+            }
+            
+            // Initialiser le jeu
+            function initCpsGame() {
+                // Réinitialiser l'état
+                cpsState.playerClicks = 0;
+                cpsState.opponentClicks = 0;
+                cpsState.timeLeft = 10;
+                cpsState.gameActive = false;
+                
+                // Déterminer la vitesse de l'adversaire (entre 4 et 8 CPS)
+                cpsState.opponentCpsRate = 4 + Math.random() * 4;
+                
+                // Mettre à jour l'interface
+                updateDisplay();
+                
+                // Désactiver le bouton de clic
+                cpsButton.className = 'cps-button disabled';
+                
+                // Ajouter les événements
+                cpsButton.removeEventListener('click', handleClick);
+                startButton.removeEventListener('click', startCpsGame);
+                cpsMessageButton.removeEventListener('click', handleCpsMessageClose);
+                
+                cpsButton.addEventListener('click', handleClick);
+                startButton.addEventListener('click', startCpsGame);
+                cpsMessageButton.addEventListener('click', handleCpsMessageClose);
+                
+                // Masquer le message
+                cpsMessage.style.display = 'none';
+                
+                // Message de bienvenue
+                showOpponentSpeech("Prêt pour le test de CPS ? Je clique super vite !");
+            }
+            
+            // Mettre à jour l'affichage
+            function updateDisplay() {
+                playerClicks.textContent = cpsState.playerClicks;
+                opponentClicks.textContent = cpsState.opponentClicks;
+                timeDisplay.textContent = cpsState.timeLeft;
+                
+                // Calculer et afficher les CPS
+                const elapsedTime = 10 - cpsState.timeLeft;
+                const playerCpsRate = elapsedTime > 0 ? cpsState.playerClicks / elapsedTime : 0;
+                const opponentCpsRate = elapsedTime > 0 ? cpsState.opponentClicks / elapsedTime : 0;
+                
+                playerCps.textContent = playerCpsRate.toFixed(1);
+                opponentCps.textContent = opponentCpsRate.toFixed(1);
+                
+                // Mettre à jour les barres de progression
+                const maxExpectedClicks = 100; // Valeur arbitraire pour l'échelle
+                const playerProgressPct = Math.min((cpsState.playerClicks / maxExpectedClicks) * 100, 100);
+                const opponentProgressPct = Math.min((cpsState.opponentClicks / maxExpectedClicks) * 100, 100);
+                
+                playerProgress.style.width = `${playerProgressPct}%`;
+                opponentProgress.style.width = `${opponentProgressPct}%`;
+            }
+            
+            // Démarrer le jeu
+            function startCpsGame() {
+                if (cpsState.gameActive) return;
+                
+                // Réinitialiser l'état
+                cpsState.playerClicks = 0;
+                cpsState.opponentClicks = 0;
+                cpsState.timeLeft = 10;
+                cpsState.gameActive = true;
+                
+                // Activer le bouton de clic
+                cpsButton.className = 'cps-button';
+                
+                // Changer le texte du bouton de démarrage
+                startButton.textContent = 'EN COURS...';
+                startButton.disabled = true;
+                
+                // Mettre à jour l'affichage
+                updateDisplay();
+                
+                // Démarrer le timer
+                cpsState.timerInterval = setInterval(updateTimer, 1000);
+                
+                // Démarrer les clics de l'adversaire
+                simulateOpponentClicks();
+                
+                // Message de départ
+                showOpponentSpeech("C'est parti ! Clique plus vite que moi !");
+                showPlayerSpeech("Je vais te montrer ma vitesse de clic !");
+                
+                // Focus sur le bouton de clic
+                cpsButton.focus();
+            }
+            
+            // Mettre à jour le timer
+            function updateTimer() {
+                cpsState.timeLeft--;
+                timeDisplay.textContent = cpsState.timeLeft;
+                
+                if (cpsState.timeLeft <= 0) {
+                    endCpsGame();
+                }
+            }
+            
+            // Gérer un clic
+            function handleClick() {
+                if (!cpsState.gameActive) return;
+                
+                // Incrémenter le compteur
+                cpsState.playerClicks++;
+                
+                // Jouer un son
+                playSound('type');
+                
+                // Animation du joueur
+                playerAvatar.classList.add('animated');
+                setTimeout(() => {
+                    playerAvatar.classList.remove('animated');
+                }, 100);
+                
+                // Mettre à jour l'affichage
+                updateDisplay();
+                
+                // Message aléatoire du joueur (10% de chance)
+                if (Math.random() < 0.1) {
+                    showPlayerSpeech(playerMessages[Math.floor(Math.random() * playerMessages.length)]);
+                }
+            }
+            
+            // Simuler les clics de l'adversaire
+            function simulateOpponentClicks() {
+                if (!cpsState.gameActive) return;
+                
+                // L'intervalle entre les clics dépend du taux de CPS
+                const interval = 1000 / cpsState.opponentCpsRate;
+                
+                setTimeout(() => {
+                    if (!cpsState.gameActive) return;
+                    
+                    // Incrémenter le compteur
+                    cpsState.opponentClicks++;
+                    
+                    // Animation de l'adversaire
+                    opponentAvatar.classList.add('animated');
+                    setTimeout(() => {
+                        opponentAvatar.classList.remove('animated');
+                    }, 100);
+                    
+                    // Mettre à jour l'affichage
+                    updateDisplay();
+                    
+                    // Message aléatoire de l'adversaire (5% de chance)
+                    if (Math.random() < 0.05) {
+                        showOpponentSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
+                    }
+                    
+                    // Continuer la simulation
+                    simulateOpponentClicks();
+                }, interval);
+            }
+            
+            // Terminer le jeu
+            function endCpsGame() {
+                // Arrêter le jeu
+                cpsState.gameActive = false;
+                clearInterval(cpsState.timerInterval);
+                
+                // Désactiver le bouton de clic
+                cpsButton.className = 'cps-button disabled';
+                
+                // Réactiver le bouton de démarrage
+                startButton.textContent = 'REDÉMARRER';
+                startButton.disabled = false;
+                
+                // Calculer les résultats
+                const playerCpsRate = cpsState.playerClicks / 10;
+                const opponentCpsRate = cpsState.opponentClicks / 10;
+                
+                // Mettre à jour le meilleur score si nécessaire
+                if (playerCpsRate > cpsState.bestScore) {
+                    cpsState.bestScore = playerCpsRate;
+                    localStorage.setItem('cpsBestScore', cpsState.bestScore);
+                    bestScore.textContent = cpsState.bestScore.toFixed(1);
+                }
+                
+                // Déterminer le résultat
+                let result, title, body;
+                
+                if (playerCpsRate > opponentCpsRate) {
+                    result = 'win';
+                    title = "VICTOIRE !";
+                    body = `Vous avez cliqué à ${playerCpsRate.toFixed(1)} CPS, battant Camille qui n'a atteint que ${opponentCpsRate.toFixed(1)} CPS !`;
+                    playSound('win');
+                    showOpponentSpeech("C'est impossible ! Tu as une souris truquée !");
+                    
+                    // Ajouter une victoire
+                    if (!gameVictories.cps) {
+                        gameVictories.cps = 0;
+                    }
+                    addVictory('cps');
+                } else if (playerCpsRate < opponentCpsRate) {
+                    result = 'lose';
+                    title = "DÉFAITE !";
+                    body = `Vous avez cliqué à ${playerCpsRate.toFixed(1)} CPS, mais Camille a réussi à atteindre ${opponentCpsRate.toFixed(1)} CPS !`;
+                    playSound('lose');
+                    showOpponentSpeech("Ha ha ! Je suis le roi du clic ! Personne ne peut me battre !");
+                } else {
+                    result = 'tie';
+                    title = "ÉGALITÉ !";
+                    body = `Vous avez tous les deux cliqué à ${playerCpsRate.toFixed(1)} CPS ! C'est un match nul !`;
+                    playSound('card');
+                    showOpponentSpeech("Wow, exactement la même vitesse ! On est synchronisés !");
+                }
+                
+                // Afficher le message
+                cpsMessageTitle.textContent = title;
+                cpsMessageBody.textContent = body;
+                cpsMessage.style.display = 'block';
+            }
+            
+            // Fermer le message
+            function handleCpsMessageClose() {
+                cpsMessage.style.display = 'none';
+            }
+            
+            // Afficher un message pour le joueur
+            function showPlayerSpeech(text) {
+                playerSpeech.textContent = text;
+                playerSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    playerSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Afficher un message pour l'adversaire
+            function showOpponentSpeech(text) {
+                opponentSpeech.textContent = text;
+                opponentSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    opponentSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu
+            initCpsGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

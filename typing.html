@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duel de Frappe vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE FRAPPE --- */
+        #typing-game {
+            background-color: #000080; /* Bleu nuit */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: 'Press Start 2P', cursive;
+            height: 100%;
+        }
+        
+        .typing-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .typing-score, .typing-time {
+            background-color: var(--background-light);
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .typing-arena {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            align-items: flex-end;
+        }
+        
+        .typing-player, .typing-opponent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+        }
+        
+        .typing-player-avatar, .typing-opponent-avatar {
+            font-size: 50px;
+            margin-bottom: 10px;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+        
+        .typing-health-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #333;
+            border: 2px solid white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .typing-health-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .typing-opponent .typing-health-fill {
+            background-color: var(--highlight-color);
+        }
+        
+        .typing-word-container {
+            width: 80%;
+            min-height: 150px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 3px solid var(--border-color);
+            margin: 20px 0;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .typing-word {
+            font-size: 30px;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .typing-word.correct {
+            color: #00ff00;
+            transform: scale(1.2);
+        }
+        
+        .typing-word.incorrect {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        .typing-input {
+            width: 80%;
+            padding: 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 20px;
+            background-color: var(--background-light);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .typing-input:focus {
+            outline: none;
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 10px var(--highlight-color);
+        }
+        
+        .typing-status {
+            position: absolute;
+            bottom: -40px;
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+        
+        .typing-controls {
+            margin-top: 60px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .typing-button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .typing-button:hover {
+            background-color: var(--highlight-color);
+        }
+        
+        .typing-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid var(--border-color);
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+        }
+        
+        .typing-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        .typing-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .typing-message-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .typing-message-button:hover {
+            background-color: var(--highlight-color);
+            transform: scale(1.1);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .player-speech {
+            left: 120px;
+            top: 200px;
+        }
+        
+        .player-speech:after {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            border: 10px solid transparent;
+            border-right-color: white;
+            margin-top: -10px;
+        }
+        
+        .opponent-speech {
+            right: 120px;
+            top: 200px;
+        }
+        
+        .opponent-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            border: 10px solid transparent;
+            border-left-color: white;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Frappe -->
+        <div id="typing-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="typing-victories">0</span></div>
+            
+            <div class="typing-header">
+                <div class="typing-score">Score: <span id="player-score">0</span></div>
+                <div class="typing-time">Temps: <span id="typing-timer">60</span>s</div>
+            </div>
+            
+            <div class="typing-arena">
+                <div class="typing-player">
+                    <div class="typing-player-avatar">🧑‍💻</div>
+                    <div class="typing-health-bar">
+                        <div class="typing-health-fill" id="player-health"></div>
+                    </div>
+                </div>
+                
+                <div class="typing-opponent">
+                    <div class="typing-opponent-avatar">👨</div>
+                    <div class="typing-health-bar">
+                        <div class="typing-health-fill" id="opponent-health"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="typing-word-container">
+                <div id="current-word" class="typing-word">Appuyez sur DÉMARRER</div>
+                <input type="text" id="word-input" class="typing-input" placeholder="Tapez le mot ici..." disabled>
+                <div id="typing-status" class="typing-status"></div>
+            </div>
+            
+            <div class="typing-controls">
+                <button id="start-typing" class="typing-button">DÉMARRER</button>
+            </div>
+            
+            <div id="player-speech" class="speech-bubble player-speech"></div>
+            <div id="opponent-speech" class="speech-bubble opponent-speech"></div>
+            
+            <div id="typing-message" class="typing-message">
+                <div id="typing-message-title" class="typing-message-title"></div>
+                <div id="typing-message-body" class="typing-message-body"></div>
+                <button id="typing-message-button" class="typing-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        // ===== JEU DE FRAPPE =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('typing-victories').textContent = gameVictories.typing;
+            };
+            
+            const wordInput = document.getElementById('word-input');
+            const currentWord = document.getElementById('current-word');
+            const typingStatus = document.getElementById('typing-status');
+            const playerScore = document.getElementById('player-score');
+            const typingTimer = document.getElementById('typing-timer');
+            const startTypingButton = document.getElementById('start-typing');
+            const playerHealth = document.getElementById('player-health');
+            const opponentHealth = document.getElementById('opponent-health');
+            const playerSpeech = document.getElementById('player-speech');
+            const opponentSpeech = document.getElementById('opponent-speech');
+            const typingMessage = document.getElementById('typing-message');
+            const typingMessageTitle = document.getElementById('typing-message-title');
+            const typingMessageBody = document.getElementById('typing-message-body');
+            const typingMessageButton = document.getElementById('typing-message-button');
+            
+            // Mots pour le jeu
+            const words = [
+                'camille', 'rapide', 'jeux', 'vitesse', 'ordinateur', 'clavier', 'souris',
+                'écran', 'console', 'pixel', 'développeur', 'javascript', 'programme',
+                'joueur', 'champion', 'défaite', 'victoire', 'score', 'niveau', 'temps',
+                'frappe', 'apprentissage', 'compétition', 'courage', 'patience', 'dextérité',
+                'réflexes', 'concentration', 'performance', 'amélioration', 'pratique',
+                'habileté', 'rapidité', 'précision', 'chance', 'réaction', 'maladroit',
+                'virtuose', 'débutant', 'expert', 'novice', 'maître', 'talent', 'adversaire',
+                'challenge', 'duel', 'combat', 'sprint', 'endurance', 'marathon', 'turbo'
+            ];
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je suis plus rapide que toi !",
+                "Mes doigts sont des éclairs !",
+                "Tu ne peux pas me battre à ce jeu !",
+                "Je m'entraîne tous les jours !",
+                "Mon clavier est en feu !",
+                "Tu tapes comme une tortue !",
+                "C'est trop facile pour moi !",
+                "Je suis le roi de la frappe !",
+                "Tu as fait une faute, ha ha !",
+                "Mes doigts sont plus rapides que ma pensée..."
+            ];
+            
+            // Messages pour le joueur
+            const playerMessages = [
+                "Je vais te battre, Camille !",
+                "Tu n'es pas si rapide !",
+                "Regarde mes doigts voler !",
+                "Tu n'as aucune chance !",
+                "Je suis imbattable !",
+                "Tu as l'air fatigué, Camille !",
+                "Tu fais des fautes !",
+                "Je suis en pleine forme !",
+                "Tu ne mérites pas ton nom !",
+                "Je tape plus vite que mon ombre !"
+            ];
+            
+            // État du jeu de frappe
+            let typingState = {
+                currentWord: '',
+                score: 0,
+                timeLeft: 60,
+                gameActive: false,
+                playerHealth: 100,
+                opponentHealth: 100,
+                timerInterval: null,
+                computerSpeed: 1.5, // Temps moyen en secondes par mot
+                computerWaitTime: 0,
+                computerWordCount: 0,
+                usedWords: []
+            };
+            
+            function initTypingGame() {
+                // Réinitialiser l'état
+                typingState = {
+                    currentWord: '',
+                    score: 0,
+                    timeLeft: 60,
+                    gameActive: false,
+                    playerHealth: 100,
+                    opponentHealth: 100,
+                    timerInterval: null,
+                    computerSpeed: 1.5,
+                    computerWaitTime: 0,
+                    computerWordCount: 0,
+                    usedWords: []
+                };
+                
+                // Réinitialiser l'interface
+                playerScore.textContent = '0';
+                typingTimer.textContent = '60';
+                currentWord.textContent = 'Appuyez sur DÉMARRER';
+                currentWord.className = 'typing-word';
+                wordInput.value = '';
+                wordInput.disabled = true;
+                typingStatus.textContent = '';
+                playerHealth.style.width = '100%';
+                opponentHealth.style.width = '100%';
+                
+                // Ajouter les événements
+                startTypingButton.removeEventListener('click', startTypingGame);
+                startTypingButton.addEventListener('click', startTypingGame);
+                
+                wordInput.removeEventListener('input', checkWord);
+                typingMessageButton.removeEventListener('click', handleTypingMessageClose);
+                typingMessageButton.addEventListener('click', handleTypingMessageClose);
+                
+                // Masquer le message
+                typingMessage.style.display = 'none';
+                
+                // Afficher un message de bienvenue
+                showOpponentSpeech("Prêt à taper ? Je suis imbattable !");
+            }
+            
+            function startTypingGame() {
+                if (typingState.gameActive) return;
+                
+                typingState.gameActive = true;
+                typingState.score = 0;
+                typingState.timeLeft = 60;
+                typingState.playerHealth = 100;
+                typingState.opponentHealth = 100;
+                typingState.usedWords = [];
+                
+                // Mettre à jour l'interface
+                playerScore.textContent = '0';
+                typingTimer.textContent = '60';
+                playerHealth.style.width = '100%';
+                opponentHealth.style.width = '100%';
+                
+                // Activer le champ de saisie
+                wordInput.disabled = false;
+                wordInput.focus();
+                
+                // Configurer les événements
+                wordInput.addEventListener('input', checkWord);
+                
+                // Générer le premier mot
+                generateWord();
+                
+                // Démarrer le timer
+                typingState.timerInterval = setInterval(updateTimer, 1000);
+                
+                // Démarrer la simulation de l'adversaire
+                simulateOpponent();
+                
+                // Changer le texte du bouton
+                startTypingButton.textContent = 'EN COURS...';
+                startTypingButton.disabled = true;
+                
+                // Afficher un message
+                showOpponentSpeech("C'est parti ! Essaie de me suivre !");
+                showPlayerSpeech("Je vais te montrer !");
+            }
+            
+            function generateWord() {
+                // Choisir un mot qui n'a pas été utilisé récemment
+                let newWord;
+                do {
+                    newWord = words[Math.floor(Math.random() * words.length)];
+                } while (typingState.usedWords.includes(newWord) && typingState.usedWords.length < words.length / 2);
+                
+                // Ajouter le mot à la liste des mots utilisés
+                typingState.usedWords.push(newWord);
+                if (typingState.usedWords.length > 10) {
+                    typingState.usedWords.shift(); // Garder la liste à une taille raisonnable
+                }
+                
+                typingState.currentWord = newWord;
+                currentWord.textContent = newWord;
+                wordInput.value = '';
+                
+                // Réinitialiser la classe
+                currentWord.className = 'typing-word';
+            }
+            
+            function checkWord() {
+                const userInput = wordInput.value.toLowerCase().trim();
+                
+                if (userInput === typingState.currentWord) {
+                    // Mot correct
+                    typingState.score++;
+                    playerScore.textContent = typingState.score;
+                    
+                    // Effet visuel
+                    currentWord.className = 'typing-word correct';
+                    setTimeout(() => {
+                        generateWord();
+                    }, 300);
+                    
+                    // Jouer un son
+                    playSound('correct');
+                    
+                    // Dégâts à l'adversaire
+                    typingState.opponentHealth -= 5;
+                    if (typingState.opponentHealth < 0) typingState.opponentHealth = 0;
+                    opponentHealth.style.width = `${typingState.opponentHealth}%`;
+                    
+                    // Vérifier victoire
+                    if (typingState.opponentHealth <= 0) {
+                        endTypingGame('win');
+                    }
+                    
+                    // Message de statut
+                    typingStatus.textContent = 'Correct !';
+                    
+                    // Message aléatoire du joueur
+                    if (Math.random() < 0.3) {
+                        showPlayerSpeech(playerMessages[Math.floor(Math.random() * playerMessages.length)]);
+                    }
+                } else if (userInput.length >= typingState.currentWord.length) {
+                    // Mot incorrect
+                    currentWord.className = 'typing-word incorrect';
+                    setTimeout(() => {
+                        currentWord.className = 'typing-word';
+                    }, 300);
+                    
+                    // Jouer un son
+                    playSound('incorrect');
+                    
+                    // Message de statut
+                    typingStatus.textContent = 'Incorrect !';
+                    
+                    // Message aléatoire de l'adversaire
+                    if (Math.random() < 0.3) {
+                        showOpponentSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
+                    }
+                }
+            }
+            
+            function simulateOpponent() {
+                if (!typingState.gameActive) return;
+                
+                // Déterminer quand l'ordinateur va "taper" le prochain mot
+                typingState.computerWaitTime = Math.random() * 1000 + typingState.computerSpeed * 1000; // 1.5-2.5 secondes par mot
+                
+                setTimeout(() => {
+                    if (!typingState.gameActive) return;
+                    
+                    // L'ordinateur a tapé un mot
+                    typingState.computerWordCount++;
+                    
+                    // Dégâts au joueur
+                    typingState.playerHealth -= 4;
+                    if (typingState.playerHealth < 0) typingState.playerHealth = 0;
+                    playerHealth.style.width = `${typingState.playerHealth}%`;
+                    
+                    // Message aléatoire de l'adversaire
+                    if (Math.random() < 0.3) {
+                        showOpponentSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
+                    }
+                    
+                    // Jouer un son
+                    playSound('type');
+                    
+                    // Vérifier défaite
+                    if (typingState.playerHealth <= 0) {
+                        endTypingGame('lose');
+                        return;
+                    }
+                    
+                    // Continuer la simulation
+                    simulateOpponent();
+                }, typingState.computerWaitTime);
+            }
+            
+            function updateTimer() {
+                typingState.timeLeft--;
+                typingTimer.textContent = typingState.timeLeft;
+                
+                if (typingState.timeLeft <= 0) {
+                    // Fin du temps
+                    if (typingState.score > typingState.computerWordCount) {
+                        endTypingGame('win');
+                    } else if (typingState.score < typingState.computerWordCount) {
+                        endTypingGame('lose');
+                    } else {
+                        endTypingGame('tie');
+                    }
+                }
+            }
+            
+            function endTypingGame(result) {
+                // Arrêter le jeu
+                typingState.gameActive = false;
+                if (typingState.timerInterval) {
+                    clearInterval(typingState.timerInterval);
+                    typingState.timerInterval = null;
+                }
+                
+                // Désactiver le champ de saisie
+                wordInput.disabled = true;
+                
+                // Réactiver le bouton
+                startTypingButton.textContent = 'REDÉMARRER';
+                startTypingButton.disabled = false;
+                
+                // Définir le message
+                let title, body;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE !";
+                        body = `Vous avez tapé ${typingState.score} mots correctement et battu Camille qui n'a tapé que ${typingState.computerWordCount} mots !`;
+                        playSound('win');
+                        showOpponentSpeech("Non ! C'est impossible ! Je ne peux pas perdre !");
+                        // Ajouter une victoire
+                        addVictory('typing');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE !";
+                        body = `Vous avez tapé ${typingState.score} mots, mais Camille en a tapé ${typingState.computerWordCount} ! Il est trop rapide !`;
+                        playSound('lose');
+                        showOpponentSpeech("Ha ha ! Je suis le roi de la frappe ! Camille le nul ? Plutôt Camille le champion !");
+                        break;
+                    case 'tie':
+                        title = "ÉGALITÉ !";
+                        body = `Vous avez tous les deux tapé ${typingState.score} mots ! C'est un match nul !`;
+                        playSound('card');
+                        showOpponentSpeech("Égalité ! C'était serré, on remet ça ?");
+                        break;
+                }
+                
+                // Afficher le message
+                typingMessageTitle.textContent = title;
+                typingMessageBody.textContent = body;
+                typingMessage.style.display = 'block';
+            }
+            
+            function handleTypingMessageClose() {
+                typingMessage.style.display = 'none';
+            }
+            
+            function showPlayerSpeech(text) {
+                playerSpeech.textContent = text;
+                playerSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    playerSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            function showOpponentSpeech(text) {
+                opponentSpeech.textContent = text;
+                opponentSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    opponentSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu de frappe
+            initTypingGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+:root {
+    --primary-color: #ff0000;
+    --secondary-color: #ffff00;
+    --background-dark: #000000;
+    --background-light: #111111;
+    --text-color: #ffffff;
+    --border-color: #ffffff;
+    --highlight-color: #00ffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    font-family: 'Press Start 2P', cursive;
+    overflow: hidden;
+    user-select: none;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    width: 800px;
+    height: 600px;
+    position: relative;
+    border: 4px solid var(--border-color);
+    overflow: hidden;
+    background-color: var(--background-dark);
+}
+
+/* --- ÉCRAN TITRE --- */
+#title-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="50" height="50" fill="%23111"/><rect x="50" y="50" width="50" height="50" fill="%23111"/></svg>');
+    background-size: 20px 20px;
+    animation: backgroundScroll 10s linear infinite;
+}
+
+@keyframes backgroundScroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 100px; }
+}
+
+.game-title {
+    font-size: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+    text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+    animation: textGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    from { text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); }
+    to { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
+}
+
+.title-camille {
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 10px;
+    font-size: 50px;
+    transform: rotate(-5deg);
+}
+
+.victory-counter {
+    background-color: var(--background-light);
+    color: var(--secondary-color);
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+.menu-container {
+    width: 80%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu-item {
+    background-color: var(--background-light);
+    margin: 15px 0;
+    padding: 15px;
+    border: 3px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    width: 100%;
+}
+
+.menu-item:hover {
+    transform: scale(1.05);
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 15px var(--highlight-color);
+}
+
+.menu-item.selected {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 15px var(--secondary-color);
+}
+
+.menu-item:before {
+    content: "★";
+    margin-right: 15px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.menu-item:hover:before, .menu-item.selected:before {
+    opacity: 1;
+}
+
+.menu-item-icon {
+    font-family: 'VT323', monospace;
+    font-size: 30px;
+    margin-right: 15px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.start-button {
+    margin-top: 30px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: 5px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    width: 150px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    animation: pulse 1.5s infinite alternate;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+    text-align: center;
+    line-height: 1.5;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); filter: brightness(1); }
+    to { transform: scale(1.1); filter: brightness(1.5); }
+}
+
+.start-button:hover {
+    background-color: var(--highlight-color);
+    animation: none;
+    transform: scale(1.2);
+    border-color: var(--secondary-color);
+}
+
+/* --- JEUX COMMUN --- */
+.game-screen {
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    padding: 5px 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.back-button:hover {
+    background-color: var(--border-color);
+    color: var(--background-dark);
+}
+
+.game-victory-counter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--secondary-color);
+    border: 2px solid var(--border-color);
+    padding: 5px 10px;
+    font-size: 10px;
+    z-index: 100;
+}
+
+/* --- Effets visuels --- */
+.scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    z-index: 900;
+    animation: scanlineMove 8s linear infinite;
+}
+
+@keyframes scanlineMove {
+    from { top: -2px; }
+    to { top: 600px; }
+}
+
+.vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 100px black;
+    pointer-events: none;
+    z-index: 800;
+}
+
+.crt-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.03) 50%, rgba(0, 0, 0, 0.03) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 700;
+}
+
+.pixel-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 1000;
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pixel {
+    background-color: var(--primary-color);
+}
+
+@keyframes pixelFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pixelFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}

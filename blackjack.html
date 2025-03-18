@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE BLACKJACK --- */
+        #blackjack-game {
+            background-color: #006400; /* Vert foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            height: 100%;
+        }
+        
+        .blackjack-table {
+            background-color: #008000; /* Vert */
+            border: 10px solid #654321; /* Marron */
+            border-radius: 30px;
+            height: calc(100% - 40px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7) inset;
+        }
+        
+        .dealer-area, .player-area {
+            height: 45%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dealer-area {
+            border-bottom: 5px solid #654321;
+        }
+        
+        .dealer-title, .player-title {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #FFD700; /* Or */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .dealer-cards, .player-cards {
+            display: flex;
+            height: 120px;
+        }
+        
+        .card-placeholder {
+            width: 80px;
+            height: 120px;
+            margin-right: 15px;
+            border: 2px dashed white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 10px;
+        }
+        
+        .card {
+            width: 80px;
+            height: 120px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            margin-right: 15px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+            transition: transform 0.3s ease;
+            cursor: default;
+            animation: dealCard 0.5s;
+        }
+        
+        @keyframes dealCard {
+            from {
+                transform: translateY(-100px) rotate(180deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .card.flipped {
+            background-image: linear-gradient(45deg, #ff0000 25%, #000000 25%, #000000 50%, #ff0000 50%, #ff0000 75%, #000000 75%, #000000 100%);
+            background-size: 10px 10px;
+        }
+        
+        .card-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .card-suit {
+            font-size: 32px;
+            margin-top: auto;
+            margin-bottom: auto;
+            text-align: center;
+        }
+        
+        .card-suit.red {
+            color: red;
+        }
+        
+        .card-suit.black {
+            color: black;
+        }
+        
+        .card-info {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .hand-value {
+            margin-top: 10px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .controls-area {
+            border-top: 5px solid #654321;
+            height: 90px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .control-button {
+            background-color: #FFD700; /* Or */
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #B8860B; /* Or foncé */
+            border-radius: 5px;
+        }
+        
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #B8860B;
+        }
+        
+        .control-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #B8860B;
+        }
+        
+        .control-button:disabled {
+            background-color: #A9A9A9; /* Gris */
+            box-shadow: 0 4px 0 #696969;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            display: none;
+        }
+        
+        .message-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        
+        .message-body {
+            margin-bottom: 20px;
+        }
+        
+        .dealer-speech {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            max-width: 200px;
+            font-size: 12px;
+            color: black;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 10;
+        }
+        
+        .dealer-speech:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            border: 10px solid transparent;
+            border-left-color: white;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Blackjack -->
+        <div id="blackjack-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="blackjack-victories">0</span></div>
+            
+            <div class="blackjack-table">
+                <div class="dealer-area">
+                    <div class="dealer-title">CAMILLE LE NUL (Croupier)</div>
+                    <div class="dealer-cards" id="dealer-cards"></div>
+                    <div class="hand-value" id="dealer-value">Valeur : ?</div>
+                </div>
+                
+                <div class="player-area">
+                    <div class="player-title">VOUS</div>
+                    <div class="player-cards" id="player-cards"></div>
+                    <div class="hand-value" id="player-value">Valeur : 0</div>
+                </div>
+                
+                <div class="controls-area">
+                    <button class="control-button" id="hit-button">TIRER</button>
+                    <button class="control-button" id="stand-button">RESTER</button>
+                    <button class="control-button" id="deal-button">DISTRIBUER</button>
+                </div>
+                
+                <div class="dealer-speech" id="dealer-speech"></div>
+                
+                <div class="message" id="result-message">
+                    <div class="message-title" id="result-title"></div>
+                    <div class="message-body" id="result-body"></div>
+                    <button class="control-button" id="continue-button">CONTINUER</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        // ===== JEU DE BLACKJACK =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('blackjack-victories').textContent = gameVictories.blackjack;
+            };
+            
+            // Éléments DOM
+            const dealerCards = document.getElementById('dealer-cards');
+            const playerCards = document.getElementById('player-cards');
+            const dealerValue = document.getElementById('dealer-value');
+            const playerValue = document.getElementById('player-value');
+            const hitButton = document.getElementById('hit-button');
+            const standButton = document.getElementById('stand-button');
+            const dealButton = document.getElementById('deal-button');
+            const resultMessage = document.getElementById('result-message');
+            const resultTitle = document.getElementById('result-title');
+            const resultBody = document.getElementById('result-body');
+            const continueButton = document.getElementById('continue-button');
+            const dealerSpeech = document.getElementById('dealer-speech');
+            
+            // État du jeu de blackjack
+            let blackjackState = {
+                deck: [],
+                dealerHand: [],
+                playerHand: [],
+                gameOver: false,
+                dealersTurn: false,
+                speech: [
+                    "Bonjour ! Je suis Camille le nul, prêt à jouer au blackjack !",
+                    "J'ai presque gagné la dernière fois !",
+                    "Je suis sûr que je vais gagner cette fois !",
+                    "Tu as beaucoup de chance aujourd'hui...",
+                    "Est-ce que tu comptes les cartes ? C'est illégal !",
+                    "Mon jeu préféré est le 21, euh je veux dire le blackjack.",
+                    "As-tu vu mes cartes ? Elles sont très jolies !",
+                    "Je commence à comprendre pourquoi on m'appelle 'le nul'..."
+                ]
+            };
+            
+            function initBlackjackGame() {
+                // Réinitialiser l'état du jeu
+                blackjackState = {
+                    deck: [],
+                    dealerHand: [],
+                    playerHand: [],
+                    gameOver: false,
+                    dealersTurn: false,
+                    speech: blackjackState.speech
+                };
+                
+                // Nettoyer l'interface
+                dealerCards.innerHTML = '';
+                playerCards.innerHTML = '';
+                dealerValue.textContent = 'Valeur : ?';
+                playerValue.textContent = 'Valeur : 0';
+                resultMessage.style.display = 'none';
+                
+                // Créer un nouveau paquet de cartes
+                blackjackState.deck = createDeck();
+                shuffleDeck(blackjackState.deck);
+                
+                // Configurer les boutons
+                hitButton.disabled = true;
+                standButton.disabled = true;
+                dealButton.disabled = false;
+                
+                // Ajouter les événements aux boutons
+                hitButton.removeEventListener('click', handleHit);
+                standButton.removeEventListener('click', handleStand);
+                dealButton.removeEventListener('click', handleDeal);
+                continueButton.removeEventListener('click', handleContinue);
+                
+                hitButton.addEventListener('click', handleHit);
+                standButton.addEventListener('click', handleStand);
+                dealButton.addEventListener('click', handleDeal);
+                continueButton.addEventListener('click', handleContinue);
+                
+                // Discours aléatoire du croupier
+                setTimeout(() => {
+                    showDealerSpeech(blackjackState.speech[Math.floor(Math.random() * blackjackState.speech.length)]);
+                }, 1000);
+            }
+            
+            function createDeck() {
+                const suits = ['♥', '♦', '♠', '♣'];
+                const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+                const deck = [];
+                
+                for (let suit of suits) {
+                    for (let value of values) {
+                        deck.push({
+                            suit,
+                            value,
+                            numericValue: getCardValue(value),
+                            color: suit === '♥' || suit === '♦' ? 'red' : 'black',
+                            flipped: false
+                        });
+                    }
+                }
+                
+                return deck;
+            }
+            
+            function getCardValue(value) {
+                if (value === 'A') return 11; // As vaut 11 initialement
+                if (['K', 'Q', 'J'].includes(value)) return 10; // Figures valent 10
+                return parseInt(value); // Autres cartes valent leur valeur
+            }
+            
+            function shuffleDeck(deck) {
+                for (let i = deck.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [deck[i], deck[j]] = [deck[j], deck[i]];
+                }
+            }
+            
+            function dealCard(hand, flipped = false) {
+                const card = blackjackState.deck.pop();
+                card.flipped = flipped;
+                hand.push(card);
+                playSound('card');
+                return card;
+            }
+            
+            function calculateHandValue(hand) {
+                let value = 0;
+                let aces = 0;
+                
+                for (let card of hand) {
+                    if (!card.flipped) {
+                        if (card.value === 'A') {
+                            aces++;
+                            value += 11;
+                        } else {
+                            value += card.numericValue;
+                        }
+                    }
+                }
+                
+                // Ajuster la valeur des as si nécessaire
+                while (value > 21 && aces > 0) {
+                    value -= 10; // Convertir un as de 11 à 1
+                    aces--;
+                }
+                
+                return value;
+            }
+            
+            function handleDeal() {
+                // Réinitialiser les mains
+                blackjackState.dealerHand = [];
+                blackjackState.playerHand = [];
+                blackjackState.gameOver = false;
+                blackjackState.dealersTurn = false;
+                
+                // Nettoyer l'interface
+                dealerCards.innerHTML = '';
+                playerCards.innerHTML = '';
+                
+                // Recréer le paquet si nécessaire
+                if (blackjackState.deck.length < 10) {
+                    blackjackState.deck = createDeck();
+                    shuffleDeck(blackjackState.deck);
+                    showDealerSpeech("Je mélange un nouveau paquet de cartes !");
+                }
+                
+                // Distribuer les cartes
+                dealCard(blackjackState.playerHand);
+                dealCard(blackjackState.dealerHand);
+                dealCard(blackjackState.playerHand);
+                dealCard(blackjackState.dealerHand, true); // Carte face cachée
+                
+                // Mettre à jour l'affichage
+                updateCardDisplay();
+                
+                // Activer les boutons
+                hitButton.disabled = false;
+                standButton.disabled = false;
+                dealButton.disabled = true;
+                
+                // Vérifier le blackjack
+                if (calculateHandValue(blackjackState.playerHand) === 21) {
+                    standButton.click(); // Automatiquement stand si blackjack
+                }
+            }
+            
+            function updateCardDisplay() {
+                // Vider les conteneurs
+                dealerCards.innerHTML = '';
+                playerCards.innerHTML = '';
+                
+                // Afficher les cartes du croupier
+                blackjackState.dealerHand.forEach(card => {
+                    dealerCards.appendChild(createCardElement(card));
+                });
+                
+                // Afficher les cartes du joueur
+                blackjackState.playerHand.forEach(card => {
+                    playerCards.appendChild(createCardElement(card));
+                });
+                
+                // Mettre à jour les valeurs
+                const dealerHandValue = calculateHandValue(blackjackState.dealerHand);
+                const playerHandValue = calculateHandValue(blackjackState.playerHand);
+                
+                // Afficher la valeur du joueur
+                playerValue.textContent = `Valeur : ${playerHandValue}`;
+                
+                // Afficher la valeur du croupier (ou ? si carte cachée)
+                if (blackjackState.dealerHand.some(card => card.flipped)) {
+                    dealerValue.textContent = 'Valeur : ?';
+                } else {
+                    dealerValue.textContent = `Valeur : ${dealerHandValue}`;
+                }
+            }
+            
+            function createCardElement(card) {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                
+                if (card.flipped) {
+                    cardElement.classList.add('flipped');
+                    return cardElement;
+                }
+                
+                const valueElement = document.createElement('div');
+                valueElement.className = 'card-value';
+                valueElement.textContent = card.value;
+                valueElement.style.color = card.color;
+                
+                const suitElement = document.createElement('div');
+                suitElement.className = `card-suit ${card.color}`;
+                suitElement.textContent = card.suit;
+                
+                const infoElement = document.createElement('div');
+                infoElement.className = 'card-info';
+                
+                const secondValueElement = document.createElement('div');
+                secondValueElement.className = 'card-value';
+                secondValueElement.textContent = card.value;
+                secondValueElement.style.color = card.color;
+                
+                cardElement.appendChild(valueElement);
+                cardElement.appendChild(suitElement);
+                infoElement.appendChild(secondValueElement);
+                cardElement.appendChild(infoElement);
+                
+                return cardElement;
+            }
+            
+            function handleHit() {
+                if (blackjackState.gameOver) return;
+                
+                // Distribuer une carte au joueur
+                dealCard(blackjackState.playerHand);
+                
+                // Mettre à jour l'affichage
+                updateCardDisplay();
+                
+                // Vérifier si le joueur a dépassé 21
+                const playerValue = calculateHandValue(blackjackState.playerHand);
+                if (playerValue > 21) {
+                    // Joueur perd
+                    endGame('lose', "Vous avez dépassé 21 !");
+                }
+                
+                // Vérifier si le joueur a 21 (5 cartes sans dépasser)
+                if (playerValue === 21 || blackjackState.playerHand.length >= 5) {
+                    standButton.click();
+                }
+            }
+            
+            function handleStand() {
+                if (blackjackState.gameOver) return;
+                
+                blackjackState.dealersTurn = true;
+                
+                // Retourner la carte cachée du croupier
+                blackjackState.dealerHand.forEach(card => card.flipped = false);
+                
+                // Mettre à jour l'affichage
+                updateCardDisplay();
+                
+                // Donner des cartes au croupier jusqu'à ce qu'il atteigne 17 ou plus
+                dealerPlay();
+            }
+            
+            function dealerPlay() {
+                const dealerHandValue = calculateHandValue(blackjackState.dealerHand);
+                
+                if (dealerHandValue < 17) {
+                    // Temporiser pour créer un effet de "réflexion"
+                    setTimeout(() => {
+                        dealCard(blackjackState.dealerHand);
+                        updateCardDisplay();
+                        dealerPlay(); // Récursif jusqu'à >= 17
+                    }, 1000);
+                } else {
+                    determineWinner();
+                }
+            }
+            
+            function determineWinner() {
+                const dealerValue = calculateHandValue(blackjackState.dealerHand);
+                const playerValue = calculateHandValue(blackjackState.playerHand);
+                
+                // Déterminer le résultat
+                if (playerValue > 21) {
+                    endGame('lose', "Vous avez dépassé 21 !");
+                } else if (dealerValue > 21) {
+                    endGame('win', "Camille a dépassé 21 !");
+                } else if (playerValue > dealerValue) {
+                    endGame('win', `Vous gagnez avec ${playerValue} contre ${dealerValue} !`);
+                } else if (playerValue < dealerValue) {
+                    endGame('lose', `Camille gagne avec ${dealerValue} contre ${playerValue} !`);
+                } else {
+                    endGame('push', `Égalité avec ${playerValue} !`);
+                }
+            }
+            
+            function endGame(result, message) {
+                blackjackState.gameOver = true;
+                
+                // Désactiver les boutons de jeu
+                hitButton.disabled = true;
+                standButton.disabled = true;
+                
+                // Définir le message
+                let title, body, speech;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE !";
+                        body = message;
+                        speech = "Oh non ! J'ai encore perdu ! Pas juste !";
+                        playSound('win');
+                        // Ajouter une victoire
+                        addVictory('blackjack');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE !";
+                        body = message;
+                        speech = "Ha ha ! J'ai gagné ! Je ne suis pas si nul après tout !";
+                        playSound('lose');
+                        break;
+                    case 'push':
+                        title = "ÉGALITÉ !";
+                        body = message;
+                        speech = "On est ex aequo ! C'est un match nul !";
+                        playSound('card');
+                        break;
+                }
+                
+                // Afficher le message du croupier
+                showDealerSpeech(speech);
+                
+                // Afficher le résultat après un court délai
+                setTimeout(() => {
+                    resultTitle.textContent = title;
+                    resultBody.textContent = body;
+                    resultMessage.style.display = 'block';
+                    dealButton.disabled = true;
+                }, 1500);
+            }
+            
+            function handleContinue() {
+                resultMessage.style.display = 'none';
+                dealButton.disabled = false;
+            }
+            
+            function showDealerSpeech(text) {
+                dealerSpeech.textContent = text;
+                dealerSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    dealerSpeech.style.opacity = '0';
+                }, 5000);
+            }
+            
+            // Initialiser le jeu de blackjack
+            initBlackjackGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

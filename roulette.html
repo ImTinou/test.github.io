@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- JEU DE ROULETTE --- */
+        #roulette-game {
+            background-color: #004d00; /* Vert foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .roulette-container {
+            width: 95%;
+            height: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #006600; /* Vert un peu moins foncé */
+            border: 3px solid #daa520; /* Or foncé */
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .roulette-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .roulette-credits {
+            background-color: #000;
+            color: #daa520;
+            padding: 10px;
+            border: 2px solid #daa520;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .roulette-wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .roulette-wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #800000; /* Rouge foncé */
+            border: 10px solid #daa520;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        .roulette-wheel-center {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #daa520;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #800000;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .roulette-number {
+            position: absolute;
+            width: 30px;
+            height: 115px;
+            transform-origin: bottom center;
+            display: flex;
+            justify-content: center;
+            padding-top: 10px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .roulette-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            top: calc(50% - 10px);
+            left: calc(50% - 10px);
+            transform: translate(150px, 0) rotate(0deg);
+            transform-origin: center;
+            z-index: 5;
+            display: none;
+        }
+        
+        .roulette-selection {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .roulette-bet-option {
+            background-color: #222;
+            color: white;
+            border: 2px solid #daa520;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .roulette-bet-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.5);
+        }
+        
+        .roulette-bet-option.selected {
+            border-color: white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+        
+        .bet-label {
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .bet-color-display {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .bet-color-red {
+            background-color: #e60000;
+        }
+        
+        .bet-color-black {
+            background-color: #000;
+        }
+        
+        .bet-color-green {
+            background-color: #00cc00;
+        }
+        
+        .bet-payout {
+            font-size: 10px;
+            color: #daa520;
+        }
+        
+        .roulette-controls {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .roulette-bet-amount {
+            display: flex;
+            align-items: center;
+        }
+        
+        .bet-button {
+            background-color: #444;
+            color: white;
+            border: 2px solid #daa520;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 10px;
+        }
+        
+        .bet-button:hover {
+            background-color: #666;
+        }
+        
+        .bet-amount-display {
+            background-color: #000;
+            color: #daa520;
+            padding: 10px 15px;
+            border: 2px solid #daa520;
+            border-radius: 5px;
+            min-width: 80px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .spin-button {
+            background-color: #daa520;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 25px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .spin-button:hover {
+            background-color: #ffd700;
+            transform: scale(1.05);
+        }
+        
+        .spin-button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+        
+        .roulette-result {
+            margin-top: 15px;
+            min-height: 40px;
+            font-size: 14px;
+            color: white;
+            text-align: center;
+        }
+        
+        .roulette-camille {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 40px;
+        }
+        
+        .roulette-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid #daa520;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+        }
+        
+        .roulette-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #daa520;
+        }
+        
+        .roulette-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .roulette-message-button {
+            background-color: #daa520;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .roulette-message-button:hover {
+            background-color: #ffd700;
+            transform: scale(1.1);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .camille-speech {
+            right: 80px;
+            bottom: 70px;
+        }
+        
+        .camille-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-left-color: white;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Roulette -->
+        <div id="roulette-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="roulette-victories">0</span></div>
+            
+            <div class="roulette-container">
+                <div class="roulette-header">
+                    <div class="roulette-credits">Crédits: <span id="roulette-credits">100</span></div>
+                </div>
+                
+                <div class="roulette-wheel-container">
+                    <div class="roulette-wheel" id="roulette-wheel">
+                        <!-- Les numéros seront ajoutés dynamiquement -->
+                    </div>
+                    <div class="roulette-wheel-center">
+                        <span>SPIN</span>
+                    </div>
+                    <div class="roulette-ball" id="roulette-ball"></div>
+                </div>
+                
+                <div class="roulette-selection">
+                    <div class="roulette-bet-option" data-bet="red">
+                        <div class="bet-label">ROUGE</div>
+                        <div class="bet-color-display bet-color-red"></div>
+                        <div class="bet-payout">PAYE x2</div>
+                    </div>
+                    <div class="roulette-bet-option" data-bet="black">
+                        <div class="bet-label">NOIR</div>
+                        <div class="bet-color-display bet-color-black"></div>
+                        <div class="bet-payout">PAYE x2</div>
+                    </div>
+                    <div class="roulette-bet-option" data-bet="green">
+                        <div class="bet-label">VERT (0)</div>
+                        <div class="bet-color-display bet-color-green"></div>
+                        <div class="bet-payout">PAYE x14</div>
+                    </div>
+                </div>
+                
+                <div class="roulette-controls">
+                    <div class="roulette-bet-amount">
+                        <button class="bet-button" id="bet-down">-</button>
+                        <div class="bet-amount-display">Mise: <span id="bet-amount">10</span></div>
+                        <button class="bet-button" id="bet-up">+</button>
+                    </div>
+                    
+                    <button class="spin-button" id="spin-button">LANCER</button>
+                </div>
+                
+                <div class="roulette-result" id="roulette-result"></div>
+                
+                <div class="roulette-camille" id="roulette-camille">👨</div>
+            </div>
+            
+            <div id="camille-speech" class="speech-bubble camille-speech"></div>
+            
+            <div id="roulette-message" class="roulette-message">
+                <div id="roulette-message-title" class="roulette-message-title"></div>
+                <div id="roulette-message-body" class="roulette-message-body"></div>
+                <button id="roulette-message-button" class="roulette-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('roulette-victories').textContent = gameVictories.roulette || 0;
+            };
+            
+            // Éléments DOM
+            const rouletteWheel = document.getElementById('roulette-wheel');
+            const rouletteBall = document.getElementById('roulette-ball');
+            const spinButton = document.getElementById('spin-button');
+            const betOptions = document.querySelectorAll('.roulette-bet-option');
+            const betDownButton = document.getElementById('bet-down');
+            const betUpButton = document.getElementById('bet-up');
+            const betAmountDisplay = document.getElementById('bet-amount');
+            const creditsDisplay = document.getElementById('roulette-credits');
+            const resultDisplay = document.getElementById('roulette-result');
+            const camilleFigure = document.getElementById('roulette-camille');
+            const camilleSpeech = document.getElementById('camille-speech');
+            const rouletteMessage = document.getElementById('roulette-message');
+            const rouletteMessageTitle = document.getElementById('roulette-message-title');
+            const rouletteMessageBody = document.getElementById('roulette-message-body');
+            const rouletteMessageButton = document.getElementById('roulette-message-button');
+            
+            // Configuration des numéros de la roulette
+            const rouletteNumbers = [
+                { number: 0, color: 'green' },
+                { number: 32, color: 'red' },
+                { number: 15, color: 'black' },
+                { number: 19, color: 'red' },
+                { number: 4, color: 'black' },
+                { number: 21, color: 'red' },
+                { number: 2, color: 'black' },
+                { number: 25, color: 'red' },
+                { number: 17, color: 'black' },
+                { number: 34, color: 'red' },
+                { number: 6, color: 'black' },
+                { number: 27, color: 'red' },
+                { number: 13, color: 'black' },
+                { number: 36, color: 'red' },
+                { number: 11, color: 'black' },
+                { number: 30, color: 'red' },
+                { number: 8, color: 'black' },
+                { number: 23, color: 'red' },
+                { number: 10, color: 'black' },
+                { number: 5, color: 'red' },
+                { number: 24, color: 'black' },
+                { number: 16, color: 'red' },
+                { number: 33, color: 'black' },
+                { number: 1, color: 'red' },
+                { number: 20, color: 'black' },
+                { number: 14, color: 'red' },
+                { number: 31, color: 'black' },
+                { number: 9, color: 'red' },
+                { number: 22, color: 'black' },
+                { number: 18, color: 'red' },
+                { number: 29, color: 'black' },
+                { number: 7, color: 'red' },
+                { number: 28, color: 'black' },
+                { number: 12, color: 'red' },
+                { number: 35, color: 'black' },
+                { number: 3, color: 'red' },
+                { number: 26, color: 'black' }
+            ];
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je mise toujours sur le rouge, c'est ma couleur porte-bonheur !",
+                "Laisse-moi te montrer comment jouer à la roulette !",
+                "Le noir va gagner cette fois, j'en suis certain !",
+                "J'ai un système infaillible pour la roulette !",
+                "Tu ne peux pas battre le hasard, mais moi je peux !",
+                "Je sens que le zéro va sortir... ou pas !",
+                "La roulette, c'est mon jeu préféré !",
+                "La chance est de mon côté aujourd'hui !",
+                "J'ai étudié les probabilités... ou presque !"
+            ];
+            
+            // État du jeu
+            let rouletteState = {
+                credits: 100,
+                betAmount: 10,
+                selectedBet: null,
+                spinning: false,
+                winningNumber: null,
+                winningColor: null,
+                camilleCredits: 100,
+                camilleBet: null,
+                gamesPlayed: 0,
+                playerWins: 0,
+                camilleWins: 0
+            };
+            
+            // Initialiser le jeu
+            function initRouletteGame() {
+                // Réinitialiser l'état du jeu
+                rouletteState = {
+                    credits: 100,
+                    betAmount: 10,
+                    selectedBet: null,
+                    spinning: false,
+                    winningNumber: null,
+                    winningColor: null,
+                    camilleCredits: 100,
+                    camilleBet: null,
+                    gamesPlayed: 0,
+                    playerWins: 0,
+                    camilleWins: 0
+                };
+                
+                // Créer la roue de roulette
+                createRouletteWheel();
+                
+                // Mettre à jour l'affichage
+                updateRouletteDisplay();
+                
+                // Configurer les événements
+                spinButton.removeEventListener('click', spinRouletteWheel);
+                betOptions.forEach(option => {
+                    option.removeEventListener('click', selectBet);
+                    option.addEventListener('click', selectBet);
+                });
+                betDownButton.removeEventListener('click', decreaseBet);
+                betUpButton.removeEventListener('click', increaseBet);
+                spinButton.addEventListener('click', spinRouletteWheel);
+                betDownButton.addEventListener('click', decreaseBet);
+                betUpButton.addEventListener('click', increaseBet);
+                rouletteMessageButton.removeEventListener('click', handleRouletteMessageClose);
+                rouletteMessageButton.addEventListener('click', handleRouletteMessageClose);
+                
+                // Désélectionner tous les paris
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Masquer la balle
+                rouletteBall.style.display = 'none';
+                
+                // Masquer le message
+                rouletteMessage.style.display = 'none';
+                
+                // Réinitialiser l'affichage du résultat
+                resultDisplay.textContent = '';
+                
+                // Message de bienvenue
+                showCamilleSpeech("Prêt à jouer à la roulette ? J'ai un système infaillible !");
+            }
+            
+            // Créer la roue de roulette
+            function createRouletteWheel() {
+                rouletteWheel.innerHTML = '';
+                
+                // Créer les segments pour chaque numéro
+                rouletteNumbers.forEach((item, index) => {
+                    const segment = document.createElement('div');
+                    segment.className = 'roulette-number';
+                    segment.style.transform = `rotate(${index * (360 / rouletteNumbers.length)}deg)`;
+                    segment.style.backgroundColor = item.color;
+                    segment.textContent = item.number;
+                    rouletteWheel.appendChild(segment);
+                });
+            }
+            
+            // Mettre à jour l'affichage
+            function updateRouletteDisplay() {
+                creditsDisplay.textContent = rouletteState.credits;
+                betAmountDisplay.textContent = rouletteState.betAmount;
+                
+                // Activer/désactiver le bouton de lancement
+                spinButton.disabled = rouletteState.spinning || rouletteState.selectedBet === null || rouletteState.credits < rouletteState.betAmount;
+                
+                // Activer/désactiver les boutons de mise
+                betDownButton.disabled = rouletteState.spinning || rouletteState.betAmount <= 5;
+                betUpButton.disabled = rouletteState.spinning || rouletteState.betAmount >= 50 || rouletteState.betAmount >= rouletteState.credits;
+            }
+            
+            // Sélectionner un pari
+            function selectBet() {
+                if (rouletteState.spinning) return;
+                
+                // Désélectionner tous les paris
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Sélectionner le pari actuel
+                this.classList.add('selected');
+                rouletteState.selectedBet = this.getAttribute('data-bet');
+                
+                // Mettre à jour l'affichage
+                updateRouletteDisplay();
+                
+                // Jouer un son
+                playSound('select');
+            }
+            
+            // Diminuer la mise
+            function decreaseBet() {
+                if (rouletteState.spinning) return;
+                
+                rouletteState.betAmount = Math.max(5, rouletteState.betAmount - 5);
+                updateRouletteDisplay();
+                playSound('select');
+            }
+            
+            // Augmenter la mise
+            function increaseBet() {
+                if (rouletteState.spinning) return;
+                
+                rouletteState.betAmount = Math.min(rouletteState.credits, Math.min(50, rouletteState.betAmount + 5));
+                updateRouletteDisplay();
+                playSound('select');
+            }
+            
+            // Faire tourner la roue
+            function spinRouletteWheel() {
+                if (rouletteState.spinning || rouletteState.selectedBet === null || rouletteState.credits < rouletteState.betAmount) return;
+                
+                // Préparer le lancement
+                rouletteState.spinning = true;
+                resultDisplay.textContent = '';
+                
+                // Déduire la mise
+                rouletteState.credits -= rouletteState.betAmount;
+                
+                // Choisir le pari de Camille (aléatoire)
+                const betOptions = ['red', 'black', 'green'];
+                rouletteState.camilleBet = betOptions[Math.floor(Math.random() * (betOptions.length - 0.2))]; // Réduire les chances de choisir green
+                
+                // Montrer le pari de Camille
+                let camilleMessage;
+                switch (rouletteState.camilleBet) {
+                    case 'red':
+                        camilleMessage = "Je mise sur le rouge cette fois !";
+                        break;
+                    case 'black':
+                        camilleMessage = "Le noir va gagner, c'est sûr !";
+                        break;
+                    case 'green':
+                        camilleMessage = "Je tente le zéro, c'est risqué mais ça paye gros !";
+                        break;
+                }
+                showCamilleSpeech(camilleMessage);
+                
+                // Mettre à jour l'affichage
+                updateRouletteDisplay();
+                
+                // Choisir un numéro gagnant aléatoire
+                const winningIndex = Math.floor(Math.random() * rouletteNumbers.length);
+                rouletteState.winningNumber = rouletteNumbers[winningIndex].number;
+                rouletteState.winningColor = rouletteNumbers[winningIndex].color;
+                
+                // Calculer l'angle de rotation
+                const rotationAngle = 360 * 5 + (360 - (winningIndex * (360 / rouletteNumbers.length)));
+                
+                // Jouer un son
+                playSound('start');
+                
+                // Afficher la balle
+                rouletteBall.style.display = 'block';
+                
+                // Animer la roue et la balle
+                rouletteWheel.style.transform = `rotate(${rotationAngle}deg)`;
+                
+                // Animer la balle dans le sens opposé (illusion)
+                rouletteBall.style.animation = 'none';
+                setTimeout(() => {
+                    rouletteBall.style.animation = `spinBall 5s cubic-bezier(0.2, 0.8, 0.2, 1)`;
+                }, 10);
+                
+                // Attendre la fin de l'animation
+                setTimeout(() => {
+                    // Vérifier les résultats
+                    checkRouletteResults();
+                    
+                    // Jeu terminé, activer les boutons
+                    rouletteState.spinning = false;
+                    updateRouletteDisplay();
+                    
+                    // Incrémenter le compteur de parties jouées
+                    rouletteState.gamesPlayed++;
+                    
+                    // Vérifier si le joueur a gagné ou perdu la partie globale
+                    checkRouletteGameEnd();
+                }, 5500);
+            }
+            
+            // Vérifier les résultats
+            function checkRouletteResults() {
+                let playerWin = false;
+                let camilleWin = false;
+                let winMessage = '';
+                
+                // Vérifier si le joueur a gagné
+                if (
+                    (rouletteState.selectedBet === 'red' && rouletteState.winningColor === 'red') ||
+                    (rouletteState.selectedBet === 'black' && rouletteState.winningColor === 'black')
+                ) {
+                    const winAmount = rouletteState.betAmount * 2;
+                    rouletteState.credits += winAmount;
+                    winMessage = `${rouletteState.winningNumber} ${rouletteState.winningColor.toUpperCase()}. Vous gagnez ${winAmount} crédits !`;
+                    playerWin = true;
+                    rouletteState.playerWins++;
+                    playSound('win');
+                } else if (rouletteState.selectedBet === 'green' && rouletteState.winningColor === 'green') {
+                    const winAmount = rouletteState.betAmount * 14;
+                    rouletteState.credits += winAmount;
+                    winMessage = `${rouletteState.winningNumber} ${rouletteState.winningColor.toUpperCase()}. JACKPOT! Vous gagnez ${winAmount} crédits !`;
+                    playerWin = true;
+                    rouletteState.playerWins++;
+                    playSound('win');
+                } else {
+                    winMessage = `${rouletteState.winningNumber} ${rouletteState.winningColor.toUpperCase()}. Vous perdez votre mise de ${rouletteState.betAmount} crédits.`;
+                    playSound('lose');
+                }
+                
+                // Vérifier si Camille a gagné
+                if (
+                    (rouletteState.camilleBet === 'red' && rouletteState.winningColor === 'red') ||
+                    (rouletteState.camilleBet === 'black' && rouletteState.winningColor === 'black')
+                ) {
+                    camilleWin = true;
+                    rouletteState.camilleWins++;
+                    if (playerWin) {
+                        showCamilleSpeech("Nous avons tous les deux gagné cette fois !");
+                    } else {
+                        showCamilleSpeech("Ha ha ! J'ai gagné et tu as perdu ! Je te l'avais dit !");
+                    }
+                } else if (rouletteState.camilleBet === 'green' && rouletteState.winningColor === 'green') {
+                    camilleWin = true;
+                    rouletteState.camilleWins++;
+                    showCamilleSpeech("JACKPOT ! Je savais que le zéro allait sortir !");
+                } else {
+                    if (playerWin) {
+                        showCamilleSpeech("Non ! J'ai perdu ! C'est impossible, j'ai un système infaillible !");
+                    } else {
+                        showCamilleSpeech("Nous avons tous les deux perdu... ce n'est pas notre jour !");
+                    }
+                }
+                
+                resultDisplay.textContent = winMessage;
+                
+                // Mettre à jour l'affichage
+                updateRouletteDisplay();
+            }
+            
+            // Vérifier si le jeu est terminé
+            function checkRouletteGameEnd() {
+                if (rouletteState.credits < 5) {
+                    // Plus assez de crédits pour jouer
+                    endRouletteGame('lose');
+                } else if (rouletteState.credits >= 200) {
+                    // Le joueur a doublé ses crédits
+                    endRouletteGame('win');
+                } else if (rouletteState.gamesPlayed >= 10) {
+                    // 10 tours joués, comparer les victoires
+                    if (rouletteState.playerWins > rouletteState.camilleWins) {
+                        endRouletteGame('win');
+                    } else if (rouletteState.playerWins < rouletteState.camilleWins) {
+                        endRouletteGame('lose');
+                    } else {
+                        // Égalité, comparer les crédits
+                        if (rouletteState.credits > 100) {
+                            endRouletteGame('win');
+                        } else {
+                            endRouletteGame('lose');
+                        }
+                    }
+                }
+            }
+            
+            // Terminer le jeu
+            function endRouletteGame(result) {
+                let title, body;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE !";
+                        body = `Félicitations ! Vous avez terminé avec ${rouletteState.credits} crédits et ${rouletteState.playerWins} victoires, battant Camille Le Nul à la roulette !`;
+                        playSound('win');
+                        
+                        // Ajouter une victoire
+                        if (!gameVictories.roulette) {
+                            gameVictories.roulette = 0;
+                        }
+                        addVictory('roulette');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE !";
+                        body = `Dommage ! Vous avez terminé avec seulement ${rouletteState.credits} crédits et ${rouletteState.playerWins} victoires. Camille Le Nul vous a battu à la roulette !`;
+                        playSound('lose');
+                        break;
+                }
+                
+                // Afficher le message
+                rouletteMessageTitle.textContent = title;
+                rouletteMessageBody.textContent = body;
+                rouletteMessage.style.display = 'block';
+            }
+            
+            // Fermer le message
+            function handleRouletteMessageClose() {
+                rouletteMessage.style.display = 'none';
+                initRouletteGame(); // Réinitialiser le jeu
+            }
+            
+            // Afficher un message de Camille
+            function showCamilleSpeech(text) {
+                camilleSpeech.textContent = text;
+                camilleSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    camilleSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu
+            initRouletteGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>
