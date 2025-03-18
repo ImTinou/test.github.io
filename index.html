@@ -7,44 +7,275 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="responsive-style.css">
+    <style>
+        /* Styles spécifiques à l'index */
+        #title-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="50" height="50" fill="%23111"/><rect x="50" y="50" width="50" height="50" fill="%23111"/></svg>');
+            background-size: 20px 20px;
+            animation: backgroundScroll 10s linear infinite;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 90%;
+            max-width: 700px;
+            margin: 20px 0;
+        }
+        
+        .game-card {
+            background-color: var(--background-light);
+            border: 3px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 15px var(--highlight-color);
+        }
+        
+        .game-card.selected {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 15px var(--secondary-color);
+            transform: translateY(-5px);
+        }
+        
+        .game-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .game-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .game-category {
+            font-size: 10px;
+            color: var(--secondary-color);
+            opacity: 0.8;
+        }
+        
+        .start-button {
+            margin-top: 30px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: 5px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            width: 180px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: pulse 1.5s infinite alternate;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+            text-align: center;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .title-camille {
+            color: var(--secondary-color);
+            display: block;
+            margin-bottom: 10px;
+            font-size: 40px;
+            transform: rotate(-5deg);
+            text-shadow: 0 0 10px var(--secondary-color);
+        }
+        
+        .title-subtitle {
+            font-size: 30px;
+            color: var(--text-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .victory-counter {
+            background-color: var(--background-light);
+            color: var(--secondary-color);
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 15px 0 25px 0;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Catégories de jeux */
+        .casino {
+            border-color: #FFD700;
+        }
+        
+        .arcade {
+            border-color: #FF4500;
+        }
+        
+        .skill {
+            border-color: #00BFFF;
+        }
+        
+        /* Animation du fond */
+        @keyframes backgroundScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+        
+        /* Animation du bouton */
+        @keyframes pulse {
+            from { transform: scale(1); filter: brightness(1); }
+            to { transform: scale(1.1); filter: brightness(1.5); }
+        }
+        
+        /* Styles responsive */
+        @media (max-width: 768px) {
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                width: 95%;
+            }
+            
+            .game-icon {
+                font-size: 30px;
+            }
+            
+            .game-title {
+                font-size: 12px;
+            }
+            
+            .title-camille {
+                font-size: 32px;
+            }
+            
+            .title-subtitle {
+                font-size: 24px;
+            }
+            
+            .victory-counter {
+                font-size: 14px;
+            }
+            
+            .start-button {
+                padding: 15px;
+                width: 160px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-card {
+                padding: 10px;
+            }
+            
+            .title-camille {
+                font-size: 28px;
+            }
+            
+            .title-subtitle {
+                font-size: 20px;
+            }
+            
+            .victory-counter {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            .start-button {
+                padding: 12px;
+                width: 140px;
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
         <!-- Écran titre -->
         <div id="title-screen">
-            <h1 class="game-title">
-                <span class="title-camille">CAMILLE LE NUL</span>
-                MINI-JEUX
-            </h1>
-            
-            <div class="victory-counter">
-                Victoires: <span id="total-victories">0</span>
+            <div class="game-header">
+                <h1>
+                    <span class="title-camille">CAMILLE LE NUL</span>
+                    <span class="title-subtitle">MINI-JEUX</span>
+                </h1>
             </div>
             
-            <div class="menu-container">
-                <div class="menu-item" data-game="blackjack">
-                    <span class="menu-item-icon">🃏</span>
-                    Blackjack vs Camille
+            <div class="victory-counter">
+                Victoires Totales: <span id="total-victories">0</span>
+            </div>
+            
+            <div class="game-grid">
+                <!-- Jeux d'Arcade -->
+                <div class="game-card arcade" data-game="platform">
+                    <div class="game-icon">🏃</div>
+                    <div class="game-title">Super Camille Bros</div>
+                    <div class="game-category">Arcade</div>
                 </div>
-                <div class="menu-item" data-game="typing">
-                    <span class="menu-item-icon">⌨️</span>
-                    Duel de Frappe vs Camille
+                
+                <div class="game-card skill" data-game="typing">
+                    <div class="game-icon">⌨️</div>
+                    <div class="game-title">Duel de Frappe</div>
+                    <div class="game-category">Compétence</div>
                 </div>
-                <div class="menu-item" data-game="platform">
-                    <span class="menu-item-icon">🏃</span>
-                    Super Camille Bros
+                
+                <div class="game-card skill" data-game="cps">
+                    <div class="game-icon">👆</div>
+                    <div class="game-title">Test de CPS</div>
+                    <div class="game-category">Compétence</div>
                 </div>
-                <div class="menu-item" data-game="cps">
-                    <span class="menu-item-icon">👆</span>
-                    Test de CPS vs Camille
+
+                <!-- Jeux de Casino -->
+                <div class="game-card casino" data-game="blackjack">
+                    <div class="game-icon">🃏</div>
+                    <div class="game-title">Blackjack</div>
+                    <div class="game-category">Casino</div>
                 </div>
-                <div class="menu-item" data-game="slots">
-                    <span class="menu-item-icon">🎰</span>
-                    Machine à Sous vs Camille
+                
+                <div class="game-card casino" data-game="slots">
+                    <div class="game-icon">🎰</div>
+                    <div class="game-title">Machine à Sous</div>
+                    <div class="game-category">Casino</div>
                 </div>
-                <div class="menu-item" data-game="roulette">
-                    <span class="menu-item-icon">🎲</span>
-                    Roulette vs Camille
+                
+                <div class="game-card casino" data-game="roulette">
+                    <div class="game-icon">🎲</div>
+                    <div class="game-title">Roulette</div>
+                    <div class="game-category">Casino</div>
+                </div>
+                
+                <div class="game-card casino" data-game="poker">
+                    <div class="game-icon">♠️</div>
+                    <div class="game-title">Poker</div>
+                    <div class="game-category">Casino</div>
+                </div>
+                
+                <div class="game-card casino" data-game="craps">
+                    <div class="game-icon">🎯</div>
+                    <div class="game-title">Craps</div>
+                    <div class="game-category">Casino</div>
                 </div>
             </div>
             
@@ -61,7 +292,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Éléments DOM
-            const menuItems = document.querySelectorAll('.menu-item');
+            const gameCards = document.querySelectorAll('.game-card');
             const startButton = document.querySelector('.start-button');
             const totalVictoriesDisplay = document.getElementById('total-victories');
             
@@ -73,26 +304,33 @@
             };
             
             // Sélection de jeu dans le menu
-            menuItems.forEach(item => {
-                item.addEventListener('click', () => {
+            gameCards.forEach(card => {
+                card.addEventListener('click', () => {
                     // Initialiser l'audio au premier clic
                     initAudio();
                     
                     // Désélectionner l'ancien item
-                    menuItems.forEach(i => i.classList.remove('selected'));
-                    // Sélectionner le nouvel item
-                    item.classList.add('selected');
-                    selectedGame = item.getAttribute('data-game');
+                    gameCards.forEach(c => c.classList.remove('selected'));
                     
-                    // Jouer un son de sélection
+                    // Sélectionner le nouvel item
+                    card.classList.add('selected');
+                    selectedGame = card.getAttribute('data-game');
+                    
+                    // Animer le bouton de démarrage
+                    startButton.style.animation = 'none';
+                    setTimeout(() => {
+                        startButton.style.animation = 'pulse 1.5s infinite alternate';
+                    }, 10);
+                    
+                    // Jouer un son
                     playSound('select');
                 });
             });
             
             // Présélectionner le premier jeu
-            if (menuItems.length > 0) {
-                menuItems[0].classList.add('selected');
-                selectedGame = menuItems[0].getAttribute('data-game');
+            if (gameCards.length > 0) {
+                gameCards[0].classList.add('selected');
+                selectedGame = gameCards[0].getAttribute('data-game');
             }
             
             // Bouton de démarrage
@@ -100,21 +338,57 @@
                 // Initialiser l'audio au premier clic
                 initAudio();
                 
-                if (!selectedGame && menuItems.length > 0) {
+                if (!selectedGame && gameCards.length > 0) {
                     // Aucun jeu sélectionné, sélectionner le premier par défaut
-                    selectedGame = menuItems[0].getAttribute('data-game');
-                    menuItems[0].classList.add('selected');
+                    selectedGame = gameCards[0].getAttribute('data-game');
+                    gameCards[0].classList.add('selected');
                 }
                 
                 if (selectedGame) {
                     playSound('start');
-                    // Rediriger vers le jeu sélectionné
-                    window.location.href = selectedGame + '.html';
+                    
+                    // Créer l'effet de transition
+                    const transition = document.getElementById('transition');
+                    transition.style.opacity = '1';
+                    
+                    // Générer des pixels colorés pour la transition
+                    if (transition.children.length === 0) {
+                        for (let i = 0; i < 300; i++) {
+                            const pixel = document.createElement('div');
+                            pixel.className = 'pixel';
+                            transition.appendChild(pixel);
+                        }
+                    }
+                    
+                    // Animer les pixels
+                    const pixels = transition.querySelectorAll('.pixel');
+                    const pixelArray = Array.from(pixels);
+                    pixelArray.sort(() => Math.random() - 0.5);
+                    
+                    pixelArray.forEach((pixel, index) => {
+                        setTimeout(() => {
+                            pixel.style.backgroundColor = getRandomColor();
+                        }, index * 5);
+                    });
+                    
+                    // Rediriger vers le jeu sélectionné après la transition
+                    setTimeout(() => {
+                        window.location.href = selectedGame + '.html';
+                    }, 1000);
                 }
             });
             
+            // Fonction pour obtenir une couleur aléatoire
+            function getRandomColor() {
+                const colors = ['#ff0000', '#ffff00', '#00ffff', '#ff00ff', '#00ff00', '#0000ff'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
             // Charger les victoires au démarrage
             loadVictories();
+            
+            // Adapter pour mobile
+            adaptToMobileDevices();
         });
     </script>
 </body>

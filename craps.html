@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Craps vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-style.css">
+    <style>
+        /* --- JEU DE CRAPS --- */
+        #craps-game {
+            background-color: #0e0e2d; /* Bleu très foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .craps-table {
+            width: 90%;
+            height: 80%;
+            background: linear-gradient(to bottom, #065230, #053a22);
+            border: 15px solid #8b4513; /* Bordure en bois */
+            border-radius: 40px;
+            box-shadow: 
+                inset 0 0 50px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.7);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .craps-table::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(
+                    circle at center,
+                    transparent 0%,
+                    rgba(0, 0, 0, 0.3) 100%
+                );
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .craps-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+        
+        .craps-stats {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: gold;
+            padding: 10px 15px;
+            border: 2px solid gold;
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 180px;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .craps-dice-area {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin: 20px 0;
+            z-index: 10;
+        }
+        
+        .craps-dice-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 20px 0;
+            perspective: 600px;
+        }
+        
+        .dice {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.5s ease-out;
+            cursor: pointer;
+        }
+        
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dice-1 { transform: rotateY(0deg) translateZ(40px); }
+        .dice-2 { transform: rotateY(180deg) translateZ(40px); }
+        .dice-3 { transform: rotateY(90deg) translateZ(40px); }
+        .dice-4 { transform: rotateY(-90deg) translateZ(40px); }
+        .dice-5 { transform: rotateX(90deg) translateZ(40px); }
+        .dice-6 { transform: rotateX(-90deg) translateZ(40px); }
+        
+        .dice-dot {
+            width: 14px;
+            height: 14px;
+            background-color: #333;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        /* Positions des points pour chaque face */
+        .dice-1 .dice-dot { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .dice-2 .dice-dot:nth-child(1) { top: 25%; left: 25%; }
+        .dice-2 .dice-dot:nth-child(2) { bottom: 25%; right: 25%; }
+        
+        .dice-3 .dice-dot:nth-child(1) { top: 25%; left: 25%; }
+        .dice-3 .dice-dot:nth-child(2) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-3 .dice-dot:nth-child(3) { bottom: 25%; right: 25%; }
+        
+        .dice-4 .dice-dot:nth-child(1) { top: 25%; left: 25%; }
+        .dice-4 .dice-dot:nth-child(2) { top: 25%; right: 25%; }
+        .dice-4 .dice-dot:nth-child(3) { bottom: 25%; left: 25%; }
+        .dice-4 .dice-dot:nth-child(4) { bottom: 25%; right: 25%; }
+        
+        .dice-5 .dice-dot:nth-child(1) { top: 25%; left: 25%; }
+        .dice-5 .dice-dot:nth-child(2) { top: 25%; right: 25%; }
+        .dice-5 .dice-dot:nth-child(3) { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .dice-5 .dice-dot:nth-child(4) { bottom: 25%; left: 25%; }
+        .dice-5 .dice-dot:nth-child(5) { bottom: 25%; right: 25%; }
+        
+        .dice-6 .dice-dot:nth-child(1) { top: 25%; left: 25%; }
+        .dice-6 .dice-dot:nth-child(2) { top: 25%; right: 25%; }
+        .dice-6 .dice-dot:nth-child(3) { top: 50%; left: 25%; transform: translateY(-50%); }
+        .dice-6 .dice-dot:nth-child(4) { top: 50%; right: 25%; transform: translateY(-50%); }
+        .dice-6 .dice-dot:nth-child(5) { bottom: 25%; left: 25%; }
+        .dice-6 .dice-dot:nth-child(6) { bottom: 25%; right: 25%; }
+        
+        .dice-sum {
+            font-size: 26px;
+            color: white;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .craps-betting-area {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            z-index: 10;
+        }
+        
+        .craps-bet-option {
+            background: linear-gradient(to bottom, #333, #222);
+            border: 2px solid gold;
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .craps-bet-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .craps-bet-option.selected {
+            background: linear-gradient(to bottom, #5a3d0b, #8b4513);
+            border-color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .bet-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .bet-payout {
+            font-size: 12px;
+            color: gold;
+            margin-bottom: 5px;
+        }
+        
+        .bet-description {
+            font-size: 10px;
+            color: #ccc;
+            text-align: center;
+        }
+        
+        .craps-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            z-index: 10;
+        }
+        
+        .bet-amount-controls {
+            display: flex;
+            align-items: center;
+        }
+        
+        .craps-button {
+            background: linear-gradient(to bottom, #f8d74a, #e5a726);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .craps-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to bottom, #ffe05d, #f8b835);
+        }
+        
+        .craps-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .craps-button:disabled {
+            background: linear-gradient(to bottom, #cccccc, #999999);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .bet-amount {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: gold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin: 0 10px;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .roll-button {
+            background: linear-gradient(to bottom, #f83a4a, #c01626);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 0 #7a0e19;
+            position: relative;
+            top: 0;
+        }
+        
+        .roll-button:hover {
+            background: linear-gradient(to bottom, #ff4a5a, #d02636);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #7a0e19;
+        }
+        
+        .roll-button:active {
+            top: 6px;
+            box-shadow: 0 0 0 #7a0e19;
+        }
+        
+        .roll-button:disabled {
+            background: linear-gradient(to bottom, #cccccc, #999999);
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: 0 6px 0 #777;
+        }
+        
+        .craps-result {
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            min-height: 40px;
+            margin: 20px 0;
+            z-index: 10;
+        }
+        
+        .craps-point {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10;
+            border: 2px solid gold;
+            display: none;
+        }
+        
+        .craps-camille {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 40px;
+            z-index: 5;
+        }
+        
+        .craps-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid gold;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .craps-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .craps-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .craps-message-button {
+            background: linear-gradient(to bottom, #f8d74a, #e5a726);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .craps-message-button:hover {
+            background: linear-gradient(to bottom, #ffe05d, #f8b835);
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 50;
+        }
+        
+        .camille-speech {
+            bottom: 50px;
+            right: 80px;
+        }
+        
+        .camille-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-left-color: white;
+        }
+        
+        .player-speech {
+            bottom: 50px;
+            left: 80px;
+        }
+        
+        .player-speech:after {
+            content: "";
+            position: absolute;
+            left: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-right-color: white;
+        }
+        
+        /* CSS animé pour les dés */
+        @keyframes rollDice {
+            0%, 100% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            25% { transform: rotateX(360deg) rotateY(180deg) rotateZ(90deg); }
+            50% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
+            75% { transform: rotateX(1080deg) rotateY(540deg) rotateZ(270deg); }
+        }
+        
+        .rolling {
+            animation: rollDice 1.5s ease-out;
+        }
+        
+        .dice.show-1 { transform: rotateY(0deg); }
+        .dice.show-2 { transform: rotateY(180deg); }
+        .dice.show-3 { transform: rotateY(90deg); }
+        .dice.show-4 { transform: rotateY(-90deg); }
+        .dice.show-5 { transform: rotateX(90deg); }
+        .dice.show-6 { transform: rotateX(-90deg); }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px gold; }
+            50% { box-shadow: 0 0 20px gold; }
+            100% { box-shadow: 0 0 5px gold; }
+        }
+        
+        .win-effect {
+            animation: glow 1.5s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .craps-bet-option {
+                padding: 10px;
+                width: 30%;
+            }
+            
+            .bet-title {
+                font-size: 10px;
+            }
+            
+            .bet-payout, .bet-description {
+                font-size: 8px;
+            }
+            
+            .dice {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .dice-face {
+                font-size: 24px;
+            }
+            
+            .dice-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .dice-1 { transform: rotateY(0deg) translateZ(30px); }
+            .dice-2 { transform: rotateY(180deg) translateZ(30px); }
+            .dice-3 { transform: rotateY(90deg) translateZ(30px); }
+            .dice-4 { transform: rotateY(-90deg) translateZ(30px); }
+            .dice-5 { transform: rotateX(90deg) translateZ(30px); }
+            .dice-6 { transform: rotateX(-90deg) translateZ(30px); }
+            
+            .roll-button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .craps-button {
+                font-size: 10px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Craps -->
+        <div id="craps-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="craps-victories">0</span></div>
+            
+            <div class="craps-table">
+                <div class="craps-header">
+                    <div class="craps-stats">Jetons: <span id="player-credits">1000</span></div>
+                    <div class="craps-stats">Phase: <span id="game-phase">Come Out</span></div>
+                </div>
+                
+                <div class="craps-point" id="point-display">Point: <span id="point-value">0</span></div>
+                
+                <div class="craps-dice-area">
+                    <div class="craps-dice-container">
+                        <div class="dice" id="dice1">
+                            <div class="dice-face dice-1">
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-2">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-3">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-4">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-5">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-6">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="dice" id="dice2">
+                            <div class="dice-face dice-1">
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-2">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-3">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-4">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-5">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                            <div class="dice-face dice-6">
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                                <div class="dice-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dice-sum" id="dice-sum"></div>
+                </div>
+                
+                <div class="craps-betting-area">
+                    <div class="craps-bet-option" data-bet="pass">
+                        <div class="bet-title">PASS</div>
+                        <div class="bet-payout">Paye 1:1</div>
+                        <div class="bet-description">Gagnez si 7 ou 11 au Come Out, ou si le Point est atteint</div>
+                    </div>
+                    
+                    <div class="craps-bet-option" data-bet="dontPass">
+                        <div class="bet-title">DON'T PASS</div>
+                        <div class="bet-payout">Paye 1:1</div>
+                        <div class="bet-description">Gagnez si 2, 3 ou 12 au Come Out, ou si 7 avant le Point</div>
+                    </div>
+                    
+                    <div class="craps-bet-option" data-bet="field">
+                        <div class="bet-title">FIELD</div>
+                        <div class="bet-payout">Paye 1:1, 2:1 sur 2 et 12</div>
+                        <div class="bet-description">Gagnez si 2, 3, 4, 9, 10, 11 ou 12</div>
+                    </div>
+                </div>
+                
+                <div class="craps-result" id="craps-result"></div>
+                
+                <div class="craps-controls">
+                    <div class="bet-amount-controls">
+                        <button class="craps-button" id="decrease-bet">-</button>
+                        <div class="bet-amount">Mise: <span id="bet-amount">50</span></div>
+                        <button class="craps-button" id="increase-bet">+</button>
+                    </div>
+                    
+                    <button class="roll-button" id="roll-button">LANCER</button>
+                </div>
+                
+                <div class="craps-camille" id="craps-camille">👨</div>
+            </div>
+            
+            <div id="camille-speech" class="speech-bubble camille-speech"></div>
+            <div id="player-speech" class="speech-bubble player-speech"></div>
+            
+            <div id="craps-message" class="craps-message">
+                <div id="craps-message-title" class="craps-message-title"></div>
+                <div id="craps-message-body" class="craps-message-body"></div>
+                <button id="craps-message-button" class="craps-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('craps-victories').textContent = gameVictories.craps || 0;
+            };
+            
+            // Éléments DOM
+            const dice1 = document.getElementById('dice1');
+            const dice2 = document.getElementById('dice2');
+            const diceSum = document.getElementById('dice-sum');
+            const playerCredits = document.getElementById('player-credits');
+            const gamePhase = document.getElementById('game-phase');
+            const pointDisplay = document.getElementById('point-display');
+            const pointValue = document.getElementById('point-value');
+            const betOptions = document.querySelectorAll('.craps-bet-option');
+            const decreaseBet = document.getElementById('decrease-bet');
+            const increaseBet = document.getElementById('increase-bet');
+            const betAmount = document.getElementById('bet-amount');
+            const rollButton = document.getElementById('roll-button');
+            const crapsResult = document.getElementById('craps-result');
+            const camilleSpeech = document.getElementById('camille-speech');
+            const playerSpeech = document.getElementById('player-speech');
+            const crapsMessage = document.getElementById('craps-message');
+            const crapsMessageTitle = document.getElementById('craps-message-title');
+            const crapsMessageBody = document.getElementById('craps-message-body');
+            const crapsMessageButton = document.getElementById('craps-message-button');
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je suis le roi du craps !",
+                "Les dés ne mentent jamais... sauf quand je perds !",
+                "Je sens que le 7 va sortir !",
+                "J'ai un système infaillible pour le craps !",
+                "As-tu déjà vu quelqu'un lancer 12 fois de suite ?",
+                "Je préfère le Don't Pass, c'est plus stratégique !",
+                "La chance est de mon côté aujourd'hui !",
+                "Une fois, j'ai gagné 10 000$ au craps à Vegas !",
+                "Je peux contrôler les dés avec mon esprit !"
+            ];
+            
+            // Messages pour le joueur
+            const playerMessages = [
+                "Je vais te montrer comment on lance les dés !",
+                "Le craps est un jeu de stratégie, pas de chance !",
+                "J'ai toujours eu de la chance avec les dés !",
+                "Je parie que tu ne sais même pas ce qu'est un 'hard way' !",
+                "Regarde et apprends, Camille !",
+                "Je sens que je vais faire un point !",
+                "Le 7 est mon chiffre porte-bonheur !",
+                "Je joue au craps depuis des années !"
+            ];
+            
+            // État du jeu
+            let crapsState = {
+                credits: 1000,
+                camilleCredits: 1000,
+                betAmount: 50,
+                selectedBet: null,
+                dice: [1, 1],
+                diceSum: 2,
+                gamePhase: 'comeOut', // comeOut ou point
+                point: 0,
+                canRoll: true,
+                gamesPlayed: 0,
+                playerWins: 0,
+                camilleWins: 0,
+                fieldNumbers: [2, 3, 4, 9, 10, 11, 12]
+            };
+            
+            // Initialiser le jeu
+            function initCrapsGame() {
+                // Réinitialiser l'état du jeu
+                crapsState = {
+                    credits: 1000,
+                    camilleCredits: 1000,
+                    betAmount: 50,
+                    selectedBet: null,
+                    dice: [1, 1],
+                    diceSum: 2,
+                    gamePhase: 'comeOut',
+                    point: 0,
+                    canRoll: true,
+                    gamesPlayed: 0,
+                    playerWins: 0,
+                    camilleWins: 0,
+                    fieldNumbers: [2, 3, 4, 9, 10, 11, 12]
+                };
+                
+                // Mettre à jour l'affichage
+                updateCrapsDisplay();
+                
+                // Configurer les dés initiaux
+                setDice(1, 1);
+                
+                // Masquer l'affichage du point
+                pointDisplay.style.display = 'none';
+                
+                // Vider le résultat
+                crapsResult.textContent = '';
+                
+                // Configurer les événements
+                betOptions.forEach(option => {
+                    option.addEventListener('click', selectBet);
+                });
+                decreaseBet.addEventListener('click', decreaseBetAmount);
+                increaseBet.addEventListener('click', increaseBetAmount);
+                rollButton.addEventListener('click', rollDice);
+                crapsMessageButton.addEventListener('click', closeCrapsMessage);
+                
+                // Désélectionner tous les paris
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Désactiver le bouton de lancement
+                rollButton.disabled = true;
+                
+                // Masquer le message
+                crapsMessage.style.display = 'none';
+                
+                // Message de bienvenue
+                showCamilleSpeech("Prêt à jouer au craps ? C'est mon jeu préféré !");
+            }
+            
+            // Mettre à jour l'affichage
+            function updateCrapsDisplay() {
+                playerCredits.textContent = crapsState.credits;
+                betAmount.textContent = crapsState.betAmount;
+                
+                // Afficher la phase du jeu
+                if (crapsState.gamePhase === 'comeOut') {
+                    gamePhase.textContent = 'Come Out';
+                } else {
+                    gamePhase.textContent = 'Point';
+                }
+                
+                // Afficher le point si nécessaire
+                if (crapsState.gamePhase === 'point') {
+                    pointDisplay.style.display = 'block';
+                    pointValue.textContent = crapsState.point;
+                } else {
+                    pointDisplay.style.display = 'none';
+                }
+                
+                // Activer/désactiver les boutons de mise
+                decreaseBet.disabled = crapsState.betAmount <= 50;
+                increaseBet.disabled = crapsState.betAmount >= crapsState.credits || crapsState.betAmount >= 500;
+                
+                // Activer/désactiver le bouton de lancement
+                rollButton.disabled = !crapsState.canRoll || crapsState.selectedBet === null;
+            }
+            
+            // Sélectionner un pari
+            function selectBet() {
+                // On ne peut pas changer de pari si on est en phase de point
+                if (crapsState.gamePhase === 'point' && crapsState.selectedBet) return;
+                
+                // Désélectionner tous les paris
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Sélectionner le pari actuel
+                this.classList.add('selected');
+                crapsState.selectedBet = this.getAttribute('data-bet');
+                
+                // Vérifier si on peut lancer
+                rollButton.disabled = !crapsState.canRoll;
+                
+                // Jouer un son
+                playSound('select');
+            }
+            
+            // Diminuer le montant de la mise
+            function decreaseBetAmount() {
+                if (crapsState.betAmount <= 50) return;
+                
+                crapsState.betAmount -= 50;
+                updateCrapsDisplay();
+                playSound('select');
+            }
+            
+            // Augmenter le montant de la mise
+            function increaseBetAmount() {
+                if (crapsState.betAmount >= crapsState.credits || crapsState.betAmount >= 500) return;
+                
+                crapsState.betAmount += 50;
+                updateCrapsDisplay();
+                playSound('select');
+            }
+            
+            // Lancer les dés
+            function rollDice() {
+                if (!crapsState.canRoll || crapsState.selectedBet === null) return;
+                
+                // Désactiver le lancement pendant l'animation
+                crapsState.canRoll = false;
+                rollButton.disabled = true;
+                
+                // Effacer le résultat précédent
+                crapsResult.textContent = '';
+                
+                // Animer les dés
+                dice1.classList.add('rolling');
+                dice2.classList.add('rolling');
+                
+                // Jouer un son
+                playSound('start');
+                
+                // Montrer un message de Camille
+                showCamilleSpeech(camilleMessages[Math.floor(Math.random() * camilleMessages.length)]);
+                
+                // Montrer un message du joueur
+                showPlayerSpeech(playerMessages[Math.floor(Math.random() * playerMessages.length)]);
+                
+                // Générer des résultats aléatoires après l'animation
+                setTimeout(() => {
+                    // Générer des valeurs aléatoires pour les dés
+                    const die1Value = Math.floor(Math.random() * 6) + 1;
+                    const die2Value = Math.floor(Math.random() * 6) + 1;
+                    
+                    // Mettre à jour l'état
+                    crapsState.dice = [die1Value, die2Value];
+                    crapsState.diceSum = die1Value + die2Value;
+                    
+                    // Afficher les dés
+                    setDice(die1Value, die2Value);
+                    diceSum.textContent = `Somme: ${crapsState.diceSum}`;
+                    
+                    // Jouer un son
+                    playSound('card');
+                    
+                    // Supprimer la classe d'animation
+                    dice1.classList.remove('rolling');
+                    dice2.classList.remove('rolling');
+                    
+                    // Traiter le résultat
+                    processRoll();
+                }, 1500);
+            }
+            
+            // Définir l'affichage des dés
+            function setDice(value1, value2) {
+                // Réinitialiser les classes
+                dice1.className = 'dice';
+                dice2.className = 'dice';
+                
+                // Ajouter la classe correspondant à la valeur
+                dice1.classList.add(`show-${value1}`);
+                dice2.classList.add(`show-${value2}`);
+                
+                // Mettre à jour la somme
+                diceSum.textContent = value1 + value2 > 0 ? `Somme: ${value1 + value2}` : '';
+            }
+            
+            // Traiter le résultat du lancer
+            function processRoll() {
+                const sum = crapsState.diceSum;
+                
+                // Phase Come Out
+                if (crapsState.gamePhase === 'comeOut') {
+                    // Pass Line Bet
+                    if (crapsState.selectedBet === 'pass') {
+                        if (sum === 7 || sum === 11) {
+                            // Victoire naturelle
+                            winBet();
+                        } else if (sum === 2 || sum === 3 || sum === 12) {
+                            // Défaite (craps)
+                            loseBet();
+                        } else {
+                            // Établir un point
+                            crapsState.gamePhase = 'point';
+                            crapsState.point = sum;
+                            updateCrapsDisplay();
+                            crapsResult.textContent = `Point établi: ${sum}`;
+                        }
+                    }
+                    // Don't Pass Line Bet
+                    else if (crapsState.selectedBet === 'dontPass') {
+                        if (sum === 7 || sum === 11) {
+                            // Défaite naturelle
+                            loseBet();
+                        } else if (sum === 2 || sum === 3) {
+                            // Victoire (craps)
+                            winBet();
+                        } else if (sum === 12) {
+                            // Push (égalité sur 12)
+                            pushBet();
+                        } else {
+                            // Établir un point
+                            crapsState.gamePhase = 'point';
+                            crapsState.point = sum;
+                            updateCrapsDisplay();
+                            crapsResult.textContent = `Point établi: ${sum}`;
+                        }
+                    }
+                    // Field Bet
+                    else if (crapsState.selectedBet === 'field') {
+                        if (crapsState.fieldNumbers.includes(sum)) {
+                            // Paiement spécial pour 2 et 12
+                            if (sum === 2 || sum === 12) {
+                                winBet(2); // Paiement 2:1
+                            } else {
+                                winBet(); // Paiement normal 1:1
+                            }
+                        } else {
+                            loseBet();
+                        }
+                        
+                        // Le Field Bet est résolu immédiatement
+                        crapsState.selectedBet = null;
+                        betOptions.forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                    }
+                }
+                // Phase Point
+                else if (crapsState.gamePhase === 'point') {
+                    // Pass Line Bet
+                    if (crapsState.selectedBet === 'pass') {
+                        if (sum === crapsState.point) {
+                            // Victoire (point atteint)
+                            winBet();
+                            // Retour à la phase Come Out
+                            crapsState.gamePhase = 'comeOut';
+                            crapsState.point = 0;
+                            updateCrapsDisplay();
+                        } else if (sum === 7) {
+                            // Défaite (seven-out)
+                            loseBet();
+                            // Retour à la phase Come Out
+                            crapsState.gamePhase = 'comeOut';
+                            crapsState.point = 0;
+                            updateCrapsDisplay();
+                        } else {
+                            // Continuez à lancer
+                            crapsResult.textContent = `Visez le ${crapsState.point} avant le 7`;
+                        }
+                    }
+                    // Don't Pass Line Bet
+                    else if (crapsState.selectedBet === 'dontPass') {
+                        if (sum === 7) {
+                            // Victoire (seven-out)
+                            winBet();
+                            // Retour à la phase Come Out
+                            crapsState.gamePhase = 'comeOut';
+                            crapsState.point = 0;
+                            updateCrapsDisplay();
+                        } else if (sum === crapsState.point) {
+                            // Défaite (point atteint)
+                            loseBet();
+                            // Retour à la phase Come Out
+                            crapsState.gamePhase = 'comeOut';
+                            crapsState.point = 0;
+                            updateCrapsDisplay();
+                        } else {
+                            // Continuez à lancer
+                            crapsResult.textContent = `Visez le 7 avant le ${crapsState.point}`;
+                        }
+                    }
+                    // Field Bet
+                    else if (crapsState.selectedBet === 'field') {
+                        if (crapsState.fieldNumbers.includes(sum)) {
+                            // Paiement spécial pour 2 et 12
+                            if (sum === 2 || sum === 12) {
+                                winBet(2); // Paiement 2:1
+                            } else {
+                                winBet(); // Paiement normal 1:1
+                            }
+                        } else {
+                            loseBet();
+                        }
+                        
+                        // Le Field Bet est résolu immédiatement, mais vous restez en phase Point
+                        crapsState.selectedBet = null;
+                        betOptions.forEach(option => {
+                            option.classList.remove('selected');
+                        });
+                    }
+                }
+                
+                // Réactiver le lancement
+                crapsState.canRoll = true;
+                updateCrapsDisplay();
+                
+                // Vérifier si le jeu est terminé
+                if (crapsState.gamesPlayed >= 10) {
+                    checkGameEnd();
+                }
+            }
+            
+            // Gagner un pari
+            function winBet(multiplier = 1) {
+                // Calculer les gains
+                const winAmount = crapsState.betAmount * multiplier;
+                
+                // Ajouter les jetons
+                crapsState.credits += winAmount + crapsState.betAmount; // Mise initiale + gains
+                
+                // Mettre à jour l'affichage
+                updateCrapsDisplay();
+                
+                // Effet visuel
+                dice1.classList.add('win-effect');
+                dice2.classList.add('win-effect');
+                
+                // Jouer un son
+                playSound('win');
+                
+                // Afficher le résultat
+                crapsResult.textContent = `Vous gagnez ${winAmount} jetons !`;
+                
+                // Réaction de Camille
+                showCamilleSpeech("Oh non ! C'est impossible ! Les dés sont truqués !");
+                
+                // Incrémenter le compteur de victoires du joueur
+                crapsState.playerWins++;
+                
+                // Désélectionner le pari si en phase Come Out
+                if (crapsState.gamePhase === 'comeOut') {
+                    crapsState.selectedBet = null;
+                    betOptions.forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                }
+                
+                // Incrémenter le compteur de parties jouées
+                crapsState.gamesPlayed++;
+                
+                // Nettoyer l'effet de victoire après un moment
+                setTimeout(() => {
+                    dice1.classList.remove('win-effect');
+                    dice2.classList.remove('win-effect');
+                }, 2000);
+            }
+            
+            // Perdre un pari
+            function loseBet() {
+                // Déduire les jetons
+                crapsState.credits -= crapsState.betAmount;
+                
+                // Mettre à jour l'affichage
+                updateCrapsDisplay();
+                
+                // Jouer un son
+                playSound('lose');
+                
+                // Afficher le résultat
+                crapsResult.textContent = `Vous perdez ${crapsState.betAmount} jetons.`;
+                
+                // Réaction de Camille
+                showCamilleSpeech("Ha ha ! J'ai gagné ! Je t'avais dit que j'étais le roi du craps !");
+                
+                // Incrémenter le compteur de victoires de Camille
+                crapsState.camilleWins++;
+                
+                // Désélectionner le pari si en phase Come Out
+                if (crapsState.gamePhase === 'comeOut') {
+                    crapsState.selectedBet = null;
+                    betOptions.forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                }
+                
+                // Incrémenter le compteur de parties jouées
+                crapsState.gamesPlayed++;
+                
+                // Vérifier si le joueur a encore des jetons
+                if (crapsState.credits <= 0) {
+                    endCrapsGame('lose');
+                }
+            }
+            
+            // Égalité (push)
+            function pushBet() {
+                // Afficher le résultat
+                crapsResult.textContent = `Égalité ! Vous récupérez votre mise.`;
+                
+                // Jouer un son
+                playSound('card');
+                
+                // Réaction de Camille
+                showCamilleSpeech("C'est une égalité ! Tu as de la chance !");
+                
+                // Désélectionner le pari
+                crapsState.selectedBet = null;
+                betOptions.forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Incrémenter le compteur de parties jouées
+                crapsState.gamesPlayed++;
+            }
+            
+            // Vérifier si le jeu est terminé
+            function checkGameEnd() {
+                if (crapsState.credits <= 0) {
+                    // Plus de jetons
+                    endCrapsGame('lose');
+                } else if (crapsState.credits >= 2000) {
+                    // Beaucoup de jetons (double du départ)
+                    endCrapsGame('win');
+                } else if (crapsState.gamesPlayed >= 10) {
+                    // 10 parties jouées
+                    if (crapsState.playerWins > crapsState.camilleWins) {
+                        endCrapsGame('win');
+                    } else {
+                        endCrapsGame('lose');
+                    }
+                }
+            }
+            
+            // Terminer le jeu
+            function endCrapsGame(result) {
+                let title, body;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE AU CRAPS !";
+                        body = `Félicitations ! Vous avez terminé avec ${crapsState.credits} jetons, battant Camille Le Nul au craps !`;
+                        playSound('win');
+                        
+                        // Ajouter une victoire
+                        if (!gameVictories.craps) {
+                            gameVictories.craps = 0;
+                        }
+                        addVictory('craps');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE AU CRAPS !";
+                        body = `Dommage ! Vous avez terminé avec seulement ${crapsState.credits} jetons. Camille Le Nul vous a battu au craps !`;
+                        playSound('lose');
+                        break;
+                }
+                
+                // Afficher le message
+                crapsMessageTitle.textContent = title;
+                crapsMessageBody.textContent = body;
+                crapsMessage.style.display = 'block';
+                
+                // Désactiver les contrôles
+                crapsState.canRoll = false;
+                rollButton.disabled = true;
+            }
+            
+            // Fermer le message
+            function closeCrapsMessage() {
+                crapsMessage.style.display = 'none';
+                initCrapsGame();
+            }
+            
+            // Afficher un message de l'adversaire
+            function showCamilleSpeech(text) {
+                camilleSpeech.textContent = text;
+                camilleSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    camilleSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Afficher un message du joueur
+            function showPlayerSpeech(text) {
+                playerSpeech.textContent = text;
+                playerSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    playerSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu
+            initCrapsGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

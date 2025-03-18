@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Poker vs Camille Le Nul</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive-style.css">
+    <style>
+        /* --- JEU DE POKER --- */
+        #poker-game {
+            background-color: #0c3b22; /* Vert foncé */
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .poker-table {
+            width: 90%;
+            height: 80%;
+            background: linear-gradient(to bottom, #0f6844, #0a4e33);
+            border: 15px solid #5e3a11; /* Bordure en bois */
+            border-radius: 150px;
+            box-shadow: 
+                inset 0 0 50px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.7);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .poker-table::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(
+                    circle at center,
+                    transparent 0%,
+                    rgba(0, 0, 0, 0.2) 80%
+                );
+            pointer-events: none;
+        }
+        
+        .poker-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+        
+        .poker-status {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: gold;
+            padding: 10px 15px;
+            border: 2px solid gold;
+            border-radius: 5px;
+            font-size: 14px;
+            min-width: 180px;
+            text-align: center;
+        }
+        
+        .poker-opponent {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 20;
+        }
+        
+        .opponent-avatar {
+            font-size: 40px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
+        }
+        
+        .opponent-cards {
+            display: flex;
+            margin-top: 10px;
+        }
+        
+        .poker-card {
+            width: 70px;
+            height: 100px;
+            background-color: white;
+            border-radius: 5px;
+            margin: 0 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: default;
+        }
+        
+        .poker-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 2px 12px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-back {
+            background: linear-gradient(45deg, #b22222 25%, #800000 25%, #800000 50%, #b22222 50%, #b22222 75%, #800000 75%);
+            background-size: 20px 20px;
+            background-position: 0 0;
+            border: 3px solid white;
+        }
+        
+        .card-value {
+            font-size: 16px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+        
+        .card-suit {
+            font-size: 24px;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+        
+        .card-value-bottom {
+            font-size: 16px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            align-self: flex-end;
+            transform: rotate(180deg);
+        }
+        
+        .red {
+            color: red;
+        }
+        
+        .black {
+            color: black;
+        }
+        
+        .poker-community {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            z-index: 15;
+        }
+        
+        .poker-pot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: gold;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 12;
+        }
+        
+        .poker-player {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 20;
+        }
+        
+        .player-avatar {
+            font-size: 40px;
+            margin-top: 10px;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
+        }
+        
+        .player-cards {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .poker-controls {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 30;
+        }
+        
+        .poker-button {
+            background: linear-gradient(to bottom, #f8d74a, #e5a726);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .poker-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to bottom, #ffe05d, #f8b835);
+        }
+        
+        .poker-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .poker-button:disabled {
+            background: linear-gradient(to bottom, #cccccc, #999999);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .bet-controls {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .bet-amount {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: gold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin: 0 10px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .hand-strength {
+            position: absolute;
+            bottom: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .hand-strength.visible {
+            opacity: 1;
+        }
+        
+        .poker-chips {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            z-index: 5;
+        }
+        
+        .chip-red {
+            background: linear-gradient(135deg, #ff5555, #cc0000);
+            border: 2px dashed white;
+            color: white;
+        }
+        
+        .chip-blue {
+            background: linear-gradient(135deg, #5555ff, #0000cc);
+            border: 2px dashed white;
+            color: white;
+        }
+        
+        .chip-green {
+            background: linear-gradient(135deg, #55ff55, #00cc00);
+            border: 2px dashed white;
+            color: white;
+        }
+        
+        .chip-black {
+            background: linear-gradient(135deg, #555555, #000000);
+            border: 2px dashed white;
+            color: gold;
+        }
+        
+        .poker-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 3px solid gold;
+            text-align: center;
+            z-index: 200;
+            display: none;
+            min-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        .poker-message-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .poker-message-body {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .poker-message-button {
+            background: linear-gradient(to bottom, #f8d74a, #e5a726);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .poker-message-button:hover {
+            background: linear-gradient(to bottom, #ffe05d, #f8b835);
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 200px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 50;
+        }
+        
+        .camille-speech {
+            top: 100px;
+            right: 80px;
+        }
+        
+        .camille-speech:after {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 20px;
+            border: 10px solid transparent;
+            border-right-color: white;
+        }
+        
+        .player-speech {
+            bottom: 130px;
+            left: 80px;
+        }
+        
+        .player-speech:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: 20px;
+            border: 10px solid transparent;
+            border-left-color: white;
+        }
+        
+        .player-stack, .opponent-stack {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: gold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        @keyframes dealCard {
+            from {
+                transform: translate(-50%, -50%) rotate(180deg) scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .dealing {
+            animation: dealCard 0.5s ease-out forwards;
+        }
+        
+        @keyframes chipMove {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+            to {
+                transform: translate(var(--targetX), var(--targetY)) scale(0.8);
+            }
+        }
+        
+        .moving-chip {
+            animation: chipMove 0.8s ease-out forwards;
+        }
+        
+        @keyframes highlightWin {
+            0% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.8); }
+            100% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.5); }
+        }
+        
+        .winning-card {
+            animation: highlightWin 1.5s infinite;
+        }
+        
+        .reveal {
+            transition: transform 0.5s ease-in-out;
+            transform: rotateY(0deg);
+        }
+        
+        .flipping {
+            animation: flip 0.5s ease-in-out;
+        }
+        
+        @keyframes flip {
+            0% { transform: rotateY(180deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .poker-card {
+                width: 50px;
+                height: 75px;
+                font-size: 14px;
+            }
+            
+            .card-suit {
+                font-size: 18px;
+            }
+            
+            .poker-controls {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .poker-button {
+                font-size: 10px;
+                padding: 8px 12px;
+            }
+            
+            .bet-amount {
+                min-width: 60px;
+                font-size: 10px;
+            }
+            
+            .opponent-avatar, .player-avatar {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Jeu de Poker -->
+        <div id="poker-game">
+            <a href="index.html" class="back-button">← RETOUR</a>
+            <div class="game-victory-counter">Victoires: <span id="poker-victories">0</span></div>
+            
+            <div class="poker-table">
+                <div class="poker-header">
+                    <div class="poker-status">Jetons: <span id="player-chips">1000</span></div>
+                    <div class="poker-status">Phase: <span id="game-phase">Prêt</span></div>
+                </div>
+                
+                <div class="poker-opponent">
+                    <div class="opponent-avatar">👨</div>
+                    <div class="opponent-stack">Jetons: <span id="opponent-chips">1000</span></div>
+                    <div class="opponent-cards" id="opponent-cards">
+                        <div class="poker-card card-back"></div>
+                        <div class="poker-card card-back"></div>
+                    </div>
+                </div>
+                
+                <div class="poker-community" id="community-cards">
+                    <!-- Les cartes communautaires seront ajoutées ici -->
+                </div>
+                
+                <div class="poker-pot">Pot: <span id="pot-amount">0</span></div>
+                
+                <div class="poker-player">
+                    <div class="player-cards" id="player-cards">
+                        <!-- Les cartes du joueur seront ajoutées ici -->
+                    </div>
+                    <div class="player-avatar">👤</div>
+                    <div class="player-stack">Jetons: <span id="player-stack">1000</span></div>
+                </div>
+                
+                <div class="hand-strength" id="hand-strength"></div>
+                
+                <div class="poker-controls">
+                    <div class="bet-controls">
+                        <button class="poker-button" id="decrease-bet">-</button>
+                        <div class="bet-amount">Mise: <span id="bet-amount">50</span></div>
+                        <button class="poker-button" id="increase-bet">+</button>
+                    </div>
+                    <button class="poker-button" id="check-button">CHECK</button>
+                    <button class="poker-button" id="call-button">CALL</button>
+                    <button class="poker-button" id="bet-button">BET</button>
+                    <button class="poker-button" id="fold-button">FOLD</button>
+                    <button class="poker-button" id="deal-button">DISTRIBUER</button>
+                </div>
+            </div>
+            
+            <div id="camille-speech" class="speech-bubble camille-speech"></div>
+            <div id="player-speech" class="speech-bubble player-speech"></div>
+            
+            <div id="poker-message" class="poker-message">
+                <div id="poker-message-title" class="poker-message-title"></div>
+                <div id="poker-message-body" class="poker-message-body"></div>
+                <button id="poker-message-button" class="poker-message-button">OK</button>
+            </div>
+        </div>
+        
+        <div class="scanline"></div>
+        <div class="vignette"></div>
+        <div class="crt-effect"></div>
+        <div class="pixel-transition" id="transition"></div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fonction spécifique pour mettre à jour les victoires sur cette page
+            window.updateVictoryDisplaysPage = function() {
+                document.getElementById('poker-victories').textContent = gameVictories.poker || 0;
+            };
+            
+            // Éléments DOM
+            const playerCardsContainer = document.getElementById('player-cards');
+            const opponentCardsContainer = document.getElementById('opponent-cards');
+            const communityCardsContainer = document.getElementById('community-cards');
+            const playerChipsDisplay = document.getElementById('player-chips');
+            const opponentChipsDisplay = document.getElementById('opponent-chips');
+            const playerStackDisplay = document.getElementById('player-stack');
+            const potAmountDisplay = document.getElementById('pot-amount');
+            const gamePhaseDisplay = document.getElementById('game-phase');
+            const handStrengthDisplay = document.getElementById('hand-strength');
+            const betAmountDisplay = document.getElementById('bet-amount');
+            const decreaseBetButton = document.getElementById('decrease-bet');
+            const increaseBetButton = document.getElementById('increase-bet');
+            const checkButton = document.getElementById('check-button');
+            const callButton = document.getElementById('call-button');
+            const betButton = document.getElementById('bet-button');
+            const foldButton = document.getElementById('fold-button');
+            const dealButton = document.getElementById('deal-button');
+            const camilleSpeech = document.getElementById('camille-speech');
+            const playerSpeech = document.getElementById('player-speech');
+            const pokerMessage = document.getElementById('poker-message');
+            const pokerMessageTitle = document.getElementById('poker-message-title');
+            const pokerMessageBody = document.getElementById('poker-message-body');
+            const pokerMessageButton = document.getElementById('poker-message-button');
+            
+            // Messages amusants pour Camille
+            const camilleMessages = [
+                "Je suis un pro du poker, tu n'as aucune chance !",
+                "Mes bluffs sont légendaires !",
+                "Je peux lire dans tes pensées... tu as une paire !",
+                "Je ne perds jamais au poker, enfin presque jamais...",
+                "Mon visage ne trahit jamais mes émotions !",
+                "J'ai joué contre les plus grands joueurs de poker !",
+                "Un jour, j'ai gagné avec un roi haute carte !",
+                "Tu ne peux pas deviner ma stratégie !",
+                "Ne regarde pas mes cartes, c'est de la triche !"
+            ];
+            
+            // Messages pour le joueur
+            const playerMessages = [
+                "Je vais te montrer comment on joue au poker !",
+                "Ton bluff est tellement évident...",
+                "Tu as l'air nerveux, Camille. Tu as une bonne main ?",
+                "Je peux lire ton jeu comme un livre ouvert !",
+                "Prépare-toi à perdre tous tes jetons !",
+                "Je sens que c'est mon jour de chance !",
+                "Tu transpires, c'est un signe de faiblesse.",
+                "Je vais te faire 'all-in' à chaque main !"
+            ];
+            
+            // Définition des cartes
+            const suits = ['♥', '♦', '♠', '♣'];
+            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            
+            // État du jeu
+            let pokerState = {
+                playerChips: 1000,
+                opponentChips: 1000,
+                pot: 0,
+                currentBet: 0,
+                opponentBet: 0,
+                playerBet: 0,
+                betAmount: 50,
+                deck: [],
+                playerCards: [],
+                opponentCards: [],
+                communityCards: [],
+                gamePhase: 'ready', // ready, preflop, flop, turn, river, showdown
+                playerTurn: true,
+                handEvaluated: false,
+                gameOver: false,
+                gamesPlayed: 0,
+                playerWins: 0,
+                opponentWins: 0
+            };
+            
+            // Initialiser le jeu
+            function initPokerGame() {
+                // Réinitialiser l'état du jeu
+                pokerState = {
+                    playerChips: 1000,
+                    opponentChips: 1000,
+                    pot: 0,
+                    currentBet: 0,
+                    opponentBet: 0,
+                    playerBet: 0,
+                    betAmount: 50,
+                    deck: [],
+                    playerCards: [],
+                    opponentCards: [],
+                    communityCards: [],
+                    gamePhase: 'ready',
+                    playerTurn: true,
+                    handEvaluated: false,
+                    gameOver: false,
+                    gamesPlayed: 0,
+                    playerWins: 0,
+                    opponentWins: 0
+                };
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Vider les conteneurs de cartes
+                playerCardsContainer.innerHTML = '';
+                opponentCardsContainer.innerHTML = '';
+                communityCardsContainer.innerHTML = '';
+                
+                // Créer les cartes face cachée de l'adversaire
+                opponentCardsContainer.innerHTML = `
+                    <div class="poker-card card-back"></div>
+                    <div class="poker-card card-back"></div>
+                `;
+                
+                // Configurer les événements
+                decreaseBetButton.addEventListener('click', decreaseBet);
+                increaseBetButton.addEventListener('click', increaseBet);
+                checkButton.addEventListener('click', checkAction);
+                callButton.addEventListener('click', callAction);
+                betButton.addEventListener('click', betAction);
+                foldButton.addEventListener('click', foldAction);
+                dealButton.addEventListener('click', dealNewHand);
+                pokerMessageButton.addEventListener('click', closePokerMessage);
+                
+                // Activer uniquement le bouton de distribution
+                enablePokerButtons(['deal']);
+                
+                // Masquer l'indicateur de force de la main
+                handStrengthDisplay.classList.remove('visible');
+                
+                // Masquer le message
+                pokerMessage.style.display = 'none';
+                
+                // Message de bienvenue
+                showCamilleSpeech("Prêt à perdre au poker ? Je suis imbattable !");
+            }
+            
+            // Mettre à jour l'affichage
+            function updatePokerDisplay() {
+                playerChipsDisplay.textContent = pokerState.playerChips;
+                opponentChipsDisplay.textContent = pokerState.opponentChips;
+                playerStackDisplay.textContent = pokerState.playerChips;
+                potAmountDisplay.textContent = pokerState.pot;
+                betAmountDisplay.textContent = pokerState.betAmount;
+                
+                // Afficher la phase actuelle
+                let phaseText = '';
+                switch (pokerState.gamePhase) {
+                    case 'ready':
+                        phaseText = 'Prêt';
+                        break;
+                    case 'preflop':
+                        phaseText = 'Pré-flop';
+                        break;
+                    case 'flop':
+                        phaseText = 'Flop';
+                        break;
+                    case 'turn':
+                        phaseText = 'Turn';
+                        break;
+                    case 'river':
+                        phaseText = 'River';
+                        break;
+                    case 'showdown':
+                        phaseText = 'Abattage';
+                        break;
+                }
+                gamePhaseDisplay.textContent = phaseText;
+            }
+            
+            // Activer ou désactiver les boutons appropriés
+            function enablePokerButtons(buttons) {
+                // Désactiver tous les boutons d'abord
+                checkButton.disabled = true;
+                callButton.disabled = true;
+                betButton.disabled = true;
+                foldButton.disabled = true;
+                dealButton.disabled = true;
+                decreaseBetButton.disabled = true;
+                increaseBetButton.disabled = true;
+                
+                // Activer les boutons spécifiés
+                buttons.forEach(button => {
+                    switch (button) {
+                        case 'check':
+                            checkButton.disabled = false;
+                            break;
+                        case 'call':
+                            callButton.disabled = false;
+                            break;
+                        case 'bet':
+                            betButton.disabled = false;
+                            decreaseBetButton.disabled = false;
+                            increaseBetButton.disabled = false;
+                            break;
+                        case 'fold':
+                            foldButton.disabled = false;
+                            break;
+                        case 'deal':
+                            dealButton.disabled = false;
+                            break;
+                    }
+                });
+                
+                // Désactiver le bouton de diminution si la mise est au minimum
+                if (pokerState.betAmount <= 50) {
+                    decreaseBetButton.disabled = true;
+                }
+                
+                // Désactiver le bouton d'augmentation si la mise est au maximum
+                if (pokerState.betAmount >= pokerState.playerChips || pokerState.betAmount >= 500) {
+                    increaseBetButton.disabled = true;
+                }
+            }
+            
+            // Distribuer une nouvelle main
+            function dealNewHand() {
+                if (pokerState.gamePhase !== 'ready' && pokerState.gamePhase !== 'showdown') return;
+                
+                // Réinitialiser l'état de la main
+                pokerState.pot = 0;
+                pokerState.currentBet = 0;
+                pokerState.opponentBet = 0;
+                pokerState.playerBet = 0;
+                pokerState.playerCards = [];
+                pokerState.opponentCards = [];
+                pokerState.communityCards = [];
+                pokerState.gamePhase = 'preflop';
+                pokerState.playerTurn = true;
+                pokerState.handEvaluated = false;
+                
+                // Vider les conteneurs de cartes
+                playerCardsContainer.innerHTML = '';
+                communityCardsContainer.innerHTML = '';
+                
+                // Créer et mélanger un nouveau paquet
+                createDeck();
+                shuffleDeck();
+                
+                // Distribuer les cartes
+                dealPlayerCards();
+                
+                // Jouer un son
+                playSound('start');
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Petite et grosse blind
+                const smallBlind = 25;
+                const bigBlind = 50;
+                
+                // Prélever les blinds
+                pokerState.playerChips -= smallBlind;
+                pokerState.opponentChips -= bigBlind;
+                pokerState.playerBet = smallBlind;
+                pokerState.opponentBet = bigBlind;
+                pokerState.currentBet = bigBlind;
+                pokerState.pot = smallBlind + bigBlind;
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Afficher les blinds
+                showPlayerSpeech(`J'ai payé la petite blind (${smallBlind})`);
+                showCamilleSpeech(`J'ai payé la grosse blind (${bigBlind})`);
+                
+                // Évaluer la force de la main du joueur
+                evaluateHand();
+                
+                // Activer les boutons appropriés (call et fold)
+                enablePokerButtons(['call', 'fold']);
+                
+                // Incrémenter le compteur de parties jouées
+                pokerState.gamesPlayed++;
+            }
+            
+            // Créer un nouveau paquet de cartes
+            function createDeck() {
+                pokerState.deck = [];
+                for (let suit of suits) {
+                    for (let value of values) {
+                        pokerState.deck.push({
+                            suit,
+                            value,
+                            numericValue: getCardValue(value),
+                            color: (suit === '♥' || suit === '♦') ? 'red' : 'black'
+                        });
+                    }
+                }
+            }
+            
+            // Mélanger le paquet
+            function shuffleDeck() {
+                for (let i = pokerState.deck.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [pokerState.deck[i], pokerState.deck[j]] = [pokerState.deck[j], pokerState.deck[i]];
+                }
+            }
+            
+            // Obtenir la valeur numérique d'une carte
+            function getCardValue(value) {
+                switch (value) {
+                    case 'A': return 14;
+                    case 'K': return 13;
+                    case 'Q': return 12;
+                    case 'J': return 11;
+                    default: return parseInt(value);
+                }
+            }
+            
+            // Distribuer les cartes du joueur
+            function dealPlayerCards() {
+                // Distribuer 2 cartes au joueur
+                for (let i = 0; i < 2; i++) {
+                    const card = pokerState.deck.pop();
+                    pokerState.playerCards.push(card);
+                    const cardElement = createCardElement(card);
+                    cardElement.classList.add('dealing');
+                    playerCardsContainer.appendChild(cardElement);
+                    
+                    // Jouer un son
+                    setTimeout(() => playSound('card'), i * 300);
+                }
+                
+                // Distribuer 2 cartes à l'adversaire (face cachée)
+                for (let i = 0; i < 2; i++) {
+                    const card = pokerState.deck.pop();
+                    pokerState.opponentCards.push(card);
+                }
+            }
+            
+            // Créer un élément de carte
+            function createCardElement(card, faceDown = false) {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'poker-card';
+                
+                if (faceDown) {
+                    cardElement.classList.add('card-back');
+                    return cardElement;
+                }
+                
+                const topValue = document.createElement('div');
+                topValue.className = `card-value ${card.color}`;
+                topValue.textContent = card.value;
+                
+                const suit = document.createElement('div');
+                suit.className = `card-suit ${card.color}`;
+                suit.textContent = card.suit;
+                
+                const bottomValue = document.createElement('div');
+                bottomValue.className = `card-value-bottom ${card.color}`;
+                bottomValue.textContent = card.value;
+                
+                cardElement.appendChild(topValue);
+                cardElement.appendChild(suit);
+                cardElement.appendChild(bottomValue);
+                
+                return cardElement;
+            }
+            
+            // Distribuer les cartes communes (flop, turn, river)
+            function dealCommunityCards(count) {
+                const startIndex = pokerState.communityCards.length;
+                
+                // Distribuer les cartes
+                for (let i = 0; i < count; i++) {
+                    const card = pokerState.deck.pop();
+                    pokerState.communityCards.push(card);
+                    const cardElement = createCardElement(card);
+                    cardElement.classList.add('dealing');
+                    communityCardsContainer.appendChild(cardElement);
+                    
+                    // Jouer un son
+                    setTimeout(() => playSound('card'), i * 300);
+                }
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Évaluer la force de la main du joueur
+                evaluateHand();
+            }
+            
+            // Évaluer la force de la main du joueur
+            function evaluateHand() {
+                // On ne peut évaluer que si on a au moins 2 cartes (préflop)
+                if (pokerState.playerCards.length < 2) return;
+                
+                const allCards = [...pokerState.playerCards, ...pokerState.communityCards];
+                const handRank = getHandRank(allCards);
+                
+                // Afficher la force de la main
+                handStrengthDisplay.textContent = handRank.name;
+                handStrengthDisplay.classList.add('visible');
+                
+                // Marquer la main comme évaluée
+                pokerState.handEvaluated = true;
+            }
+            
+            // Obtenir le rang d'une main
+            function getHandRank(cards) {
+                if (cards.length < 5) {
+                    // Préflop, on regarde juste les 2 cartes du joueur
+                    const card1 = pokerState.playerCards[0];
+                    const card2 = pokerState.playerCards[1];
+                    
+                    if (card1.value === card2.value) {
+                        return { rank: 2, name: `Paire de ${card1.value}s` };
+                    } else {
+                        const highCard = card1.numericValue > card2.numericValue ? card1 : card2;
+                        return { rank: 1, name: `${highCard.value} Haute` };
+                    }
+                }
+                
+                // Trier les cartes par valeur (ordre décroissant)
+                cards.sort((a, b) => b.numericValue - a.numericValue);
+                
+                // Vérifier les différentes mains possibles (du plus fort au plus faible)
+                
+                // Quinte Flush Royale
+                if (isRoyalFlush(cards)) {
+                    return { rank: 10, name: 'Quinte Flush Royale' };
+                }
+                
+                // Quinte Flush
+                const straightFlush = isStraightFlush(cards);
+                if (straightFlush) {
+                    return { rank: 9, name: `Quinte Flush ${straightFlush.highCard}` };
+                }
+                
+                // Carré
+                const fourOfAKind = isFourOfAKind(cards);
+                if (fourOfAKind) {
+                    return { rank: 8, name: `Carré de ${fourOfAKind.value}s` };
+                }
+                
+                // Full
+                const fullHouse = isFullHouse(cards);
+                if (fullHouse) {
+                    return { rank: 7, name: `Full aux ${fullHouse.three}s par les ${fullHouse.pair}s` };
+                }
+                
+                // Couleur
+                const flush = isFlush(cards);
+                if (flush) {
+                    return { rank: 6, name: `Couleur ${flush.suit}` };
+                }
+                
+                // Quinte
+                const straight = isStraight(cards);
+                if (straight) {
+                    return { rank: 5, name: `Quinte ${straight.highCard}` };
+                }
+                
+                // Brelan
+                const threeOfAKind = isThreeOfAKind(cards);
+                if (threeOfAKind) {
+                    return { rank: 4, name: `Brelan de ${threeOfAKind.value}s` };
+                }
+                
+                // Deux Paires
+                const twoPairs = isTwoPairs(cards);
+                if (twoPairs) {
+                    return { rank: 3, name: `Deux Paires: ${twoPairs.high}s et ${twoPairs.low}s` };
+                }
+                
+                // Paire
+                const pair = isPair(cards);
+                if (pair) {
+                    return { rank: 2, name: `Paire de ${pair.value}s` };
+                }
+                
+                // Carte Haute
+                return { rank: 1, name: `${cards[0].value} Haute` };
+            }
+            
+            // Fonctions d'évaluation des différentes mains
+            function isRoyalFlush(cards) {
+                const straightFlush = isStraightFlush(cards);
+                if (straightFlush && straightFlush.highCard === 'A') {
+                    return true;
+                }
+                return false;
+            }
+            
+            function isStraightFlush(cards) {
+                const flush = isFlush(cards);
+                if (!flush) return false;
+                
+                // Filtrer les cartes de la même couleur
+                const flushCards = cards.filter(card => card.suit === flush.suit);
+                const straight = isStraight(flushCards);
+                
+                if (straight) {
+                    return { highCard: straight.highCard };
+                }
+                
+                return false;
+            }
+            
+            function isFourOfAKind(cards) {
+                const valueCounts = getValueCounts(cards);
+                
+                for (let value in valueCounts) {
+                    if (valueCounts[value] === 4) {
+                        return { value: value };
+                    }
+                }
+                
+                return false;
+            }
+            
+            function isFullHouse(cards) {
+                const valueCounts = getValueCounts(cards);
+                let three = null;
+                let pair = null;
+                
+                for (let value in valueCounts) {
+                    if (valueCounts[value] >= 3) {
+                        three = value;
+                    } else if (valueCounts[value] >= 2) {
+                        pair = value;
+                    }
+                }
+                
+                if (three && pair) {
+                    return { three, pair };
+                }
+                
+                return false;
+            }
+            
+            function isFlush(cards) {
+                const suitCounts = getSuitCounts(cards);
+                
+                for (let suit in suitCounts) {
+                    if (suitCounts[suit] >= 5) {
+                        return { suit };
+                    }
+                }
+                
+                return false;
+            }
+            
+            function isStraight(cards) {
+                // Copier et trier les cartes par valeur numérique
+                const sortedCards = [...cards].sort((a, b) => b.numericValue - a.numericValue);
+                
+                // Éliminer les doublons (même valeur)
+                const uniqueCards = [];
+                for (let i = 0; i < sortedCards.length; i++) {
+                    if (i === 0 || sortedCards[i].numericValue !== sortedCards[i-1].numericValue) {
+                        uniqueCards.push(sortedCards[i]);
+                    }
+                }
+                
+                // Cas spécial: As peut être bas (A,2,3,4,5)
+                if (uniqueCards[0].numericValue === 14) { // As
+                    let lowAce = { ...uniqueCards[0], numericValue: 1 };
+                    uniqueCards.push(lowAce);
+                }
+                
+                // Chercher 5 cartes consécutives
+                for (let i = 0; i <= uniqueCards.length - 5; i++) {
+                    if (
+                        uniqueCards[i].numericValue === uniqueCards[i+1].numericValue + 1 &&
+                        uniqueCards[i+1].numericValue === uniqueCards[i+2].numericValue + 1 &&
+                        uniqueCards[i+2].numericValue === uniqueCards[i+3].numericValue + 1 &&
+                        uniqueCards[i+3].numericValue === uniqueCards[i+4].numericValue + 1
+                    ) {
+                        return { highCard: uniqueCards[i].value };
+                    }
+                }
+                
+                return false;
+            }
+            
+            function isThreeOfAKind(cards) {
+                const valueCounts = getValueCounts(cards);
+                
+                for (let value in valueCounts) {
+                    if (valueCounts[value] === 3) {
+                        return { value };
+                    }
+                }
+                
+                return false;
+            }
+            
+            function isTwoPairs(cards) {
+                const valueCounts = getValueCounts(cards);
+                const pairs = [];
+                
+                for (let value in valueCounts) {
+                    if (valueCounts[value] >= 2) {
+                        pairs.push(value);
+                    }
+                }
+                
+                if (pairs.length >= 2) {
+                    // Trier les paires par valeur (ordre décroissant)
+                    pairs.sort((a, b) => getCardValue(b) - getCardValue(a));
+                    return { high: pairs[0], low: pairs[1] };
+                }
+                
+                return false;
+            }
+            
+            function isPair(cards) {
+                const valueCounts = getValueCounts(cards);
+                
+                for (let value in valueCounts) {
+                    if (valueCounts[value] === 2) {
+                        return { value };
+                    }
+                }
+                
+                return false;
+            }
+            
+            // Fonctions utilitaires pour l'évaluation des mains
+            function getValueCounts(cards) {
+                const counts = {};
+                
+                for (let card of cards) {
+                    counts[card.value] = (counts[card.value] || 0) + 1;
+                }
+                
+                return counts;
+            }
+            
+            function getSuitCounts(cards) {
+                const counts = {};
+                
+                for (let card of cards) {
+                    counts[card.suit] = (counts[card.suit] || 0) + 1;
+                }
+                
+                return counts;
+            }
+            
+            // Actions du joueur
+            function checkAction() {
+                if (!pokerState.playerTurn) return;
+                
+                // On ne peut checker que si aucune mise n'a été faite
+                if (pokerState.currentBet > pokerState.playerBet) return;
+                
+                // Passer le tour à l'adversaire
+                pokerState.playerTurn = false;
+                
+                // Désactiver les boutons
+                enablePokerButtons([]);
+                
+                // Message du joueur
+                showPlayerSpeech("Je check.");
+                
+                // Action de l'adversaire après un délai
+                setTimeout(opponentAction, 1500);
+            }
+            
+            function callAction() {
+                if (!pokerState.playerTurn) return;
+                
+                // On ne peut suivre que si une mise a été faite
+                if (pokerState.currentBet <= pokerState.playerBet) return;
+                
+                // Calculer le montant à suivre
+                const callAmount = pokerState.currentBet - pokerState.playerBet;
+                
+                // Vérifier si le joueur a assez de jetons
+                if (callAmount > pokerState.playerChips) return;
+                
+                // Mettre à jour les jetons et la mise du joueur
+                pokerState.playerChips -= callAmount;
+                pokerState.playerBet = pokerState.currentBet;
+                pokerState.pot += callAmount;
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Jouer un son
+                playSound('card');
+                
+                // Message du joueur
+                showPlayerSpeech(`Je suis (${callAmount}).`);
+                
+                // Passer à la phase suivante
+                nextBettingRound();
+            }
+            
+            function betAction() {
+                if (!pokerState.playerTurn) return;
+                
+                // Vérifier si le joueur a assez de jetons
+                if (pokerState.betAmount > pokerState.playerChips) return;
+                
+                // Calculer le montant supplémentaire à miser
+                const additionalBet = pokerState.betAmount - pokerState.playerBet;
+                
+                // Mettre à jour les jetons et la mise du joueur
+                pokerState.playerChips -= additionalBet;
+                pokerState.playerBet = pokerState.betAmount;
+                pokerState.currentBet = pokerState.betAmount;
+                pokerState.pot += additionalBet;
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Jouer un son
+                playSound('card');
+                
+                // Message du joueur
+                showPlayerSpeech(`Je mise ${pokerState.betAmount}.`);
+                
+                // Passer le tour à l'adversaire
+                pokerState.playerTurn = false;
+                
+                // Désactiver les boutons
+                enablePokerButtons([]);
+                
+                // Action de l'adversaire après un délai
+                setTimeout(opponentAction, 1500);
+            }
+            
+            function foldAction() {
+                if (!pokerState.playerTurn) return;
+                
+                // Le joueur abandonne, l'adversaire remporte le pot
+                pokerState.opponentChips += pokerState.pot;
+                pokerState.pot = 0;
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Jouer un son
+                playSound('lose');
+                
+                // Message du joueur
+                showPlayerSpeech("Je me couche.");
+                
+                // Message de l'adversaire
+                showCamilleSpeech("Ha ha ! Je savais que tu te coucherais !");
+                
+                // Incrémenter le compteur de victoires de l'adversaire
+                pokerState.opponentWins++;
+                
+                // Passer à la phase de préparation
+                pokerState.gamePhase = 'ready';
+                
+                // Activer uniquement le bouton de distribution
+                enablePokerButtons(['deal']);
+                
+                // Vérifier si le jeu est terminé
+                checkGameEnd();
+            }
+            
+            // Passer à la phase suivante de mise
+            function nextBettingRound() {
+                // Réinitialiser les mises de la phase
+                pokerState.playerBet = 0;
+                pokerState.opponentBet = 0;
+                pokerState.currentBet = 0;
+                
+                // Déterminer la phase suivante
+                switch (pokerState.gamePhase) {
+                    case 'preflop':
+                        // Passer au flop (3 cartes communes)
+                        pokerState.gamePhase = 'flop';
+                        dealCommunityCards(3);
+                        break;
+                    case 'flop':
+                        // Passer au turn (1 carte commune)
+                        pokerState.gamePhase = 'turn';
+                        dealCommunityCards(1);
+                        break;
+                    case 'turn':
+                        // Passer à la river (1 carte commune)
+                        pokerState.gamePhase = 'river';
+                        dealCommunityCards(1);
+                        break;
+                    case 'river':
+                        // Passer à l'abattage (showdown)
+                        pokerState.gamePhase = 'showdown';
+                        showdown();
+                        return;
+                }
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Le joueur commence
+                pokerState.playerTurn = true;
+                
+                // Activer les boutons appropriés
+                enablePokerButtons(['check', 'bet', 'fold']);
+            }
+            
+            // Action de l'adversaire
+            function opponentAction() {
+                if (pokerState.playerTurn) return;
+                
+                // Calculer la force de la main de l'adversaire (pour déterminer son action)
+                const opponentCards = [...pokerState.opponentCards, ...pokerState.communityCards];
+                const handRank = getHandRank(opponentCards).rank;
+                
+                // Probabilité de bluffer (plus élevée avec une mauvaise main)
+                const bluffProbability = 0.2 - (handRank * 0.01);
+                const isBluffing = Math.random() < bluffProbability;
+                
+                // Décision en fonction de la force de la main et du bluff
+                if (isBluffing || handRank >= 5 || Math.random() < 0.3) {
+                    // Miser ou relancer
+                    const betAmount = Math.min(
+                        pokerState.opponentChips,
+                        pokerState.currentBet + 50 + Math.floor(Math.random() * 100)
+                    );
+                    
+                    const additionalBet = betAmount - pokerState.opponentBet;
+                    pokerState.opponentChips -= additionalBet;
+                    pokerState.opponentBet = betAmount;
+                    pokerState.currentBet = betAmount;
+                    pokerState.pot += additionalBet;
+                    
+                    // Message de l'adversaire
+                    showCamilleSpeech(`Je mise ${betAmount}.`);
+                    
+                    // Jouer un son
+                    playSound('card');
+                } else if (pokerState.currentBet > pokerState.opponentBet) {
+                    // Suivre
+                    const callAmount = pokerState.currentBet - pokerState.opponentBet;
+                    pokerState.opponentChips -= callAmount;
+                    pokerState.opponentBet = pokerState.currentBet;
+                    pokerState.pot += callAmount;
+                    
+                    // Message de l'adversaire
+                    showCamilleSpeech(`Je suis (${callAmount}).`);
+                    
+                    // Jouer un son
+                    playSound('card');
+                    
+                    // Passer à la phase suivante
+                    nextBettingRound();
+                    return;
+                } else {
+                    // Checker
+                    showCamilleSpeech("Je check.");
+                }
+                
+                // Mettre à jour l'affichage
+                updatePokerDisplay();
+                
+                // Activer les boutons appropriés pour le joueur
+                pokerState.playerTurn = true;
+                if (pokerState.currentBet > pokerState.playerBet) {
+                    enablePokerButtons(['call', 'fold']);
+                } else {
+                    enablePokerButtons(['check', 'bet', 'fold']);
+                }
+            }
+            
+            // Abattage (showdown)
+            function showdown() {
+                // Révéler les cartes de l'adversaire
+                opponentCardsContainer.innerHTML = '';
+                pokerState.opponentCards.forEach(card => {
+                    const cardElement = createCardElement(card);
+                    cardElement.classList.add('flipping');
+                    opponentCardsContainer.appendChild(cardElement);
+                });
+                
+                // Jouer un son
+                playSound('card');
+                
+                // Calculer les forces de main
+                const playerHand = getHandRank([...pokerState.playerCards, ...pokerState.communityCards]);
+                const opponentHand = getHandRank([...pokerState.opponentCards, ...pokerState.communityCards]);
+                
+                setTimeout(() => {
+                    // Déterminer le gagnant
+                    let winner;
+                    if (playerHand.rank > opponentHand.rank) {
+                        winner = 'player';
+                    } else if (opponentHand.rank > playerHand.rank) {
+                        winner = 'opponent';
+                    } else {
+                        // Égalité, vérifier la carte haute (à implémenter si nécessaire)
+                        winner = Math.random() < 0.5 ? 'player' : 'opponent';
+                    }
+                    
+                    // Message approprié
+                    if (winner === 'player') {
+                        showPlayerSpeech(`J'ai gagné avec ${playerHand.name}!`);
+                        showCamilleSpeech(`Tu as eu de la chance... J'avais ${opponentHand.name}.`);
+                        pokerState.playerChips += pokerState.pot;
+                        pokerState.playerWins++;
+                        playSound('win');
+                    } else {
+                        showCamilleSpeech(`J'ai gagné avec ${opponentHand.name}!`);
+                        showPlayerSpeech(`Bien joué, tu as battu ma ${playerHand.name}.`);
+                        pokerState.opponentChips += pokerState.pot;
+                        pokerState.opponentWins++;
+                        playSound('lose');
+                    }
+                    
+                    // Réinitialiser le pot
+                    pokerState.pot = 0;
+                    
+                    // Mettre à jour l'affichage
+                    updatePokerDisplay();
+                    
+                    // Passer à la phase de préparation
+                    pokerState.gamePhase = 'ready';
+                    
+                    // Activer uniquement le bouton de distribution
+                    enablePokerButtons(['deal']);
+                    
+                    // Vérifier si le jeu est terminé
+                    checkGameEnd();
+                }, 1000);
+            }
+            
+            // Vérifier si le jeu est terminé
+            function checkGameEnd() {
+                if (pokerState.playerChips <= 0) {
+                    // Le joueur n'a plus de jetons
+                    endPokerGame('lose');
+                } else if (pokerState.opponentChips <= 0) {
+                    // L'adversaire n'a plus de jetons
+                    endPokerGame('win');
+                } else if (pokerState.gamesPlayed >= 10) {
+                    // 10 mains jouées, comparer les jetons
+                    if (pokerState.playerChips > pokerState.opponentChips) {
+                        endPokerGame('win');
+                    } else {
+                        endPokerGame('lose');
+                    }
+                }
+            }
+            
+            // Terminer le jeu
+            function endPokerGame(result) {
+                let title, body;
+                
+                switch (result) {
+                    case 'win':
+                        title = "VICTOIRE AU POKER !";
+                        body = `Félicitations ! Vous avez terminé avec ${pokerState.playerChips} jetons, battant Camille Le Nul qui n'a que ${pokerState.opponentChips} jetons !`;
+                        playSound('win');
+                        
+                        // Ajouter une victoire
+                        if (!gameVictories.poker) {
+                            gameVictories.poker = 0;
+                        }
+                        addVictory('poker');
+                        break;
+                    case 'lose':
+                        title = "DÉFAITE AU POKER !";
+                        body = `Dommage ! Vous avez perdu avec seulement ${pokerState.playerChips} jetons, alors que Camille Le Nul a ${pokerState.opponentChips} jetons !`;
+                        playSound('lose');
+                        break;
+                }
+                
+                // Afficher le message
+                pokerMessageTitle.textContent = title;
+                pokerMessageBody.textContent = body;
+                pokerMessage.style.display = 'block';
+            }
+            
+            // Fermer le message
+            function closePokerMessage() {
+                pokerMessage.style.display = 'none';
+                initPokerGame();
+            }
+            
+            // Diminuer la mise
+            function decreaseBet() {
+                pokerState.betAmount = Math.max(50, pokerState.betAmount - 50);
+                updatePokerDisplay();
+                playSound('select');
+                
+                // Vérifier si on a atteint le minimum
+                if (pokerState.betAmount <= 50) {
+                    decreaseBetButton.disabled = true;
+                }
+                increaseBetButton.disabled = false;
+            }
+            
+            // Augmenter la mise
+            function increaseBet() {
+                pokerState.betAmount = Math.min(pokerState.playerChips, Math.min(500, pokerState.betAmount + 50));
+                updatePokerDisplay();
+                playSound('select');
+                
+                // Vérifier si on a atteint le maximum
+                if (pokerState.betAmount >= pokerState.playerChips || pokerState.betAmount >= 500) {
+                    increaseBetButton.disabled = true;
+                }
+                decreaseBetButton.disabled = false;
+            }
+            
+            // Afficher un message de l'adversaire
+            function showCamilleSpeech(text) {
+                camilleSpeech.textContent = text;
+                camilleSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    camilleSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Afficher un message du joueur
+            function showPlayerSpeech(text) {
+                playerSpeech.textContent = text;
+                playerSpeech.style.opacity = '1';
+                
+                setTimeout(() => {
+                    playerSpeech.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Initialiser le jeu
+            initPokerGame();
+            
+            // Mettre à jour l'affichage des victoires
+            loadVictories();
+        });
+    </script>
+</body>
+</html>

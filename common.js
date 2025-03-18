@@ -3,7 +3,12 @@ const gameVictories = {
     total: 0,
     blackjack: 0,
     typing: 0,
-    platform: 0
+    platform: 0,
+    cps: 0,
+    slots: 0,
+    roulette: 0,
+    poker: 0,
+    craps: 0
 };
 
 // Charger les victoires depuis le stockage local
